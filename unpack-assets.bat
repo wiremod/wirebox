@@ -1,0 +1,1 @@
+xcopy /E models\wirebox\ ..\..\..\models\wirebox\
