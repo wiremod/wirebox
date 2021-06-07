@@ -1,0 +1,7 @@
+*.addon filter=lfs diff=lfs merge=lfs -text
+*.cs filter=lfs diff=lfs merge=lfs -text
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.vmdl filter=lfs diff=lfs merge=lfs -text
+*.vmdl_c filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
+*.dmx filter=lfs diff=lfs merge=lfs -text
