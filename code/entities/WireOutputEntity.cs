@@ -22,6 +22,7 @@ namespace Sandbox
 		public static void WireTriggerOutput( WireOutputEntity ent, string outputName, int value )
 		{
 			var output = ent.GetOutput( outputName );
+			output.value = value;
 			foreach ( var input in output.connected ) {
 				if ( !input.entity.IsValid() ) continue;
 				if ( input.entity is WireInputEntity inputEntity ) {
