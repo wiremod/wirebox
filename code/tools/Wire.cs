@@ -41,6 +41,7 @@
 						var outputName = wireOutputProp.GetOutputNames()[0];
 						var inputName = wireInputProp.GetInputNames()[0];
 
+						//Log.Info("Wiring " + wireInputProp + "'s " + inputName + " to " + wireOutputProp + "'s " + outputName);
 						wireOutputProp.WireConnect( wireInputProp, outputName, inputName );
 						WireOutputEntity.WireTriggerOutput( wireOutputProp, outputName, wireOutputProp.GetOutput( outputName ).value );
 						Reset();

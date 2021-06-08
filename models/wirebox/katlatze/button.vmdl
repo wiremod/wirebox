@@ -69,7 +69,7 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						filename = "models/katlatze/button.fbx"
+						filename = "models/wirebox/katlatze/button.fbx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 0.1
@@ -98,7 +98,7 @@
 						recenter_on_parent_bone = false
 						offset_origin = [ 0.0, 0.0, 0.0 ]
 						offset_angles = [ 0.0, 0.0, 0.0 ]
-						filename = "models/katlatze/button.fbx"
+						filename = "models/wirebox/katlatze/button.fbx"
 						import_scale = 0.1
 						faceMergeAngle = 10.0
 						maxHullVertices = 0

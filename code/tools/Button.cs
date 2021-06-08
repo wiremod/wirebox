@@ -2,69 +2,21 @@
 namespace Sandbox.Tools
 {
 	[Library( "tool_button", Title = "Button", Description = "Create Buttons!", Group = "construction" )]
-	public partial class ButtonTool : BaseTool
+	public partial class ButtonTool : BaseWireTool
 	{
-		PreviewEntity previewModel;
-
-		protected override bool IsPreviewTraceValid( TraceResult tr )
+		protected override Type GetEntityType()
 		{
-			if ( !base.IsPreviewTraceValid( tr ) )
-				return false;
-
-			if ( tr.Entity is ButtonEntity )
-				return false;
-
-			return true;
+			return typeof( ButtonEntity );
 		}
-
-		public override void CreatePreviews()
+		protected override string GetModel()
 		{
-			if ( TryCreatePreview( ref previewModel, "models/wirebox/katlatze/button.vmdl" ) ) {
-				previewModel.RelativeToNormal = false;
-			}
+			return "models/wirebox/katlatze/button.vmdl";
 		}
-
-		public override void Simulate()
+		protected override ModelEntity SpawnEntity( TraceResult tr )
 		{
-			if ( !Host.IsServer )
-				return;
-
-			using ( Prediction.Off() ) {
-				var input = Owner.Input;
-
-				if ( !input.Pressed( InputButton.Attack1 ) )
-					return;
-
-				var startPos = Owner.EyePos;
-				var dir = Owner.EyeRot.Forward;
-
-				var tr = Trace.Ray( startPos, startPos + dir * MaxTraceDistance )
-					.Ignore( Owner )
-					.Run();
-
-				if ( !tr.Hit )
-					return;
-
-				if ( !tr.Entity.IsValid() )
-					return;
-
-				CreateHitEffects( tr.EndPos );
-
-				if ( tr.Entity is ButtonEntity )
-					return;
-
-				var ent = new ButtonEntity {
-					Position = tr.EndPos,
-				};
-
-				ent.SetModel( "models/wirebox/katlatze/button.vmdl" );
-
-				var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
-
-				if ( attachEnt.IsValid() ) {
-					ent.SetParent( tr.Body.Entity, tr.Body.PhysicsGroup.GetBodyBoneName( tr.Body ) );
-				}
-			}
+			return new ButtonEntity {
+				Position = tr.EndPos,
+			};
 		}
 	}
 }

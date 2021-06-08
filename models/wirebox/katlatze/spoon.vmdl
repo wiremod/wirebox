@@ -61,7 +61,7 @@
 						recenter_on_parent_bone = false
 						offset_origin = [ 0.0, 0.0, 0.0 ]
 						offset_angles = [ 0.0, 0.0, 0.0 ]
-						filename = "models/katlatze/spoon.dmx"
+						filename = "models/wirebox/katlatze/spoon.dmx"
 						import_scale = 1.0
 						faceMergeAngle = 25.0
 						maxHullVertices = 0
@@ -81,7 +81,7 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						filename = "models/katlatze/spoon.dmx"
+						filename = "models/wirebox/katlatze/spoon.dmx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 1.0

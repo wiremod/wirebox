@@ -1,1 +1,1 @@
-xcopy /E models\wirebox\ ..\..\..\models\wirebox\
+xcopy /E /Y models\wirebox\ ..\..\..\models\wirebox\
