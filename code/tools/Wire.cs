@@ -38,7 +38,11 @@
 						if ( tr.Entity is not WireOutputEntity wireOutputProp )
 							return;
 
-						wireOutputProp.WireConnect( wireInputProp, wireOutputProp.GetOutputNames()[0], wireInputProp.GetInputNames()[0] );
+						var outputName = wireOutputProp.GetOutputNames()[0];
+						var inputName = wireInputProp.GetInputNames()[0];
+
+						wireOutputProp.WireConnect( wireInputProp, outputName, inputName );
+						WireOutputEntity.WireTriggerOutput( wireOutputProp, outputName, wireOutputProp.GetOutput( outputName ).value );
 						Reset();
 					}
 				}

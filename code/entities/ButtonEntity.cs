@@ -7,6 +7,7 @@ public partial class ButtonEntity : Prop, IUse, WireOutputEntity
 {
 	public bool On { get; set; } = false;
 	public bool IsToggle { get; set; } = false;
+	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 
 	public override void Spawn()
 	{

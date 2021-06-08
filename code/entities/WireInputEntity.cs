@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Sandbox
 {
@@ -8,48 +9,83 @@ namespace Sandbox
 		public int value;
 		public Entity entity;
 		public string inputName;
+		public string type;
 		public List<WireOutput> connected = new List<WireOutput>();
 
-		public WireInput( Entity entity, string inputName )
+		public WireInput( Entity entity, string inputName, string type )
 		{
 			this.entity = entity;
 			this.inputName = inputName;
+			this.type = type;
 		}
 	}
-	public interface WireInputEntity
+	public interface WireInputEntity : IWireEntity
 	{
-		protected static Dictionary<int, Dictionary<string, WireInput>> allInputs = new Dictionary<int, Dictionary<string, WireInput>>();
-
-		public int NetworkIdent { get; }
 		public void WireTriggerInput<T>( string inputName, T value )
 		{
-			HandleWireInput( inputName, value );
+			if ( WirePorts.inputHandlers.Count == 0 ) { // these get cleared by hot reloading
+				WireInitialize();
+			}
+			WirePorts.inputHandlers[inputName]( value );
 		}
-		public virtual void HandleWireInput<T>( string inputName, T value ) { }
+		public virtual void WireInitialize() { }
 
 		public WireInput GetInput( string inputName )
 		{
-			if ( !allInputs.ContainsKey( this.NetworkIdent ) ) {
-				InitializeInputs();
+			if ( WirePorts.inputHandlers.Count == 0 ) {
+				WireInitialize();
 			}
-			return allInputs[this.NetworkIdent][inputName];
+			return WirePorts.inputs[inputName];
 		}
 		public string[] GetInputNames()
 		{
-			if ( !allInputs.ContainsKey( this.NetworkIdent ) ) {
-				InitializeInputs();
+			if ( WirePorts.inputHandlers.Count == 0 ) {
+				WireInitialize();
 			}
-			return allInputs[this.NetworkIdent].Keys.ToArray();
+			return WirePorts.inputs.Keys.ToArray();
 		}
-
-		protected void InitializeInputs()
+		public void RegisterInputHandler<T>( string inputName, Action<T> handler )
 		{
-			allInputs[this.NetworkIdent] = new Dictionary<string, WireInput>();
-			foreach ( var inputName in WireGetInputs() ) {
-				allInputs[this.NetworkIdent][inputName] = new WireInput( (Entity)this, inputName );
+			if ( typeof( T ) == typeof( bool ) ) {
+				WirePorts.inputHandlers[inputName] = (( value ) => {
+					if ( value is int valueInt ) {
+						handler( (T)(object)(valueInt != 0) );
+					}
+					else if ( value is float valueFloat ) {
+						handler( (T)(object)(valueFloat != 0.0f) );
+					}
+					else {
+						handler( (T)value );
+					}
+				});
+				WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "bool" );
+			}
+			else if ( typeof( T ) == typeof( float ) ) {
+				WirePorts.inputHandlers[inputName] = (( value ) => {
+					if ( value is int valueInt ) {
+						handler( (T)(object)(float)(valueInt) );
+					}
+					else {
+						handler( (T)value );
+					}
+				});
+				WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "float" );
+			}
+			else if ( typeof( T ) == typeof( int ) ) {
+				WirePorts.inputHandlers[inputName] = (( value ) => {
+					if ( value is float valueInt ) {
+						handler( (T)(object)(int)(valueInt) );
+					}
+					else {
+						handler( (T)value );
+					}
+				});
+				WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "int" );
+			}
+			else {
+				throw new Exception( "Wirebox RegisterInputHandler<" + typeof( T ) + "> unhandled type for " + this.GetType() );
 			}
 		}
-		abstract public string[] WireGetInputs();
 	}
 
 }

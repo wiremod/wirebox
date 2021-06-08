@@ -17,12 +17,8 @@ namespace Sandbox
 		}
 	}
 
-	public interface WireOutputEntity
+	public interface WireOutputEntity : IWireEntity
 	{
-		protected static Dictionary<int, Dictionary<string, WireOutput>> allOutputs = new Dictionary<int, Dictionary<string, WireOutput>>();
-
-		public int NetworkIdent { get; }
-
 		public static void WireTriggerOutput( WireOutputEntity ent, string outputName, int value )
 		{
 			var output = ent.GetOutput( outputName );
@@ -35,29 +31,32 @@ namespace Sandbox
 		}
 		public void WireConnect( WireInputEntity inputEnt, string outputName, string inputName )
 		{
-			GetOutput( outputName ).connected.Add( inputEnt.GetInput( inputName ) );
+			var connected = GetOutput( outputName ).connected;
+			var input = inputEnt.GetInput( inputName );
+			if ( !connected.Contains( input ) ) {
+				connected.Add( input );
+			}
 		}
 
 		public WireOutput GetOutput( string inputName )
 		{
-			if ( !allOutputs.ContainsKey( this.NetworkIdent ) ) {
+			if ( WirePorts.outputs.Count == 0 ) {
 				InitializeOutputs();
 			}
-			return allOutputs[this.NetworkIdent][inputName];
+			return WirePorts.outputs[inputName];
 		}
 		public string[] GetOutputNames()
 		{
-			if ( !allOutputs.ContainsKey( this.NetworkIdent ) ) {
+			if ( WirePorts.outputs.Count == 0 ) {
 				InitializeOutputs();
 			}
-			return allOutputs[this.NetworkIdent].Keys.ToArray();
+			return WirePorts.outputs.Keys.ToArray();
 		}
 
 		protected void InitializeOutputs()
 		{
-			allOutputs[this.NetworkIdent] = new Dictionary<string, WireOutput>();
 			foreach ( var outputName in WireGetOutputs() ) {
-				allOutputs[this.NetworkIdent][outputName] = new WireOutput( (Entity)this, outputName );
+				WirePorts.outputs[outputName] = new WireOutput( (Entity)this, outputName );
 			}
 		}
 		abstract public string[] WireGetOutputs();
