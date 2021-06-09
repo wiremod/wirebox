@@ -8,7 +8,7 @@ namespace Sandbox
 		public int value;
 		public Entity entity;
 		public string outputName;
-		public List<WireInput> connected = new List<WireInput>();
+		public List<WireInput> connected = new();
 
 		public WireOutput( Entity entity, string newOutputName )
 		{
@@ -32,9 +32,14 @@ namespace Sandbox
 		}
 		public void WireConnect( WireInputEntity inputEnt, string outputName, string inputName )
 		{
-			var connected = GetOutput( outputName ).connected;
 			var input = inputEnt.GetInput( inputName );
+			var output = GetOutput(outputName);
+			var connected = output.connected;
 			if ( !connected.Contains( input ) ) {
+				if (input.connectedOutput != null) {
+					inputEnt.DisconnectInput(inputName);
+				}
+				input.connectedOutput = output;
 				connected.Add( input );
 			}
 		}

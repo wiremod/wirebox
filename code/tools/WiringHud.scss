@@ -1,0 +1,56 @@
+div.wiring-tool-hud {
+  position: absolute;
+  top: 300px;
+  left: 100px;
+}
+
+.wiring-ports {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(blue, 0.2);
+  border-radius: 8px;
+  padding: 4px;
+
+  .h2 {
+    font-size: 40px;
+    color: rgba(white, 0.8);
+    text-shadow: 3px 3px 20px rgba(black, 0.8);
+    padding: 4px;
+  }
+  .port {
+    font-size: 24px;
+    color: rgba(white, 0.8);
+    text-shadow: 3px 3px 20px rgba(black, 0.8);
+    padding: 4px;
+    &.active {
+      background-color: rgba(green, 0.6);
+    }
+  }
+  &.selected {
+    background-color: rgba(blue, 0.35);
+    .port.active {
+      background-color: rgba(green, 0.9);
+    }
+  }
+
+  .wiring-ports-list {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.wiring-outputs {
+  margin-left: 30px;
+  display: none;
+  &.visible {
+    display: flex;
+  }
+}
+
+text.title {
+  font-family: Poppins;
+  font-size: 50px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 5px 5px 50px rgba(black, 0.8);
+}

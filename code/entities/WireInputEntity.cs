@@ -10,7 +10,7 @@ namespace Sandbox
 		public Entity entity;
 		public string inputName;
 		public string type;
-		public List<WireOutput> connected = new List<WireOutput>();
+		public WireOutput connectedOutput;
 
 		public WireInput( Entity entity, string inputName, string type )
 		{
@@ -44,6 +44,16 @@ namespace Sandbox
 			}
 			return WirePorts.inputs.Keys.ToArray();
 		}
+
+		public void DisconnectInput(string inputName)
+		{
+			var input = GetInput(inputName);
+			if (input.connectedOutput != null) {
+				input.connectedOutput.connected.Remove(input);
+				input.connectedOutput = null;
+			}
+		}
+
 		public void RegisterInputHandler<T>( string inputName, Action<T> handler )
 		{
 			if ( typeof( T ) == typeof( bool ) ) {
