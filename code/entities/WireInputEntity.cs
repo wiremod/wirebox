@@ -54,47 +54,31 @@ namespace Sandbox
 			}
 		}
 
-		public void RegisterInputHandler<T>( string inputName, Action<T> handler )
+		public void RegisterInputHandler( string inputName, Action<bool> handler )
 		{
-			if ( typeof( T ) == typeof( bool ) ) {
-				WirePorts.inputHandlers[inputName] = (( value ) => {
-					if ( value is int valueInt ) {
-						handler( (T)(object)(valueInt != 0) );
-					}
-					else if ( value is float valueFloat ) {
-						handler( (T)(object)(valueFloat != 0.0f) );
-					}
-					else {
-						handler( (T)value );
-					}
-				});
-				WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "bool" );
-			}
-			else if ( typeof( T ) == typeof( float ) ) {
-				WirePorts.inputHandlers[inputName] = (( value ) => {
-					if ( value is int valueInt ) {
-						handler( (T)(object)(float)(valueInt) );
-					}
-					else {
-						handler( (T)value );
-					}
-				});
-				WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "float" );
-			}
-			else if ( typeof( T ) == typeof( int ) ) {
-				WirePorts.inputHandlers[inputName] = (( value ) => {
-					if ( value is float valueInt ) {
-						handler( (T)(object)(int)(valueInt) );
-					}
-					else {
-						handler( (T)value );
-					}
-				});
-				WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "int" );
-			}
-			else {
-				throw new Exception( "Wirebox RegisterInputHandler<" + typeof( T ) + "> unhandled type for " + this.GetType() );
-			}
+			WirePorts.inputHandlers[inputName] = (( value ) => {
+				if ( value is bool valueBool ) {
+					handler( valueBool );
+				}
+				else {
+					handler( ((int)value)!=0 );
+				}
+			});
+			WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "bool" );
+		}
+		public void RegisterInputHandler( string inputName, Action<float> handler )
+		{
+			WirePorts.inputHandlers[inputName] = (( value ) => {
+				handler( (float)value );
+			});
+			WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "float" );
+		}
+		public void RegisterInputHandler( string inputName, Action<int> handler )
+		{
+			WirePorts.inputHandlers[inputName] = (( value ) => {
+				handler( (int)value );
+			});
+			WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "int" );
 		}
 	}
 
