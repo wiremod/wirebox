@@ -92,6 +92,23 @@ namespace Sandbox.Tools
 						Reset();
 					}
 				}
+				else if ( Input.Pressed( InputButton.Drop ) ) {
+					if ( tr.Entity.GetType().IsSubclassOf( typeof( WireGateEntity ) ) ) {
+						return;
+					}
+					if ( Host.IsServer ) {
+						var ent = new WireGateEntity {
+							Position = tr.EndPos,
+							GateType = "Add",
+						};
+						ent.SetModel( "models/citizen_props/hotdog01.vmdl" );
+
+						var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
+						if ( attachEnt.IsValid() ) {
+							ent.SetParent( tr.Body.Entity, tr.Body.PhysicsGroup.GetBodyBoneName( tr.Body ) );
+						}
+					}
+				}
 				else {
 					return;
 				}

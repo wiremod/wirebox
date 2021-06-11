@@ -21,6 +21,16 @@ namespace Sandbox
 	{
 		public void WireTriggerOutput<T>( string outputName, T value )
 		{
+			if ( WirePorts.outputExecutionsTick != Time.Tick ) {
+				WirePorts.outputExecutionsTick = Time.Tick;
+				WirePorts.outputExecutions = 0;
+			}
+			if ( WirePorts.outputExecutions >= 4 ) {
+				// prevent infinite loops
+				return; // todo: queue for next tick?
+			}
+			WirePorts.outputExecutions++;
+
 			var output = GetOutput( outputName );
 			output.value = value;
 			foreach ( var input in output.connected ) {
