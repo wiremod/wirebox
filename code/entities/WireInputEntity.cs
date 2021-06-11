@@ -38,12 +38,16 @@ namespace Sandbox
 			}
 			return WirePorts.inputs[inputName];
 		}
-		public string[] GetInputNames()
+		public string[] GetInputNames( bool withValues = false )
 		{
 			if ( WirePorts.inputHandlers.Count == 0 ) {
 				WireInitialize();
 			}
-			return WirePorts.inputs.Keys.ToArray();
+			return !withValues
+				? WirePorts.inputs.Keys.ToArray()
+				: WirePorts.inputs.Keys.Select( ( string key ) => {
+					return $"{key}: {WirePorts.inputs[key].value}";
+				} ).ToArray();
 		}
 
 		public void DisconnectInput( string inputName )

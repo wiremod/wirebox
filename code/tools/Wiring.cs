@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Sandbox.UI;
+using System.Text.Json;
 
 namespace Sandbox.Tools
 {
@@ -10,6 +11,12 @@ namespace Sandbox.Tools
 		private Entity inputEnt;
 		private WiringHud wiringHud;
 
+		// Cache the inputs/outputs here, so we can network them to the client, as only the server knows the current port values
+		// These would be tidier over in the HUD class, but [Net] seems buggy over there
+		[Net]
+		public string NetInputs { get; set; } = "";
+		[Net]
+		public string NetOutputs { get; set; } = "";
 		private int InputPortIndex = 0;
 		private int OutputPortIndex = 0;
 		public override void Simulate()
@@ -18,28 +25,29 @@ namespace Sandbox.Tools
 				var startPos = Owner.EyePos;
 				var dir = Owner.EyeRot.Forward;
 
-
 				var tr = Trace.Ray( startPos, startPos + dir * MaxTraceDistance )
 					.Ignore( Owner )
 					.Run();
 
-				if ( inputEnt is WireInputEntity wireInputProp1 ) {
-					wiringHud.SetInputs( wireInputProp1.GetInputNames(), true );
+
+				if ( inputEnt is WireInputEntity wireInputEnt ) {
+					ShowInputs( wireInputEnt, true );
 					if ( tr.Entity is WireOutputEntity wireOutputProp1 ) {
 						OutputPortIndex = Math.Clamp( OutputPortIndex - Input.MouseWheel, 0, wireOutputProp1.GetOutputNames().Length - 1 );
-						wiringHud.SetOutputs( wireOutputProp1.GetOutputNames(), OutputPortIndex );
+						ShowOutputs( wireOutputProp1 );
 					}
 					else {
-						wiringHud.SetOutputs( Array.Empty<string>() );
+						ShowOutputs( null );
 					}
 				}
-				else if ( tr.Entity is WireInputEntity wireInputProp2 ) {
-					InputPortIndex = Math.Clamp( InputPortIndex - Input.MouseWheel, 0, wireInputProp2.GetInputNames().Length - 1 );
-					wiringHud.SetInputs( wireInputProp2.GetInputNames(), false, InputPortIndex );
+				else if ( tr.Entity is WireInputEntity wireInputEnt2 ) {
+					InputPortIndex = Math.Clamp( InputPortIndex - Input.MouseWheel, 0, wireInputEnt2.GetInputNames().Length - 1 );
+					ShowInputs( wireInputEnt2, false );
 				}
 				else {
-					wiringHud.SetInputs( Array.Empty<string>(), false );
+					ShowInputs( null, false );
 				}
+
 
 
 				if ( Input.Pressed( InputButton.Attack1 ) ) {
@@ -122,8 +130,8 @@ namespace Sandbox.Tools
 			inputEnt = null;
 			InputPortIndex = 0;
 			OutputPortIndex = 0;
-			wiringHud?.SetInputs( Array.Empty<string>(), false );
-			wiringHud?.SetOutputs( Array.Empty<string>() );
+			ShowInputs( null );
+			ShowOutputs( null );
 		}
 
 		public override void Activate()
@@ -140,6 +148,38 @@ namespace Sandbox.Tools
 
 			wiringHud.Delete();
 			Reset();
+		}
+
+		// A wrapper around wiringHud.SetInputs that helps sync the server port state to the client for display
+		private void ShowInputs( WireInputEntity ent, bool entSelected = false )
+		{
+			string[] names = Array.Empty<string>();
+			if ( ent != null ) {
+				if ( Host.IsServer ) {
+					names = ent.GetInputNames( true );
+					NetInputs = JsonSerializer.Serialize( names ); // serialize em, as [Net] errors on string[]'s
+				}
+				else {
+					names = NetInputs != null ? JsonSerializer.Deserialize<string[]>( NetInputs ) : ent.GetInputNames();
+				}
+			}
+
+			wiringHud?.SetInputs( names, entSelected, InputPortIndex );
+		}
+		private void ShowOutputs( WireOutputEntity ent )
+		{
+			string[] names = Array.Empty<string>();
+			if ( ent != null ) {
+				if ( Host.IsServer ) {
+					names = ent.GetOutputNames( true );
+					NetOutputs = JsonSerializer.Serialize( names );
+				}
+				else {
+					names = NetOutputs != null ? JsonSerializer.Deserialize<string[]>( NetOutputs ) : ent.GetOutputNames();
+				}
+			}
+
+			wiringHud?.SetOutputs( names, OutputPortIndex );
 		}
 	}
 

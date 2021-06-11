@@ -61,12 +61,16 @@ namespace Sandbox
 			}
 			return WirePorts.outputs[inputName];
 		}
-		public string[] GetOutputNames()
+		public string[] GetOutputNames( bool withValues = false )
 		{
 			if ( WirePorts.outputs.Count == 0 ) {
 				WireInitializeOutputs();
 			}
-			return WirePorts.outputs.Keys.ToArray();
+			return !withValues
+				? WirePorts.outputs.Keys.ToArray()
+				: WirePorts.outputs.Keys.Select( ( string key ) => {
+					return $"{key}: {WirePorts.outputs[key].value}";
+				} ).ToArray();
 		}
 
 		// A thin wrapper, so classes can replaces this as needed
