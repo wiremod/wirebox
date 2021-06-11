@@ -57,6 +57,10 @@ namespace Sandbox
 				input.connectedOutput.connected.Remove( input );
 				input.connectedOutput = null;
 			}
+			if ( WirePorts.AttachRope != null ) {
+				WirePorts.AttachRope.Destroy( true );
+				WirePorts.AttachRope = null;
+			}
 		}
 
 	}

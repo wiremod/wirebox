@@ -9,6 +9,7 @@ namespace Sandbox.Tools
 	public partial class WiringTool : BaseTool
 	{
 		private Entity inputEnt;
+		private Vector3 inputPos;
 		private WiringHud wiringHud;
 
 		// Cache the inputs/outputs here, so we can network them to the client, as only the server knows the current port values
@@ -61,6 +62,7 @@ namespace Sandbox.Tools
 						if ( tr.Entity is not WireInputEntity wireProp )
 							return;
 						inputEnt = tr.Entity;
+						inputPos = tr.EndPos;
 					}
 					else {
 						// stage 2
@@ -76,6 +78,19 @@ namespace Sandbox.Tools
 							// Log.Info("Wiring " + wireInputProp + "'s " + inputName + " to " + wireOutputProp + "'s " + outputName);
 							wireOutputProp.WireConnect( wireInputProp, outputName, inputName );
 							wireOutputProp.WireTriggerOutput( outputName, wireOutputProp.GetOutput( outputName ).value );
+
+							var rope = Particles.Create( "particles/wirebox/wire.vpcf" );
+							rope.SetEntity( 0, inputEnt, inputEnt.Transform.PointToLocal( inputPos ) );
+
+							var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
+							var attachLocalPos = tr.Body.Transform.PointToLocal( tr.EndPos );
+							if ( attachEnt.IsWorld ) {
+								rope.SetPos( 1, attachLocalPos );
+							}
+							else {
+								rope.SetEntityBone( 1, attachEnt, tr.Bone, new Transform( attachLocalPos ) );
+							}
+							wireInputProp.WirePorts.AttachRope = rope;
 						}
 						Reset();
 					}

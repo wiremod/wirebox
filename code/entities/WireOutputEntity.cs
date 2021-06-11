@@ -45,13 +45,11 @@ namespace Sandbox
 			var input = inputEnt.GetInput( inputName );
 			var output = GetOutput( outputName );
 			var connected = output.connected;
-			if ( !connected.Contains( input ) ) {
-				if ( input.connectedOutput != null ) {
-					inputEnt.DisconnectInput( inputName );
-				}
-				input.connectedOutput = output;
-				connected.Add( input );
+			if ( input.connectedOutput != null ) {
+				inputEnt.DisconnectInput( inputName );
 			}
+			input.connectedOutput = output;
+			connected.Add( input );
 		}
 
 		public WireOutput GetOutput( string inputName )
