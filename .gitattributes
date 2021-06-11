@@ -9,3 +9,5 @@
 *.bat filter=lfs diff=lfs merge=lfs -text
 *.html filter=lfs diff=lfs merge=lfs -text
 *.scss filter=lfs diff=lfs merge=lfs -text
+*.vpcf filter=lfs diff=lfs merge=lfs -text
+*.vpcf_c filter=lfs diff=lfs merge=lfs -text
