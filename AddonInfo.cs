@@ -5,27 +5,25 @@ using Sandbox;
 
 namespace Wirebox
 {
-  [Library("wirebox")]
-  public class AddonInfo : IAddonInfo
-  {
-    public string Name => "WireBox";
+	[Library( "wirebox" )]
+	public class AddonInfo : BaseAddonInfo
+	{
+		public override string Name => "WireBox";
 
-    public string Description => "Wiremod for S&Box";
+		public override string Description => "Wiremod for S&Box";
 
-    public string Author => "Wireteam";
+		public override string Author => "Wireteam";
 
-    public double Version => 0.1;
+		public override double Version => 0.1;
 
-    public List<AddonDependency> Dependencies => new()
-    {
-      new AddonDependency()
-      {
-        Name = "Sandbox",
-        MinVersion = 1.0
-      }
-    };
+		public override List<AddonDependency> Dependencies => new()
+		{
+			new AddonDependency() {
+				Name = "Sandbox",
+				MinVersion = 1.0
+			}
+		};
 
-    // No main class as it should be instantiated by the Entities/Tools (so far)
-    public Type MainClass => null;
-  }
+		public class WireboxAddon : AddonClass<AddonInfo> { }
+	}
 }

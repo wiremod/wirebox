@@ -6,7 +6,7 @@ namespace Sandbox
 {
 	public class WireInput
 	{
-		public int value;
+		public object value = 0;
 		public Entity entity;
 		public string inputName;
 		public string type;
@@ -26,6 +26,7 @@ namespace Sandbox
 			if ( WirePorts.inputHandlers.Count == 0 ) { // these get cleared by hot reloading
 				WireInitialize();
 			}
+			WirePorts.inputs[inputName].value = value;
 			WirePorts.inputHandlers[inputName]( value );
 		}
 		public virtual void WireInitialize() { }
@@ -45,40 +46,53 @@ namespace Sandbox
 			return WirePorts.inputs.Keys.ToArray();
 		}
 
-		public void DisconnectInput(string inputName)
+		public void DisconnectInput( string inputName )
 		{
-			var input = GetInput(inputName);
-			if (input.connectedOutput != null) {
-				input.connectedOutput.connected.Remove(input);
+			var input = GetInput( inputName );
+			if ( input.connectedOutput != null ) {
+				input.connectedOutput.connected.Remove( input );
 				input.connectedOutput = null;
 			}
 		}
 
-		public void RegisterInputHandler( string inputName, Action<bool> handler )
+	}
+
+	// Extension methods to allow calling the interface methods without explicit casting
+	public static class WireInputEntityUtils
+	{
+		public static void RegisterInputHandler( this WireInputEntity instance, string inputName, Action<float> handler )
 		{
-			WirePorts.inputHandlers[inputName] = (( value ) => {
-				if ( value is bool valueBool ) {
-					handler( valueBool );
+			instance.WirePorts.inputHandlers[inputName] = (( value ) => {
+				if ( value is int valueInt ) {
+					handler( (float)(valueInt) );
 				}
 				else {
-					handler( ((int)value)!=0 );
+					handler( (float)value );
 				}
 			});
-			WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "bool" );
+			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "float" );
 		}
-		public void RegisterInputHandler( string inputName, Action<float> handler )
+		public static void RegisterInputHandler( this WireInputEntity instance, string inputName, Action<bool> handler )
 		{
-			WirePorts.inputHandlers[inputName] = (( value ) => {
-				handler( (float)value );
+			instance.WirePorts.inputHandlers[inputName] = (( value ) => {
+				if ( value is int valueInt ) {
+					handler( valueInt != 0 );
+				}
+				else if ( value is float valueFloat ) {
+					handler( valueFloat != 0.0f );
+				}
+				else {
+					handler( (bool)value );
+				}
 			});
-			WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "float" );
+			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "bool" );
 		}
-		public void RegisterInputHandler( string inputName, Action<int> handler )
+		public static void RegisterInputHandler( this WireInputEntity instance, string inputName, Action<int> handler )
 		{
-			WirePorts.inputHandlers[inputName] = (( value ) => {
+			instance.WirePorts.inputHandlers[inputName] = (( value ) => {
 				handler( (int)value );
 			});
-			WirePorts.inputs[inputName] = new WireInput( (Entity)this, inputName, "int" );
+			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "int" );
 		}
 	}
 

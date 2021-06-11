@@ -5,7 +5,7 @@ namespace Sandbox
 {
 	public class WireOutput
 	{
-		public int value;
+		public object value = 0;
 		public Entity entity;
 		public string outputName;
 		public List<WireInput> connected = new();
@@ -19,9 +19,9 @@ namespace Sandbox
 
 	public interface WireOutputEntity : IWireEntity
 	{
-		public static void WireTriggerOutput( WireOutputEntity ent, string outputName, int value )
+		public void WireTriggerOutput<T>( string outputName, T value )
 		{
-			var output = ent.GetOutput( outputName );
+			var output = GetOutput( outputName );
 			output.value = value;
 			foreach ( var input in output.connected ) {
 				if ( !input.entity.IsValid() ) continue;
@@ -33,11 +33,11 @@ namespace Sandbox
 		public void WireConnect( WireInputEntity inputEnt, string outputName, string inputName )
 		{
 			var input = inputEnt.GetInput( inputName );
-			var output = GetOutput(outputName);
+			var output = GetOutput( outputName );
 			var connected = output.connected;
 			if ( !connected.Contains( input ) ) {
-				if (input.connectedOutput != null) {
-					inputEnt.DisconnectInput(inputName);
+				if ( input.connectedOutput != null ) {
+					inputEnt.DisconnectInput( inputName );
 				}
 				input.connectedOutput = output;
 				connected.Add( input );
@@ -47,19 +47,24 @@ namespace Sandbox
 		public WireOutput GetOutput( string inputName )
 		{
 			if ( WirePorts.outputs.Count == 0 ) {
-				InitializeOutputs();
+				WireInitializeOutputs();
 			}
 			return WirePorts.outputs[inputName];
 		}
 		public string[] GetOutputNames()
 		{
 			if ( WirePorts.outputs.Count == 0 ) {
-				InitializeOutputs();
+				WireInitializeOutputs();
 			}
 			return WirePorts.outputs.Keys.ToArray();
 		}
 
-		protected void InitializeOutputs()
+		// A thin wrapper, so classes can replaces this as needed
+		public virtual void WireInitializeOutputs()
+		{
+			InitializeOutputs();
+		}
+		public void InitializeOutputs()
 		{
 			foreach ( var outputName in WireGetOutputs() ) {
 				WirePorts.outputs[outputName] = new WireOutput( (Entity)this, outputName );
@@ -67,4 +72,14 @@ namespace Sandbox
 		}
 		abstract public string[] WireGetOutputs();
 	}
+
+	// Extension methods to allow calling the interface methods without explicit casting
+	public static class WireOutputEntityUtils
+	{
+		public static void WireTriggerOutput<T>( this WireOutputEntity instance, string outputName, T value )
+		{
+			instance.WireTriggerOutput( outputName, value );
+		}
+	}
+
 }

@@ -39,7 +39,7 @@ public partial class ButtonEntity : Prop, IUse, WireOutputEntity
 			else {
 				RenderColor = On ? Color32.Green : Color32.Red;
 			}
-			WireOutputEntity.WireTriggerOutput( this, "On", On ? 1 : 0 );
+			this.WireTriggerOutput( "On", On ? 1 : 0 );
 		}
 
 		return false;

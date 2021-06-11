@@ -15,7 +15,6 @@ namespace Sandbox.Tools
 		public override void Simulate()
 		{
 			using ( Prediction.Off() ) {
-				var input = Owner.Input;
 				var startPos = Owner.EyePos;
 				var dir = Owner.EyeRot.Forward;
 
@@ -27,7 +26,7 @@ namespace Sandbox.Tools
 				if ( inputEnt is WireInputEntity wireInputProp1 ) {
 					wiringHud.SetInputs( wireInputProp1.GetInputNames(), true );
 					if ( tr.Entity is WireOutputEntity wireOutputProp1 ) {
-						OutputPortIndex = Math.Clamp( OutputPortIndex - input.MouseWheel, 0, wireOutputProp1.GetOutputNames().Length - 1 );
+						OutputPortIndex = Math.Clamp( OutputPortIndex - Input.MouseWheel, 0, wireOutputProp1.GetOutputNames().Length - 1 );
 						wiringHud.SetOutputs( wireOutputProp1.GetOutputNames(), OutputPortIndex );
 					}
 					else {
@@ -35,7 +34,7 @@ namespace Sandbox.Tools
 					}
 				}
 				else if ( tr.Entity is WireInputEntity wireInputProp2 ) {
-					InputPortIndex = Math.Clamp( InputPortIndex - input.MouseWheel, 0, wireInputProp2.GetInputNames().Length - 1 );
+					InputPortIndex = Math.Clamp( InputPortIndex - Input.MouseWheel, 0, wireInputProp2.GetInputNames().Length - 1 );
 					wiringHud.SetInputs( wireInputProp2.GetInputNames(), false, InputPortIndex );
 				}
 				else {
@@ -43,7 +42,7 @@ namespace Sandbox.Tools
 				}
 
 
-				if ( input.Pressed( InputButton.Attack1 ) ) {
+				if ( Input.Pressed( InputButton.Attack1 ) ) {
 
 					if ( !tr.Hit || !tr.Body.IsValid() || !tr.Entity.IsValid() || tr.Entity.IsWorld )
 						return;
@@ -68,21 +67,33 @@ namespace Sandbox.Tools
 
 							// Log.Info("Wiring " + wireInputProp + "'s " + inputName + " to " + wireOutputProp + "'s " + outputName);
 							wireOutputProp.WireConnect( wireInputProp, outputName, inputName );
-							WireOutputEntity.WireTriggerOutput( wireOutputProp, outputName, wireOutputProp.GetOutput( outputName ).value );
+							wireOutputProp.WireTriggerOutput( outputName, wireOutputProp.GetOutput( outputName ).value );
 						}
 						Reset();
 					}
 				}
-				else if ( input.Pressed( InputButton.Attack2 ) ) {
-					Reset();
+				else if ( Input.Pressed( InputButton.Attack2 ) ) {
+					var portDirection = Input.Down( InputButton.Run ) ? -1 : 1;
+
+					if ( inputEnt is WireInputEntity ) {
+						OutputPortIndex += portDirection;
+					}
+					else {
+						InputPortIndex += portDirection;
+					}
+
+					return;
 				}
-				else if ( input.Pressed( InputButton.Reload ) ) {
+				else if ( Input.Pressed( InputButton.Reload ) ) {
 					if ( tr.Entity is WireInputEntity wireEntity ) {
 						wireEntity.DisconnectInput( wireEntity.GetInputNames()[InputPortIndex] );
 					}
 					else {
 						Reset();
 					}
+				}
+				else {
+					return;
 				}
 
 				CreateHitEffects( tr.EndPos );

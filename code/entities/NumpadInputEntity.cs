@@ -39,21 +39,24 @@ public partial class NumpadInputEntity : Prop, WireOutputEntity
 		["Slot9"] = InputButton.Slot9,
 	};
 
-	[Event.Tick.Server]
-	public void OnTick()
+	void WireOutputEntity.WireInitializeOutputs()
 	{
-		if ( !WireOwner.IsValid() || WireOwner is not SandboxPlayer ) {
-			return;
+		((WireOutputEntity)this).InitializeOutputs();
+		if ( IsServer ) {
+			((SandboxPlayer)WireOwner).OnSimulate += OnSimulatePlayer;
 		}
-		var input = ((SandboxPlayer)WireOwner).LastInput;
-		if ( input == null ) {
+	}
+
+	private void OnSimulatePlayer( SandboxPlayer player )
+	{
+		if ( WireOwner != player ) {
 			return;
 		}
 		foreach ( var name in inputButtons.Keys ) {
 			var inputButton = inputButtons[name];
-			var newState = input.Down( inputButton ) ? 1 : 0;
-			if ( newState != ((WireOutputEntity)this).GetOutput( name ).value ) {
-				WireOutputEntity.WireTriggerOutput( this, name, newState );
+			var newState = Input.Down( inputButton ) ? 1 : 0;
+			if ( newState != (int)((WireOutputEntity)this).GetOutput( name ).value ) {
+				this.WireTriggerOutput( name, newState );
 			}
 		}
 	}
