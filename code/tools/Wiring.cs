@@ -2,6 +2,7 @@
 using System.Linq;
 using Sandbox.UI;
 using System.Text.Json;
+using Sandbox.UI.Construct;
 
 namespace Sandbox.Tools
 {
@@ -10,7 +11,9 @@ namespace Sandbox.Tools
 	{
 		private Entity inputEnt;
 		private Vector3 inputPos;
-		private WiringHud wiringHud;
+
+		private WireGatePanel wireGatePanel;
+		private WiringPanel wiringHud;
 
 		// Cache the inputs/outputs here, so we can network them to the client, as only the server knows the current port values
 		// These would be tidier over in the HUD class, but [Net] seems buggy over there
@@ -115,23 +118,6 @@ namespace Sandbox.Tools
 						Reset();
 					}
 				}
-				else if ( Input.Pressed( InputButton.Drop ) ) {
-					if ( tr.Entity.GetType().IsSubclassOf( typeof( WireGateEntity ) ) ) {
-						return;
-					}
-					if ( Host.IsServer ) {
-						var ent = new WireGateEntity {
-							Position = tr.EndPos,
-							GateType = "Add",
-						};
-						ent.SetModel( "models/citizen_props/hotdog01.vmdl" );
-
-						var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
-						if ( attachEnt.IsValid() ) {
-							ent.SetParent( tr.Body.Entity, tr.Body.PhysicsGroup.GetBodyBoneName( tr.Body ) );
-						}
-					}
-				}
 				else {
 					return;
 				}
@@ -149,21 +135,61 @@ namespace Sandbox.Tools
 			ShowOutputs( null );
 		}
 
+
 		public override void Activate()
 		{
 			base.Activate();
 
-			wiringHud = new WiringHud();
+			if ( Host.IsClient ) {
+				Local.Hud.StyleSheet.Load( "/code/addons/wirebox/code/tools/WiringHud.scss" );
+				wiringHud = Local.Hud.AddChild<WiringPanel>();
+				wireGatePanel = Local.Hud.AddChild<WireGatePanel>( "wire-gate-menu" );
+			}
 			Reset();
 		}
 
 		public override void Deactivate()
 		{
 			base.Deactivate();
-
-			wiringHud.Delete();
+			if ( Host.IsClient ) {
+				wireGatePanel?.Delete( true );
+				wiringHud?.Delete();
+			}
 			Reset();
 		}
+
+
+		[ServerCmd( "wire_spawn_gate" )]
+		public static void SpawnGate( string gateType )
+		{
+			var owner = ConsoleSystem.Caller?.Pawn;
+
+			if ( ConsoleSystem.Caller == null )
+				return;
+
+			var tr = Trace.Ray( owner.EyePos, owner.EyePos + owner.EyeRot.Forward * 500 )
+			  .UseHitboxes()
+			  .Ignore( owner )
+			  .Size( 2 )
+			  .Run();
+
+			if ( tr.Entity is WireGateEntity wireGateEntity ) {
+				// todo: change gate type
+				return;
+			}
+
+			var ent = new WireGateEntity {
+				Position = tr.EndPos,
+				GateType = gateType,
+			};
+			ent.SetModel( "models/citizen_props/hotdog01.vmdl" );
+
+			var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
+			if ( attachEnt.IsValid() ) {
+				ent.SetParent( tr.Body.Entity, tr.Body.PhysicsGroup.GetBodyBoneName( tr.Body ) );
+			}
+		}
+
 
 		// A wrapper around wiringHud.SetInputs that helps sync the server port state to the client for display
 		private void ShowInputs( WireInputEntity ent, bool entSelected = false )
@@ -175,11 +201,12 @@ namespace Sandbox.Tools
 					NetInputs = JsonSerializer.Serialize( names ); // serialize em, as [Net] errors on string[]'s
 				}
 				else {
-					names = NetInputs != null ? JsonSerializer.Deserialize<string[]>( NetInputs ) : ent.GetInputNames();
+					names = NetInputs?.Length > 0 ? JsonSerializer.Deserialize<string[]>( NetInputs ) : ent.GetInputNames();
 				}
 			}
-
-			wiringHud?.SetInputs( names, entSelected, InputPortIndex );
+			if ( Host.IsClient ) {
+				wiringHud?.SetInputs( names, entSelected, InputPortIndex );
+			}
 		}
 		private void ShowOutputs( WireOutputEntity ent )
 		{
@@ -190,39 +217,34 @@ namespace Sandbox.Tools
 					NetOutputs = JsonSerializer.Serialize( names );
 				}
 				else {
-					names = NetOutputs != null ? JsonSerializer.Deserialize<string[]>( NetOutputs ) : ent.GetOutputNames();
+					names = NetOutputs?.Length > 0 ? JsonSerializer.Deserialize<string[]>( NetOutputs ) : ent.GetOutputNames();
 				}
 			}
 
-			wiringHud?.SetOutputs( names, OutputPortIndex );
+			if ( Host.IsClient ) {
+				wiringHud?.SetOutputs( names, OutputPortIndex );
+			}
 		}
 	}
 
-	public partial class WiringHud : HudEntity<RootPanel>
+	public partial class WiringPanel : Panel
 	{
 		private string[] lastInputs = System.Array.Empty<string>();
 		private string[] lastOutputs = System.Array.Empty<string>();
 		public Panel InputsPanel { get; set; }
 		public Panel OutputsPanel { get; set; }
 
-		public WiringHud()
+		public WiringPanel()
 		{
-			if ( !IsClient ) {
-				return;
-			}
-
-			RootPanel.SetTemplate( "/code/addons/wirebox/code/tools/WiringHud.html" );
-			InputsPanel = RootPanel.GetChild( 0 ).GetChild( 0 );
-			OutputsPanel = RootPanel.GetChild( 0 ).GetChild( 1 );
+			SetTemplate( "/code/addons/wirebox/code/tools/WiringHud.html" );
+			InputsPanel = GetChild( 0 ).GetChild( 0 );
+			OutputsPanel = GetChild( 0 ).GetChild( 1 );
 		}
 
 		public void SetInputs( string[] names, bool selected = false, int portIndex = 0 )
 		{
 			if ( Local.Pawn is SandboxPlayer sandboxPlayer ) {
 				sandboxPlayer.SuppressScrollWheelInventory = names.Length != 0;
-			}
-			if ( !IsClient || RootPanel == null ) {
-				return;
 			}
 			foreach ( var lineItem in InputsPanel.GetChild( 1 ).Children ) {
 				lineItem.SetClass( "active", InputsPanel.GetChild( 1 ).GetChildIndex( lineItem ) == portIndex );
@@ -240,9 +262,6 @@ namespace Sandbox.Tools
 		}
 		public void SetOutputs( string[] names, int portIndex = 0 )
 		{
-			if ( !IsClient || RootPanel == null ) {
-				return;
-			}
 			foreach ( var lineItem in OutputsPanel.GetChild( 1 ).Children ) {
 				lineItem.SetClass( "active", OutputsPanel.GetChild( 1 ).GetChildIndex( lineItem ) == portIndex );
 			}
@@ -256,6 +275,23 @@ namespace Sandbox.Tools
 			foreach ( var name in names ) {
 				OutputsPanel.GetChild( 1 ).AddChild<Label>( "port" ).SetText( name );
 			}
+		}
+	}
+
+	public partial class WireGatePanel : Panel
+	{
+		public WireGatePanel()
+		{
+			foreach ( var name in new string[] { "Add", "Subtract", "Negate", "Not", "And", "Or" } ) {
+				Add.Button( name, () => {
+					ConsoleSystem.Run( "wire_spawn_gate", name );
+				} );
+			}
+		}
+		public override void Tick()
+		{
+			base.Tick();
+			SetClass( "visible", Input.Down( InputButton.Drop ) );
 		}
 	}
 }

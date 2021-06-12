@@ -19,5 +19,7 @@ namespace Sandbox
 	public interface IWireEntity
 	{
 		public WirePortData WirePorts { get; }
+
+		public virtual string GetOverlayText() { return ""; }
 	}
 }

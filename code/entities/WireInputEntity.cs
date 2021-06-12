@@ -71,11 +71,11 @@ namespace Sandbox
 		public static void RegisterInputHandler( this WireInputEntity instance, string inputName, Action<float> handler )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) => {
-				if ( value is int valueInt ) {
-					handler( (float)(valueInt) );
+				if ( value is bool valueBool ) {
+					handler( valueBool ? 1.0f : 0.0f );
 				}
 				else {
-					handler( (float)value );
+					handler( Convert.ToSingle(value) );
 				}
 			});
 			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "float" );

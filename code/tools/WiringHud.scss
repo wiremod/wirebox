@@ -54,3 +54,32 @@ text.title {
   color: white;
   text-shadow: 5px 5px 50px rgba(black, 0.8);
 }
+
+.wire-gate-menu {
+  position: absolute;
+  top: 40%;
+  left: 40%;
+  display: none;
+  &.visible {
+    display: flex;
+
+    button {
+      color: rgb(216, 216, 216);
+
+      padding: 16px;
+      margin: 2px;
+      background-color: rgba(black, 0.85);
+      border-radius: 12px;
+      font-size: 14px;
+      transition: all 0.2s ease-out;
+      cursor: pointer;
+      pointer-events: all;
+
+      &:hover,
+      &:active {
+        background-color: rgba(black, 0.75);
+        color: white;
+      }
+    }
+  }
+}
