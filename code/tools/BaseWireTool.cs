@@ -9,12 +9,14 @@ namespace Sandbox.Tools
 		abstract protected string GetModel();
 		abstract protected ModelEntity SpawnEntity( TraceResult tr );
 
+		protected virtual void UpdateEntity(Entity ent) {}
+
 		protected override bool IsPreviewTraceValid( TraceResult tr )
 		{
 			if ( !base.IsPreviewTraceValid( tr ) ) {
 				return false;
 			}
-			if ( tr.Entity.GetType().IsSubclassOf( GetEntityType() ) ) {
+			if ( tr.Entity.GetType() == GetEntityType() ) {
 				return false;
 			}
 
@@ -24,7 +26,8 @@ namespace Sandbox.Tools
 		public override void CreatePreviews()
 		{
 			if ( TryCreatePreview( ref previewModel, GetModel() ) ) {
-				previewModel.RelativeToNormal = false;
+				previewModel.RelativeToNormal = true;
+				previewModel.RotationOffset = Rotation.From( new Angles( 90, 0, 0 ) );
 			}
 		}
 
@@ -51,7 +54,8 @@ namespace Sandbox.Tools
 
 				CreateHitEffects( tr.EndPos );
 
-				if ( tr.Entity.GetType().IsSubclassOf( GetEntityType() ) ) {
+				if ( tr.Entity.GetType() == GetEntityType() ) {
+					UpdateEntity(tr.Entity);
 					return;
 				}
 

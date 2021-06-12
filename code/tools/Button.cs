@@ -16,6 +16,7 @@ namespace Sandbox.Tools
 		{
 			return new ButtonEntity {
 				Position = tr.EndPos,
+				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 			};
 		}
 	}
