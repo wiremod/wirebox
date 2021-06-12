@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Sandbox.Tools
 {
-	[Library( "tool_button", Title = "Button", Description = "Create Buttons!", Group = "construction" )]
+	[Library( "tool_button", Title = "Button", Description = "Create Buttons! Shift for Toggle buttons", Group = "construction" )]
 	public partial class ButtonTool : BaseWireTool
 	{
 		protected override Type GetEntityType()
@@ -17,6 +17,7 @@ namespace Sandbox.Tools
 			return new ButtonEntity {
 				Position = tr.EndPos,
 				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
+				IsToggle = Input.Down(InputButton.Run),
 			};
 		}
 	}
