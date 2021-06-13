@@ -9,20 +9,26 @@ namespace Sandbox.Tools
 	[Library( "tool_wiring", Title = "Wiring", Description = "Wire entities together", Group = "construction" )]
 	public partial class WiringTool : BaseTool
 	{
-		private Entity inputEnt;
-		private Vector3 inputPos;
+		[Net, Local]
+		private Entity inputEnt { get; set; }
+		[Net, Local]
+		private Vector3 inputPos { get; set; }
 
 		private WireGatePanel wireGatePanel;
 		private WiringPanel wiringHud;
 
 		// Cache the inputs/outputs here, so we can network them to the client, as only the server knows the current port values
 		// These would be tidier over in the HUD class, but [Net] seems buggy over there
-		[Net]
+		[Net, Local]
 		public string NetInputs { get; set; } = "";
-		[Net]
+		[Net, Local]
 		public string NetOutputs { get; set; } = "";
-		private int InputPortIndex = 0;
-		private int OutputPortIndex = 0;
+
+		[Net, Local]
+		private int InputPortIndex { get; set; } = 0;
+		[Net, Local]
+		private int OutputPortIndex { get; set; } = 0;
+
 		public override void Simulate()
 		{
 			using ( Prediction.Off() ) {
@@ -37,7 +43,9 @@ namespace Sandbox.Tools
 				if ( inputEnt is WireInputEntity wireInputEnt ) {
 					ShowInputs( wireInputEnt, true );
 					if ( tr.Entity is WireOutputEntity wireOutputProp1 ) {
-						OutputPortIndex = Math.Clamp( OutputPortIndex - Input.MouseWheel, 0, wireOutputProp1.GetOutputNames().Length - 1 );
+						if ( Host.IsServer ) {
+							OutputPortIndex = Math.Clamp( OutputPortIndex - Input.MouseWheel, 0, Math.Max( 0, wireOutputProp1.GetOutputNames().Length - 1 ) );
+						}
 						ShowOutputs( wireOutputProp1 );
 					}
 					else {
@@ -45,11 +53,14 @@ namespace Sandbox.Tools
 					}
 				}
 				else if ( tr.Entity is WireInputEntity wireInputEnt2 ) {
-					InputPortIndex = Math.Clamp( InputPortIndex - Input.MouseWheel, 0, wireInputEnt2.GetInputNames().Length - 1 );
+					if ( Host.IsServer ) {
+						InputPortIndex = Math.Clamp( InputPortIndex - Input.MouseWheel, 0, Math.Max( 0, wireInputEnt2.GetInputNames().Length - 1 ) );
+					}
 					ShowInputs( wireInputEnt2, false );
 				}
 				else {
 					ShowInputs( null, false );
+					ShowOutputs( null );
 				}
 
 
@@ -62,8 +73,12 @@ namespace Sandbox.Tools
 					if ( !inputEnt.IsValid() ) {
 						// stage 1
 
-						if ( tr.Entity is not WireInputEntity wireProp )
+						if ( tr.Entity is not WireInputEntity wireProp || wireProp.GetInputNames().Length == 0 )
 							return;
+						if ( Host.IsClient ) {
+							CreateHitEffects( tr.EndPos, tr.Normal );
+							return;
+						}
 						inputEnt = tr.Entity;
 						inputPos = tr.EndPos;
 					}
@@ -71,7 +86,7 @@ namespace Sandbox.Tools
 						// stage 2
 						if ( inputEnt is not WireInputEntity wireInputProp )
 							return;
-						if ( tr.Entity is not WireOutputEntity wireOutputProp )
+						if ( tr.Entity is not WireOutputEntity wireOutputProp || wireOutputProp.GetOutputNames().Length == 0 )
 							return;
 
 						if ( Host.IsServer ) {
@@ -99,6 +114,9 @@ namespace Sandbox.Tools
 					}
 				}
 				else if ( Input.Pressed( InputButton.Attack2 ) ) {
+					if ( Host.IsClient ) {
+						return;
+					}
 					var portDirection = Input.Down( InputButton.Run ) ? -1 : 1;
 
 					if ( inputEnt is WireInputEntity ) {
@@ -121,8 +139,9 @@ namespace Sandbox.Tools
 				else {
 					return;
 				}
-
-				CreateHitEffects( tr.EndPos );
+				if ( Host.IsClient ) {
+					CreateHitEffects( tr.EndPos );
+				}
 			}
 		}
 
@@ -141,7 +160,7 @@ namespace Sandbox.Tools
 			base.Activate();
 
 			if ( Host.IsClient ) {
-				Local.Hud.StyleSheet.Load( "/code/addons/wirebox/code/tools/WiringHud.scss" );
+				Local.Hud.StyleSheet.Load( "/ui/wirebox/wiringhud.scss" );
 				wiringHud = Local.Hud.AddChild<WiringPanel>();
 				wireGatePanel = Local.Hud.AddChild<WireGatePanel>( "wire-gate-menu" );
 			}
@@ -236,7 +255,7 @@ namespace Sandbox.Tools
 
 		public WiringPanel()
 		{
-			SetTemplate( "/code/addons/wirebox/code/tools/WiringHud.html" );
+			SetTemplate( "/ui/wirebox/wiringhud.html" );
 			InputsPanel = GetChild( 0 ).GetChild( 0 );
 			OutputsPanel = GetChild( 0 ).GetChild( 1 );
 		}
