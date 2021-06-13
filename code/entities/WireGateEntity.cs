@@ -17,7 +17,7 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 
 	public static IEnumerable<string> GetGates()
 	{
-		return new string[] { "Constant", "Add", "Subtract", "Negate", "Not", "And", "Or" };
+		return new string[] { "Constant", "Add", "Subtract", "Multiply", "Divide", "Negate", "Not", "And", "Or" };
 	}
 	public void WireInitialize()
 	{
@@ -49,6 +49,26 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 					- Convert.ToSingle( inputs["H"].value );
 				this.WireTriggerOutput( "Out", outValue );
 			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );
+		}
+		else if ( GateType == "Multiply" ) {
+			BulkRegisterInputHandlers( ( float value ) => {
+				var connectedInputs = inputs.Values.Where((input) => input.connectedOutput != null);
+				float outValue = 1;
+				foreach(var input in connectedInputs) {
+					outValue *= Convert.ToSingle(input.value);
+				}
+				this.WireTriggerOutput( "Out", outValue );
+			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );
+		}
+		else if ( GateType == "Divide" ) {
+			BulkRegisterInputHandlers( ( float value ) => {
+				var b = Convert.ToSingle( inputs["B"].value );
+				if (b == 0) {
+					this.WireTriggerOutput( "Out", 0 );
+				} else {
+					this.WireTriggerOutput( "Out", Convert.ToSingle( inputs["A"].value ) / b );
+				}
+			}, new string[] { "A", "B" } );
 		}
 		else if ( GateType == "Negate" ) {
 			this.RegisterInputHandler( "A", ( float value ) => {

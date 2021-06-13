@@ -14,6 +14,7 @@ namespace Sandbox
 			EyeRot = Input.Rotation;
 
 			if ( GroundBody == null ) {
+				Pawn.Inventory.SetActiveSlot(-1, true);
 				var trace = TraceBBox( Position, Position + Velocity * Time.Delta - new Vector3( 0, 0, 5 ) );
 				if ( trace.Hit && trace.Body != null ) {
 					GroundBody = trace.Body;
