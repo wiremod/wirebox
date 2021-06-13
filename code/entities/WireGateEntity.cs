@@ -4,11 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 
 [Library( "ent_wiregate", Title = "Wire Gate" )]
-public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity
+public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, IUse
 {
 	[Net]
 	public string GateType { get; set; } = "Add";
+
+	private int constantValue = 3;
+
+	[Net]
+	public string DebugText { get; set; } = "";
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
+
+	public static IEnumerable<string> GetGates()
+	{
+		return new string[] { "Constant", "Add", "Subtract", "Negate", "Not", "And", "Or" };
+	}
 	public void WireInitialize()
 	{
 		var inputs = ((IWireEntity)this).WirePorts.inputs;
@@ -67,6 +77,10 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity
 				this.WireTriggerOutput( "Out", outValue );
 			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );
 		}
+		else if ( GateType == "Constant" ) {
+			DebugText = $" value: {constantValue}";
+			this.WireTriggerOutput( "Out", constantValue );
+		}
 	}
 
 	protected void BulkRegisterInputHandlers( Action<float> handler, string[] inputNames )
@@ -88,6 +102,19 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity
 
 	string IWireEntity.GetOverlayText()
 	{
-		return $"Gate: {GateType}";
+		return $"Gate: {GateType}{DebugText}";
+	}
+
+	public bool OnUse( Entity user )
+	{
+		if ( GateType == "Constant" && Host.IsServer ) {
+			constantValue += Input.Down( InputButton.Run ) ? -1 : 1;
+		}
+		return false;
+	}
+
+	public bool IsUsable( Entity user )
+	{
+		return this.GateType == "Constant";
 	}
 }

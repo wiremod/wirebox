@@ -301,7 +301,7 @@ namespace Sandbox.Tools
 	{
 		public WireGatePanel()
 		{
-			foreach ( var name in new string[] { "Add", "Subtract", "Negate", "Not", "And", "Or" } ) {
+			foreach ( var name in WireGateEntity.GetGates() ) {
 				Add.Button( name, () => {
 					ConsoleSystem.Run( "wire_spawn_gate", name );
 				} );
