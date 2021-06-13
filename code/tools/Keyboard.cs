@@ -14,19 +14,10 @@ namespace Sandbox.Tools
 		}
 		protected override ModelEntity SpawnEntity( TraceResult tr )
 		{
-			var ent = new KeyboardEntity {
+			return new KeyboardEntity {
 				Position = tr.EndPos,
 				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 			};
-
-			ent.UpdateEntity( (SandboxPlayer)Owner );
-
-			return ent;
-		}
-
-		protected override void UpdateEntity( Entity ent )
-		{
-			((KeyboardEntity)ent).UpdateEntity( Owner );
 		}
 	}
 }

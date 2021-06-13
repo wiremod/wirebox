@@ -38,14 +38,6 @@ public partial class KeyboardEntity : Prop, IUse, WireOutputEntity
 		["Slot9"] = InputButton.Slot9,
 	};
 
-	public void UpdateEntity( Entity owner )
-	{
-		if ( IsServer && owner is SandboxPlayer playerOwner ) {
-			playerOwner.OnSimulate -= OnSimulatePlayer;
-			playerOwner.OnSimulate += OnSimulatePlayer;
-		}
-	}
-
 	public bool IsUsable( Entity user )
 	{
 		return user is SandboxPlayer;
@@ -54,33 +46,22 @@ public partial class KeyboardEntity : Prop, IUse, WireOutputEntity
 	{
 		if ( user is SandboxPlayer player ) {
 			if ( player.Controller.GetType() != typeof( LockedPositionController ) ) {
+				player.OnSimulate -= OnSimulatePlayer;
+				player.OnSimulate += OnSimulatePlayer;
 				player.EnableSolidCollisions = false;
 				player.PhysicsBody.CollisionEnabled = false;
-				PhysicsBody targetPhysicsBody;
-				if ( Parent is ModelEntity modelParent ) {
-					targetPhysicsBody = modelParent.PhysicsBody;
-				}
-				else if ( Parent is Entity entityParent ) {
-					targetPhysicsBody = entityParent.PhysicsGroup.GetBody( 0 );
-				}
-				else {
-					targetPhysicsBody = this.PhysicsBody;
-				}
-				for ( int shapeIndex = 0; shapeIndex < player.PhysicsGroup.BodyCount; ++shapeIndex ) {
-					//player.PhysicsGroup.GetBody( shapeIndex ).Parent = targetPhysicsBody;
-				}
+				player.Controller = new LockedPositionController();
+
+				this.WireTriggerOutput( "Active", true );
 			}
 			else {
+				player.OnSimulate -= OnSimulatePlayer;
 				player.EnableSolidCollisions = true;
 				player.PhysicsBody.CollisionEnabled = true;
+				player.Controller = new WalkController();
 
-				for ( int shapeIndex = 0; shapeIndex < player.PhysicsGroup.BodyCount; ++shapeIndex ) {
-					//player.PhysicsGroup.GetBody( shapeIndex ).Parent = null;
-				}
+				this.WireTriggerOutput( "Active", false );
 			}
-			player.Controller = player.Controller.GetType() != typeof( LockedPositionController )
-				? new LockedPositionController()
-				: new WalkController();
 		}
 		return false;
 	}
@@ -97,6 +78,8 @@ public partial class KeyboardEntity : Prop, IUse, WireOutputEntity
 	}
 	public string[] WireGetOutputs()
 	{
-		return inputButtons.Keys.ToArray();
+		return inputButtons.Keys
+			.Concat(new string[]{"Active"})
+			.ToArray();
 	}
 }
