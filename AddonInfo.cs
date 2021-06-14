@@ -24,6 +24,17 @@ namespace Wirebox
 			}
 		};
 
+
+		public override void Initialize()
+		{
+			WireCable.InitCleanupTimer();
+		}
+
+		public override void Dispose()
+		{
+			WireCable.StopCleanupTimer();
+		}
+
 		public class WireboxAddon : AddonClass<AddonInfo> { }
 	}
 }

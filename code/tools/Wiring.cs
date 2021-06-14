@@ -97,16 +97,16 @@ namespace Sandbox.Tools
 							wireOutputProp.WireConnect( wireInputProp, outputName, inputName );
 							wireOutputProp.WireTriggerOutput( outputName, wireOutputProp.GetOutput( outputName ).value );
 
-							var rope = Particles.Create( "particles/wirebox/wire.vpcf" );
-							rope.SetEntity( 0, inputEnt, inputEnt.Transform.PointToLocal( inputPos ) );
-
 							var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
+							var rope = new WireCable( "particles/wirebox/wire.vpcf", inputEnt, attachEnt );
+							rope.Particle.SetEntity( 0, inputEnt, inputEnt.Transform.PointToLocal( inputPos ) );
+
 							var attachLocalPos = tr.Body.Transform.PointToLocal( tr.EndPos );
 							if ( attachEnt.IsWorld ) {
-								rope.SetPos( 1, attachLocalPos );
+								rope.Particle.SetPos( 1, attachLocalPos );
 							}
 							else {
-								rope.SetEntityBone( 1, attachEnt, tr.Bone, new Transform( attachLocalPos ) );
+								rope.Particle.SetEntityBone( 1, attachEnt, tr.Bone, new Transform( attachLocalPos ) );
 							}
 							wireInputProp.WirePorts.AttachRope = rope;
 						}
