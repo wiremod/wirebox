@@ -23,19 +23,7 @@ Unfortunately, the base 'Sandbox' gamemode needs to be modified to be more exten
 
 ### Building from scratch
 
-1. Start with `minimal-extended` modular addon framework:
-```
-cd steamapps/common/sbox/addons
-git clone https://github.com/Ceveos/minimal-extended.git
-```
-2. Clone Wirebox on top:
-```
-cd minimal-extended/code/addons
-git clone https://github.com/wiremod/wirebox.git
-cd wirebox
-./asset-copier.bat
-```
-3. Apply Nebual's latest Sandbox extensions (todo: track in Git somehow)
+`wirebox-build-scratch.bat` will `git clone` the [modular Gamemode](https://github.com/Ceveos/minimal-extended), wirebox itself, and [sandbox-plus](https://github.com/Nebual/sandbox-plus), producing a new "gamemode" which should be placed in `steamapps/sbox/addons/`
 
 
 ## Developing

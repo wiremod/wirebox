@@ -140,7 +140,7 @@ namespace Sandbox.Tools
 					return;
 				}
 				if ( Host.IsClient ) {
-					CreateHitEffects( tr.EndPos );
+					CreateHitEffects( tr.EndPos, tr.Normal );
 				}
 			}
 		}

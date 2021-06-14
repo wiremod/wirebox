@@ -19,7 +19,7 @@ namespace Wirebox
 		public override List<AddonDependency> Dependencies => new()
 		{
 			new AddonDependency() {
-				Name = "Sandbox",
+				Name = "SandboxPlus",
 				MinVersion = 1.0
 			}
 		};

@@ -21,7 +21,7 @@ partial class SandboxPlayer
 	}
 	public override void OnAnimEventFootstep( Vector3 pos, int foot, float volume )
 	{
-		if ( GetActiveController().GetType() == typeof( LockedPositionController ) ) {
+		if ( GetActiveController()?.GetType() == typeof( LockedPositionController ) ) {
 			return;
 		}
 		base.OnAnimEventFootstep( pos, foot, volume );
