@@ -10,6 +10,7 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 	public string GateType { get; set; } = "Add";
 
 	private int constantValue = 3;
+	private float storedFloat = 0;
 
 	[Net]
 	public string DebugText { get; set; } = "";
@@ -17,7 +18,11 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 
 	public static IEnumerable<string> GetGates()
 	{
-		return new string[] { "Constant", "Add", "Subtract", "Multiply", "Divide", "Negate", "Not", "And", "Or" };
+		return new string[] {
+			"Constant", "Add", "Subtract", "Multiply", "Divide", "Negate",
+			"Delta",
+			"Not", "And", "Or", "GreaterThan", "LessThan", "Equal"
+		};
 	}
 	public void WireInitialize()
 	{
@@ -75,6 +80,12 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 				this.WireTriggerOutput( "Out", -value );
 			} );
 		}
+		else if ( GateType == "Delta" ) {
+			this.RegisterInputHandler( "A", ( float value ) => {
+				this.WireTriggerOutput( "Out", value - storedFloat );
+				storedFloat = value;
+			} );
+		}
 		else if ( GateType == "Not" ) {
 			this.RegisterInputHandler( "A", ( bool value ) => {
 				this.WireTriggerOutput( "Out", !value );
@@ -96,6 +107,27 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 				);
 				this.WireTriggerOutput( "Out", outValue );
 			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );
+		}
+		else if ( GateType == "GreaterThan" ) {
+			BulkRegisterInputHandlers( ( float value ) => {
+				var a = Convert.ToSingle( inputs["A"].value );
+				var b = Convert.ToSingle( inputs["B"].value );
+				this.WireTriggerOutput( "Out", a > b );
+			}, new string[] { "A", "B" } );
+		}
+		else if ( GateType == "LessThan" ) {
+			BulkRegisterInputHandlers( ( float value ) => {
+				var a = Convert.ToSingle( inputs["A"].value );
+				var b = Convert.ToSingle( inputs["B"].value );
+				this.WireTriggerOutput( "Out", a < b );
+			}, new string[] { "A", "B" } );
+		}
+		else if ( GateType == "Equal" ) {
+			BulkRegisterInputHandlers( ( float value ) => {
+				var a = Convert.ToSingle( inputs["A"].value );
+				var b = Convert.ToSingle( inputs["B"].value );
+				this.WireTriggerOutput( "Out", a == b );
+			}, new string[] { "A", "B" } );
 		}
 		else if ( GateType == "Constant" ) {
 			DebugText = $" value: {constantValue}";
