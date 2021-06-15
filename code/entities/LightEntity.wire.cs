@@ -7,5 +7,8 @@ public partial class LightEntity : WireInputEntity
 		this.RegisterInputHandler( "On", ( bool value ) => {
 			Enabled = value;
 		} );
+		this.RegisterInputHandler( "Brightness", ( float value ) => {
+			BrightnessMultiplier = value;
+		} );
 	}
 }

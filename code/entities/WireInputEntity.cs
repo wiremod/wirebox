@@ -7,6 +7,8 @@ namespace Sandbox
 	public class WireInput
 	{
 		public object value = 0;
+		public float asFloat { get => Convert.ToSingle( value ); }
+
 		public Entity entity;
 		public string inputName;
 		public string type;

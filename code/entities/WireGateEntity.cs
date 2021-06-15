@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 [Library( "ent_wiregate", Title = "Wire Gate" )]
-public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, IUse
+public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, IUse, IPhysicsUpdate
 {
 	[Net]
 	public string GateType { get; set; } = "Add";
@@ -16,64 +16,88 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 	public string DebugText { get; set; } = "";
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 
-	public static IEnumerable<string> GetGates()
+	// todo: allow these to be extended by addons
+	public static Dictionary<string, string[]> GetGates()
 	{
-		return new string[] {
-			"Constant", "Add", "Subtract", "Multiply", "Divide", "Negate",
-			"Delta",
-			"Not", "And", "Or", "GreaterThan", "LessThan", "Equal"
+		return new Dictionary<string, string[]> {
+			["Math"] = new string[] { "Constant", "Add", "Subtract", "Multiply", "Divide", "Negate", "Absolute", "Sin", "Cos" },
+			["Logic"] = new string[] { "Not", "And", "Or", "GreaterThan", "LessThan", "Equal" },
+			["Comparison"] = new string[] { "Max", "Min", "Clamp" },
+			["Time"] = new string[] { "Delta", "Tick" },
 		};
 	}
+
 	public void WireInitialize()
 	{
 		var inputs = ((IWireEntity)this).WirePorts.inputs;
 		if ( GateType == "Add" ) {
 			BulkRegisterInputHandlers( ( float value ) => {
 				var outValue =
-					  Convert.ToSingle( inputs["A"].value )
-					+ Convert.ToSingle( inputs["B"].value )
-					+ Convert.ToSingle( inputs["C"].value )
-					+ Convert.ToSingle( inputs["D"].value )
-					+ Convert.ToSingle( inputs["E"].value )
-					+ Convert.ToSingle( inputs["F"].value )
-					+ Convert.ToSingle( inputs["G"].value )
-					+ Convert.ToSingle( inputs["H"].value );
+					  inputs["A"].asFloat
+					+ inputs["B"].asFloat
+					+ inputs["C"].asFloat
+					+ inputs["D"].asFloat
+					+ inputs["E"].asFloat
+					+ inputs["F"].asFloat
+					+ inputs["G"].asFloat
+					+ inputs["H"].asFloat;
 				this.WireTriggerOutput( "Out", outValue );
 			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );
 		}
 		else if ( GateType == "Subtract" ) {
 			BulkRegisterInputHandlers( ( float value ) => {
 				var outValue =
-					  Convert.ToSingle( inputs["A"].value )
-					- Convert.ToSingle( inputs["B"].value )
-					- Convert.ToSingle( inputs["C"].value )
-					- Convert.ToSingle( inputs["D"].value )
-					- Convert.ToSingle( inputs["E"].value )
-					- Convert.ToSingle( inputs["F"].value )
-					- Convert.ToSingle( inputs["G"].value )
-					- Convert.ToSingle( inputs["H"].value );
+					  inputs["A"].asFloat
+					- inputs["B"].asFloat
+					- inputs["C"].asFloat
+					- inputs["D"].asFloat
+					- inputs["E"].asFloat
+					- inputs["F"].asFloat
+					- inputs["G"].asFloat
+					- inputs["H"].asFloat;
 				this.WireTriggerOutput( "Out", outValue );
 			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );
 		}
 		else if ( GateType == "Multiply" ) {
 			BulkRegisterInputHandlers( ( float value ) => {
-				var connectedInputs = inputs.Values.Where((input) => input.connectedOutput != null);
+				var connectedInputs = inputs.Values.Where( ( input ) => input.connectedOutput != null );
 				float outValue = 1;
-				foreach(var input in connectedInputs) {
-					outValue *= Convert.ToSingle(input.value);
+				foreach ( var input in connectedInputs ) {
+					outValue *= input.asFloat;
 				}
 				this.WireTriggerOutput( "Out", outValue );
 			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );
 		}
 		else if ( GateType == "Divide" ) {
 			BulkRegisterInputHandlers( ( float value ) => {
-				var b = Convert.ToSingle( inputs["B"].value );
-				if (b == 0) {
+				var b = inputs["B"].asFloat;
+				if ( b == 0 ) {
 					this.WireTriggerOutput( "Out", 0 );
-				} else {
-					this.WireTriggerOutput( "Out", Convert.ToSingle( inputs["A"].value ) / b );
+				}
+				else {
+					this.WireTriggerOutput( "Out", inputs["A"].asFloat / b );
 				}
 			}, new string[] { "A", "B" } );
+		}
+		else if ( GateType == "Negate" ) {
+			this.RegisterInputHandler( "A", ( float value ) => {
+				this.WireTriggerOutput( "Out", -value );
+			} );
+		}
+		else if ( GateType == "Sin" ) {
+			this.RegisterInputHandler( "A", ( float value ) => {
+				this.WireTriggerOutput( "Out", Math.Sin( value ) );
+			} );
+		}
+		else if ( GateType == "Cos" ) {
+			this.RegisterInputHandler( "A", ( float value ) => {
+				this.WireTriggerOutput( "Out", Math.Cos( value ) );
+			} );
+		}
+		else if ( GateType == "Absolute" ) {
+			this.RegisterInputHandler( "A", ( float value ) => {
+				this.WireTriggerOutput( "Out", Math.Abs( value ) );
+			} );
 		}
 		else if ( GateType == "Negate" ) {
 			this.RegisterInputHandler( "A", ( float value ) => {
@@ -110,28 +134,65 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 		}
 		else if ( GateType == "GreaterThan" ) {
 			BulkRegisterInputHandlers( ( float value ) => {
-				var a = Convert.ToSingle( inputs["A"].value );
-				var b = Convert.ToSingle( inputs["B"].value );
+				var a = inputs["A"].asFloat;
+				var b = inputs["B"].asFloat;
 				this.WireTriggerOutput( "Out", a > b );
 			}, new string[] { "A", "B" } );
 		}
 		else if ( GateType == "LessThan" ) {
 			BulkRegisterInputHandlers( ( float value ) => {
-				var a = Convert.ToSingle( inputs["A"].value );
-				var b = Convert.ToSingle( inputs["B"].value );
+				var a = inputs["A"].asFloat;
+				var b = inputs["B"].asFloat;
 				this.WireTriggerOutput( "Out", a < b );
 			}, new string[] { "A", "B" } );
 		}
 		else if ( GateType == "Equal" ) {
 			BulkRegisterInputHandlers( ( float value ) => {
-				var a = Convert.ToSingle( inputs["A"].value );
-				var b = Convert.ToSingle( inputs["B"].value );
+				var a = inputs["A"].asFloat;
+				var b = inputs["B"].asFloat;
 				this.WireTriggerOutput( "Out", a == b );
 			}, new string[] { "A", "B" } );
 		}
 		else if ( GateType == "Constant" ) {
 			DebugText = $" value: {constantValue}";
 			this.WireTriggerOutput( "Out", constantValue );
+		}
+		else if ( GateType == "Min" ) {
+			BulkRegisterInputHandlers( ( float value ) => {
+				var connectedInputs = inputs.Values.Where( ( input ) => input.connectedOutput != null );
+				float outValue = connectedInputs.FirstOrDefault()?.asFloat ?? 0f;
+				foreach ( var x in connectedInputs ) {
+					outValue = Math.Min( outValue, x.asFloat );
+				}
+				this.WireTriggerOutput( "Out", outValue );
+			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );
+		}
+		else if ( GateType == "Max" ) {
+			BulkRegisterInputHandlers( ( float value ) => {
+				var connectedInputs = inputs.Values.Where( ( input ) => input.connectedOutput != null );
+				float outValue = 0;
+				foreach ( var x in connectedInputs ) {
+					outValue = Math.Max( outValue, x.asFloat );
+				}
+				this.WireTriggerOutput( "Out", outValue );
+			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );
+		}
+		else if ( GateType == "Clamp" ) {
+			BulkRegisterInputHandlers( ( float value ) => {
+				this.WireTriggerOutput( "Out", Math.Clamp(
+					inputs["Value"].asFloat,
+					inputs["Min"].asFloat,
+					inputs["Max"].asFloat
+				) );
+			}, new string[] { "Min", "Max", "Value" } );
+		}
+	}
+
+	public void OnPostPhysicsStep( float dt )
+	{
+		// todo: it sucks to bind this for gates that don't need it, perhaps move to separate entity?
+		if ( GateType == "Tick" ) {
+			this.WireTriggerOutput( "Out", Time.Tick );
 		}
 	}
 

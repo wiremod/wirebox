@@ -301,10 +301,20 @@ namespace Sandbox.Tools
 	{
 		public WireGatePanel()
 		{
-			foreach ( var name in WireGateEntity.GetGates() ) {
-				Add.Button( name, () => {
-					ConsoleSystem.Run( "wire_spawn_gate", name );
-				} );
+			var container = Add.Panel( "wire-gate-container" );
+			foreach ( var kvp in WireGateEntity.GetGates() ) {
+				var category = kvp.Key;
+				var gates = kvp.Value;
+
+				var categoryRow = container.Add.Panel( "wire-gate-category" );
+				var categoryText = categoryRow.Add.TextEntry( category );
+				categoryText.AddClass( "wire-gate-category-label" );
+				var categoryList = categoryRow.Add.Panel( "wire-gate-category-list" );
+				foreach ( var gateName in gates ) {
+					categoryList.Add.Button( gateName, () => {
+						ConsoleSystem.Run( "wire_spawn_gate", gateName );
+					} );
+				}
 			}
 		}
 		public override void Tick()
