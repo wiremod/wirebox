@@ -67,6 +67,8 @@ namespace Sandbox.Tools
 				if ( attachEnt.IsValid() ) {
 					ent.SetParent( tr.Body.Entity, tr.Body.PhysicsGroup.GetBodyBoneName( tr.Body ) );
 				}
+
+				Sandbox.Hooks.Entities.TriggerOnSpawned(ent, Owner);
 			}
 		}
 	}
