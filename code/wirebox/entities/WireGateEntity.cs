@@ -119,7 +119,7 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 			BulkRegisterInputHandlers( ( bool value ) => {
 				var outValue = inputs.Values.All( input =>
 					 input.connectedOutput == null
-						 || (bool)input.value
+						 || input.asBool
 				);
 				this.WireTriggerOutput( "Out", outValue );
 			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );
@@ -127,7 +127,7 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 		else if ( GateType == "Or" ) {
 			BulkRegisterInputHandlers( ( bool value ) => {
 				var outValue = inputs.Values.Any( input =>
-					 (bool)input.value
+					 input.asBool
 				);
 				this.WireTriggerOutput( "Out", outValue );
 			}, new string[] { "A", "B", "C", "D", "E", "F", "G", "H" } );

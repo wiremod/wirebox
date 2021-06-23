@@ -129,7 +129,7 @@ namespace Sandbox.Tools
 					return;
 				}
 				else if ( Input.Pressed( InputButton.Reload ) ) {
-					if ( tr.Entity is WireInputEntity wireEntity ) {
+					if ( tr.Entity is WireInputEntity wireEntity && Host.IsServer) {
 						wireEntity.DisconnectInput( wireEntity.GetInputNames()[InputPortIndex] );
 					}
 					else {

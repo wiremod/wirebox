@@ -8,6 +8,7 @@ namespace Sandbox
 	{
 		public object value = 0;
 		public float asFloat { get => Convert.ToSingle( value ); }
+		public bool asBool { get => Convert.ToBoolean( value ); }
 
 		public Entity entity;
 		public string inputName;
@@ -77,7 +78,7 @@ namespace Sandbox
 					handler( valueBool ? 1.0f : 0.0f );
 				}
 				else {
-					handler( Convert.ToSingle(value) );
+					handler( Convert.ToSingle( value ) );
 				}
 			});
 			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "float" );
