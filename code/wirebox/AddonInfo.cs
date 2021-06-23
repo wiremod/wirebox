@@ -28,6 +28,7 @@ namespace Wirebox
 		public override void Initialize()
 		{
 			WireCable.InitCleanupTimer();
+			Sandbox.Tools.ConstraintTool.CreateWireboxConstraintController = ConstraintControllerEntity.CreateFromTool;
 		}
 
 		public override void Dispose()
