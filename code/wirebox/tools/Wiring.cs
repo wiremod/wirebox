@@ -29,6 +29,9 @@ namespace Sandbox.Tools
 		[Net, Local]
 		private int OutputPortIndex { get; set; } = 0;
 
+		[ConVar.ClientData( "tool_wiring_model" )]
+		public string _ { get; set; } = "models/citizen_props/hotdog01.vmdl";
+
 		public override void Simulate()
 		{
 			using ( Prediction.Off() ) {
@@ -163,6 +166,9 @@ namespace Sandbox.Tools
 				Local.Hud.StyleSheet.Load( "/wirebox/ui/wiringhud.scss" );
 				wiringHud = Local.Hud.AddChild<WiringPanel>();
 				wireGatePanel = Local.Hud.AddChild<WireGatePanel>( "wire-gate-menu" );
+
+				var modelSelector = new ModelSelector( new string[] { "gate", "controller" } );
+				SpawnMenu.Instance?.ToolPanel?.AddChild( modelSelector );
 			}
 			Reset();
 		}
@@ -176,7 +182,6 @@ namespace Sandbox.Tools
 			}
 			Reset();
 		}
-
 
 		[ServerCmd( "wire_spawn_gate" )]
 		public static void SpawnGate( string gateType )
@@ -201,7 +206,7 @@ namespace Sandbox.Tools
 				Position = tr.EndPos,
 				GateType = gateType,
 			};
-			ent.SetModel( "models/citizen_props/hotdog01.vmdl" );
+			ent.SetModel( ConsoleSystem.Caller.GetUserString( "tool_wiring_model" ) );
 
 			var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
 			if ( attachEnt.IsValid() ) {
@@ -322,5 +327,18 @@ namespace Sandbox.Tools
 			base.Tick();
 			SetClass( "visible", Input.Down( InputButton.Drop ) );
 		}
+	}
+	
+	[Library]
+	public class GateModels : MinimalExtended.IAutoload
+	{
+		public GateModels()
+		{
+			ModelSelector.AddToSpawnlist( "gate", new string[] {
+				"models/citizen_props/hotdog01.vmdl",
+			} );
+		}
+		public bool ReloadOnHotload => false;
+		public void Dispose() { }
 	}
 }

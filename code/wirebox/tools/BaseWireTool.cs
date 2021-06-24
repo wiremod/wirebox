@@ -1,4 +1,6 @@
 ﻿using System;
+using Sandbox.UI;
+
 namespace Sandbox.Tools
 {
 	public abstract partial class BaseWireTool : BaseTool
@@ -6,10 +8,18 @@ namespace Sandbox.Tools
 		PreviewEntity previewModel;
 
 		abstract protected Type GetEntityType();
-		abstract protected string GetModel();
+		protected virtual string GetModel()
+		{
+			var toolCurrent = GetConvarValue( "tool_current", "" );
+			return GetConvarValue( $"{toolCurrent}_model" ) ?? "models/citizen_props/coffeemug01.vmdl";
+		}
+		protected virtual string[] GetSpawnLists()
+		{
+			return new string[] { GetConvarValue( "tool_current", "" )[5..] };
+		}
 		abstract protected ModelEntity SpawnEntity( TraceResult tr );
 
-		protected virtual void UpdateEntity(Entity ent) {}
+		protected virtual void UpdateEntity( Entity ent ) { }
 
 		protected override bool IsPreviewTraceValid( TraceResult tr )
 		{
@@ -33,6 +43,9 @@ namespace Sandbox.Tools
 
 		public override void Simulate()
 		{
+			if ( GetModel() != previewModel.GetModelName() ) {
+				previewModel.SetModel( GetModel() );
+			}
 			if ( !Host.IsServer ) {
 				return;
 			}
@@ -55,7 +68,7 @@ namespace Sandbox.Tools
 				CreateHitEffects( tr.EndPos, tr.Normal );
 
 				if ( tr.Entity.GetType() == GetEntityType() ) {
-					UpdateEntity(tr.Entity);
+					UpdateEntity( tr.Entity );
 					return;
 				}
 
@@ -68,7 +81,19 @@ namespace Sandbox.Tools
 					ent.SetParent( tr.Body.Entity, tr.Body.PhysicsGroup.GetBodyBoneName( tr.Body ) );
 				}
 
-				Sandbox.Hooks.Entities.TriggerOnSpawned(ent, Owner);
+				Sandbox.Hooks.Entities.TriggerOnSpawned( ent, Owner );
+			}
+		}
+
+		public override void Activate()
+		{
+			base.Activate();
+			if ( Host.IsClient ) {
+				var current_tool = GetConvarValue( "tool_current" );
+				if ( GetConvarValue( $"{current_tool}_model" ) != null ) {
+					var modelSelector = new ModelSelector( GetSpawnLists() );
+					SpawnMenu.Instance?.ToolPanel?.AddChild( modelSelector );
+				}
 			}
 		}
 	}
