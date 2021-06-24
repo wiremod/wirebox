@@ -6,13 +6,17 @@ using System;
 [Library( "ent_constraintcontroller", Title = "Constraint Controller" )]
 public partial class ConstraintControllerEntity : Prop, WireInputEntity
 {
-	public object Joint { get; set; }
+	public IPhysicsJoint Joint { get; set; }
 	public ConstraintType JointType { get; set; }
 	public Func<string> JointCleanup { get; set; }
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 
 	public void WireInitialize()
 	{
+		this.RegisterInputHandler( "On", ( bool value ) => {
+			Joint.EnableLinearConstraint = value;
+			Joint.EnableAngularConstraint = value;
+		} );
 		if ( Joint is SpringJoint spring ) {
 			this.RegisterInputHandler( "Length", ( float value ) => {
 				spring.RestLengthMax = value;
@@ -32,10 +36,6 @@ public partial class ConstraintControllerEntity : Prop, WireInputEntity
 			// ReferenceMass, EnableLinearConstraint, and EnableAngularConstraint don't appear to do anything
 		}
 		else if ( Joint is WeldJoint weld ) {
-			this.RegisterInputHandler( "On", ( bool value ) => {
-				weld.EnableLinearConstraint = value;
-				weld.EnableAngularConstraint = value;
-			} );
 		}
 		else if ( Joint is RevoluteJoint axis ) {
 			this.RegisterInputHandler( "Friction", ( float value ) => {
@@ -53,7 +53,7 @@ public partial class ConstraintControllerEntity : Prop, WireInputEntity
 		base.OnDestroy();
 	}
 
-	public static void CreateFromTool( Player owner, TraceResult tr, ConstraintType type, object joint, Func<string> undo )
+	public static void CreateFromTool( Player owner, TraceResult tr, ConstraintType type, IPhysicsJoint joint, Func<string> undo )
 	{
 		var ent = new ConstraintControllerEntity {
 			Position = tr.EndPos,
