@@ -41,11 +41,16 @@ div.wiring-tool-hud {
 
 .wiring-outputs {
   margin-left: 30px;
-  display: none;
-  &.visible {
-    display: flex;
+
+  background-color: rgba(blue, 0.125);
+  opacity: 0.75;
+  &.selected {
+    background-color: rgba(blue, 0.2);
+    opacity: 1;
   }
 }
+
+
 
 .wire-gate-menu {
   position: absolute;

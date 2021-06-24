@@ -49,21 +49,28 @@ namespace Sandbox.Tools
 						if ( Host.IsServer ) {
 							OutputPortIndex = Math.Clamp( OutputPortIndex - Input.MouseWheel, 0, Math.Max( 0, wireOutputProp1.GetOutputNames().Length - 1 ) );
 						}
-						ShowOutputs( wireOutputProp1 );
+						ShowOutputs( wireOutputProp1, true );
 					}
 					else {
 						ShowOutputs( null );
 					}
 				}
-				else if ( tr.Entity is WireInputEntity wireInputEnt2 ) {
-					if ( Host.IsServer ) {
-						InputPortIndex = Math.Clamp( InputPortIndex - Input.MouseWheel, 0, Math.Max( 0, wireInputEnt2.GetInputNames().Length - 1 ) );
-					}
-					ShowInputs( wireInputEnt2, false );
-				}
 				else {
-					ShowInputs( null, false );
-					ShowOutputs( null );
+					if ( tr.Entity is WireInputEntity wireInputEnt2 ) {
+						if ( Host.IsServer ) {
+							InputPortIndex = Math.Clamp( InputPortIndex - Input.MouseWheel, 0, Math.Max( 0, wireInputEnt2.GetInputNames().Length - 1 ) );
+						}
+						ShowInputs( wireInputEnt2, false );
+					}
+					else {
+						ShowInputs( null, false );
+					}
+					if ( tr.Entity is WireOutputEntity wireOutputProp2 ) {
+						ShowOutputs( wireOutputProp2 );
+					}
+					else {
+						ShowOutputs( null );
+					}
 				}
 
 
@@ -232,7 +239,7 @@ namespace Sandbox.Tools
 				wiringHud?.SetInputs( names, entSelected, InputPortIndex );
 			}
 		}
-		private void ShowOutputs( WireOutputEntity ent )
+		private void ShowOutputs( WireOutputEntity ent, bool selectingOutput = false )
 		{
 			string[] names = Array.Empty<string>();
 			if ( ent != null ) {
@@ -246,7 +253,7 @@ namespace Sandbox.Tools
 			}
 
 			if ( Host.IsClient ) {
-				wiringHud?.SetOutputs( names, OutputPortIndex );
+				wiringHud?.SetOutputs( names, selectingOutput, OutputPortIndex );
 			}
 		}
 	}
@@ -284,11 +291,12 @@ namespace Sandbox.Tools
 				InputsPanel.GetChild( 1 ).AddChild<Label>( "port" ).SetText( name );
 			}
 		}
-		public void SetOutputs( string[] names, int portIndex = 0 )
+		public void SetOutputs( string[] names, bool selectingOutput = false, int portIndex = 0 )
 		{
 			foreach ( var lineItem in OutputsPanel.GetChild( 1 ).Children ) {
-				lineItem.SetClass( "active", OutputsPanel.GetChild( 1 ).GetChildIndex( lineItem ) == portIndex );
+				lineItem.SetClass( "active", selectingOutput && OutputsPanel.GetChild( 1 ).GetChildIndex( lineItem ) == portIndex );
 			}
+			OutputsPanel.SetClass( "selected", selectingOutput );
 			if ( Enumerable.SequenceEqual( lastOutputs, names ) ) {
 				return;
 			}
