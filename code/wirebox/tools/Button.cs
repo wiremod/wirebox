@@ -30,7 +30,7 @@ namespace Sandbox.Tools
 				"models/citizen_props/coin01.vmdl",
 			} );
 		}
-		public bool ReloadOnHotload => false;
+		public bool ReloadOnHotload => true;
 		public void Dispose() { }
 	}
 }

@@ -30,7 +30,7 @@ namespace Sandbox.Tools
 		private int OutputPortIndex { get; set; } = 0;
 
 		[ConVar.ClientData( "tool_wiring_model" )]
-		public string _ { get; set; } = "models/citizen_props/hotdog01.vmdl";
+		public string _ { get; set; } = "models/wirebox/katlatze/chip_rectangle.vmdl";
 
 		public override void Simulate()
 		{
@@ -213,6 +213,7 @@ namespace Sandbox.Tools
 
 			var ent = new WireGateEntity {
 				Position = tr.EndPos,
+				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 				GateType = gateType,
 			};
 			ent.SetModel( ConsoleSystem.Caller.GetUserString( "tool_wiring_model" ) );
@@ -349,9 +350,10 @@ namespace Sandbox.Tools
 		{
 			ModelSelector.AddToSpawnlist( "gate", new string[] {
 				"models/citizen_props/hotdog01.vmdl",
+				"models/wirebox/katlatze/chip_rectangle.vmdl",
 			} );
 		}
-		public bool ReloadOnHotload => false;
+		public bool ReloadOnHotload => true;
 		public void Dispose() { }
 	}
 }
