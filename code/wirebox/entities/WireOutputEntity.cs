@@ -50,6 +50,7 @@ namespace Sandbox
 			}
 			input.connectedOutput = output;
 			connected.Add( input );
+			WireTriggerOutput( outputName, output.value );
 		}
 
 		public WireOutput GetOutput( string inputName )

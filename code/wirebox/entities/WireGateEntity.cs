@@ -27,6 +27,38 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 		};
 	}
 
+	public void Update( string newGateType )
+	{
+		var oldInputs = ((IWireEntity)this).WirePorts.inputs;
+		((IWireEntity)this).WirePorts.inputs = new();
+
+		GateType = newGateType;
+		WireInitialize();
+
+
+		// reconnect old matching inputs
+		foreach ( var kv in ((IWireEntity)this).WirePorts.inputs ) {
+			var inputName = kv.Key;
+			if ( oldInputs.ContainsKey( inputName ) ) {
+				var output = oldInputs[inputName].connectedOutput;
+				if ( output != null && output.entity is WireOutputEntity outputEnt ) {
+					var rope = oldInputs[inputName].AttachRope;
+					oldInputs[inputName].AttachRope = null;
+					((WireInputEntity)this).DisconnectInput( oldInputs[inputName] );
+					oldInputs.Remove( inputName );
+
+					outputEnt.WireConnect( this, output.outputName, inputName );
+					((IWireEntity)this).WirePorts.inputs[inputName].AttachRope = rope;
+				}
+			}
+		}
+		foreach ( var kv in oldInputs ) {
+			((WireInputEntity)this).DisconnectInput( kv.Value );
+		}
+
+		// todo: outputs, once we got more than 1
+	}
+
 	public void WireInitialize()
 	{
 		var inputs = ((IWireEntity)this).WirePorts.inputs;

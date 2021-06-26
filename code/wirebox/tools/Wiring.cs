@@ -105,7 +105,6 @@ namespace Sandbox.Tools
 
 							// Log.Info("Wiring " + wireInputProp + "'s " + inputName + " to " + wireOutputProp + "'s " + outputName);
 							wireOutputProp.WireConnect( wireInputProp, outputName, inputName );
-							wireOutputProp.WireTriggerOutput( outputName, wireOutputProp.GetOutput( outputName ).value );
 
 							var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
 							var rope = new WireCable( "particles/wirebox/wire.vpcf", inputEnt, attachEnt );
@@ -118,7 +117,7 @@ namespace Sandbox.Tools
 							else {
 								rope.Particle.SetEntityBone( 1, attachEnt, tr.Bone, new Transform( attachLocalPos ) );
 							}
-							wireInputProp.WirePorts.AttachRope = rope;
+							wireInputProp.WirePorts.inputs[inputName].AttachRope = rope;
 						}
 						Reset();
 					}
@@ -205,7 +204,10 @@ namespace Sandbox.Tools
 			  .Run();
 
 			if ( tr.Entity is WireGateEntity wireGateEntity ) {
-				// todo: change gate type
+				wireGateEntity.Update(gateType);
+				if ( owner.Inventory.Active is Tool toolgun && toolgun.CurrentTool is WiringTool wiringTool) {
+					wiringTool.CreateHitEffects( tr.EndPos, tr.Normal );
+				}
 				return;
 			}
 
@@ -218,6 +220,9 @@ namespace Sandbox.Tools
 			var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
 			if ( attachEnt.IsValid() ) {
 				ent.SetParent( tr.Body.Entity, tr.Body.PhysicsGroup.GetBodyBoneName( tr.Body ) );
+			}
+			if ( owner.Inventory.Active is Tool toolgun2 && toolgun2.CurrentTool is WiringTool wiringTool2) {
+				wiringTool2.CreateHitEffects( tr.EndPos, tr.Normal );
 			}
 		}
 

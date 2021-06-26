@@ -14,8 +14,6 @@ namespace Sandbox
 
 		public int outputExecutions = 0;
 		public int outputExecutionsTick = 0;
-
-		public WireCable AttachRope { get; set; }
 	}
 
 	public interface IWireEntity

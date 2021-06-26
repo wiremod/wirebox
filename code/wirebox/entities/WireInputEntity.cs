@@ -14,6 +14,7 @@ namespace Sandbox
 		public string inputName;
 		public string type;
 		public WireOutput connectedOutput;
+		public WireCable AttachRope { get; set; }
 
 		public WireInput( Entity entity, string inputName, string type )
 		{
@@ -55,14 +56,17 @@ namespace Sandbox
 
 		public void DisconnectInput( string inputName )
 		{
-			var input = GetInput( inputName );
+			DisconnectInput(GetInput( inputName ));
+		}
+		public void DisconnectInput( WireInput input )
+		{
 			if ( input.connectedOutput != null ) {
 				input.connectedOutput.connected.Remove( input );
 				input.connectedOutput = null;
 			}
-			if ( WirePorts.AttachRope != null ) {
-				WirePorts.AttachRope.Destroy( true );
-				WirePorts.AttachRope = null;
+			if ( input.AttachRope != null ) {
+				input.AttachRope.Destroy( true );
+				input.AttachRope = null;
 			}
 		}
 
