@@ -23,7 +23,7 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 			["Math"] = new string[] { "Constant", "Add", "Subtract", "Multiply", "Divide", "Negate", "Absolute", "Sin", "Cos" },
 			["Logic"] = new string[] { "Not", "And", "Or", "GreaterThan", "LessThan", "Equal" },
 			["Comparison"] = new string[] { "Max", "Min", "Clamp" },
-			["Time"] = new string[] { "Delta", "Tick" },
+			["Time"] = new string[] { "Delta", "Tick", "Smoother" },
 		};
 	}
 
@@ -217,6 +217,21 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 					inputs["Max"].asFloat
 				) );
 			}, new string[] { "Min", "Max", "Value" } );
+		}
+		else if ( GateType == "Smoother" ) {
+			this.RegisterInputHandler( "A", ( float value ) => {} );
+			this.RegisterInputHandler( "Rate", ( float value ) => {} );
+			inputs["Rate"].value = 1.0f; // a default
+			this.RegisterInputHandler( "Clk", ( bool value ) => { // todo: event type
+				var A = inputs["A"].asFloat;
+				if (A > storedFloat) {
+					storedFloat = Math.Min(A, storedFloat + inputs["Rate"].asFloat);
+					this.WireTriggerOutput( "Out", storedFloat );
+				} else if (A < storedFloat) {
+					storedFloat = Math.Max(A, storedFloat - inputs["Rate"].asFloat);
+					this.WireTriggerOutput( "Out", storedFloat );
+				}
+			} );
 		}
 	}
 
