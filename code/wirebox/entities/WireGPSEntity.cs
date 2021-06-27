@@ -4,9 +4,14 @@
 public partial class WireGPSEntity : Prop, WireOutputEntity, IPhysicsUpdate
 {
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
-	public string[] WireGetOutputs()
+	public PortType[] WireGetOutputs()
 	{
-		return new string[] { "X", "Y", "Z", "Position" };
+		return new PortType[] {
+			PortType.Float("X"),
+			PortType.Float("Y"),
+			PortType.Float("Z"),
+			PortType.Vector3("Position")
+		};
 	}
 
 	public void OnPostPhysicsStep( float dt )

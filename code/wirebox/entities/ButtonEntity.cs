@@ -57,13 +57,13 @@ public partial class ButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
 		else {
 			RenderColor = On ? Color32.Green : Color32.Red;
 		}
-		this.WireTriggerOutput( "On", On ? 1 : 0 );
+		this.WireTriggerOutput( "On", On );
 	}
 
 
-	public string[] WireGetOutputs()
+	public PortType[] WireGetOutputs()
 	{
-		return new string[] { "On" };
+		return new PortType[] { PortType.Bool("On") };
 	}
 }
 

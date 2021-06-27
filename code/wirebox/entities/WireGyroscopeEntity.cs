@@ -4,9 +4,15 @@
 public partial class WireGyroscopeEntity : Prop, WireOutputEntity, IPhysicsUpdate
 {
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
-	public string[] WireGetOutputs()
+	public PortType[] WireGetOutputs()
 	{
-		return new string[] { "Pitch", "Yaw", "Roll", "Angle", "Rotation" };
+		return new PortType[] {
+			PortType.Float("Pitch"),
+			PortType.Float("Yaw"),
+			PortType.Float("Roll"),
+			PortType.Angle("Angle"),
+			PortType.Rotation("Rotation"),
+		};
 	}
 
 	public void OnPostPhysicsStep( float dt )

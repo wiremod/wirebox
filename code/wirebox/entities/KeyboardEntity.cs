@@ -70,16 +70,17 @@ public partial class KeyboardEntity : Prop, IUse, WireOutputEntity
 	{
 		foreach ( var name in inputButtons.Keys ) {
 			var inputButton = inputButtons[name];
-			var newState = Input.Down( inputButton ) ? 1 : 0;
-			if ( newState != (int)((WireOutputEntity)this).GetOutput( name ).value ) {
+			var newState = Input.Down( inputButton );
+			if ( newState != (bool)((WireOutputEntity)this).GetOutput( name ).value ) {
 				this.WireTriggerOutput( name, newState );
 			}
 		}
 	}
-	public string[] WireGetOutputs()
+	public PortType[] WireGetOutputs()
 	{
 		return inputButtons.Keys
 			.Concat(new string[]{"Active"})
+			.Select(x => PortType.Bool(x))
 			.ToArray();
 	}
 }

@@ -50,13 +50,13 @@ namespace Sandbox
 			return !withValues
 				? WirePorts.inputs.Keys.ToArray()
 				: WirePorts.inputs.Keys.Select( ( string key ) => {
-					return $"{key}: {WirePorts.inputs[key].value}";
+					return $"{key} [{WirePorts.inputs[key].type}]: {WirePorts.inputs[key].value}";
 				} ).ToArray();
 		}
 
 		public void DisconnectInput( string inputName )
 		{
-			DisconnectInput(GetInput( inputName ));
+			DisconnectInput( GetInput( inputName ) );
 		}
 		public void DisconnectInput( WireInput input )
 		{

@@ -8,13 +8,36 @@ namespace Sandbox
 		public object value = 0;
 		public Entity entity;
 		public string outputName;
+		public string type;
 		public List<WireInput> connected = new();
 
-		public WireOutput( Entity entity, string newOutputName )
+		public WireOutput( Entity entity, string outputName, string type )
 		{
 			this.entity = entity;
-			outputName = newOutputName;
+			this.outputName = outputName;
+			this.type = type;
 		}
+	}
+
+	public readonly struct PortType
+	{
+		public string Name { get; init; }
+		public string Type { get; init; }
+
+		public static PortType Bool( string name ) =>
+			new() { Name = name, Type = "bool" };
+		public static PortType Int( string name ) =>
+			new() { Name = name, Type = "int" };
+		public static PortType Float( string name ) =>
+			new() { Name = name, Type = "float" };
+		public static PortType String( string name ) =>
+			new() { Name = name, Type = "string" };
+		public static PortType Vector3( string name ) =>
+			new() { Name = name, Type = "vector3" };
+		public static PortType Angle( string name ) =>
+			new() { Name = name, Type = "angle" };
+		public static PortType Rotation( string name ) =>
+			new() { Name = name, Type = "rotation" };
 	}
 
 	public interface WireOutputEntity : IWireEntity
@@ -68,7 +91,7 @@ namespace Sandbox
 			return !withValues
 				? WirePorts.outputs.Keys.ToArray()
 				: WirePorts.outputs.Keys.Select( ( string key ) => {
-					return $"{key}: {WirePorts.outputs[key].value}";
+					return $"{key} [{WirePorts.outputs[key].type}]: {WirePorts.outputs[key].value}";
 				} ).ToArray();
 		}
 
@@ -79,11 +102,11 @@ namespace Sandbox
 		}
 		public void InitializeOutputs()
 		{
-			foreach ( var outputName in WireGetOutputs() ) {
-				WirePorts.outputs[outputName] = new WireOutput( (Entity)this, outputName );
+			foreach ( var type in WireGetOutputs() ) {
+				WirePorts.outputs[type.Name] = new WireOutput( (Entity)this, type.Name, type.Type );
 			}
 		}
-		abstract public string[] WireGetOutputs();
+		abstract public PortType[] WireGetOutputs();
 	}
 
 	// Extension methods to allow calling the interface methods without explicit casting

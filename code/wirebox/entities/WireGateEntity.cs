@@ -270,9 +270,9 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 			this.RegisterInputHandler( inputName, handler );
 		}
 	}
-	public string[] WireGetOutputs()
+	public PortType[] WireGetOutputs()
 	{
-		return new string[] { "Out" };
+		return new PortType[] { PortType.Float("Out") };
 	}
 
 	string IWireEntity.GetOverlayText()
