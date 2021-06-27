@@ -225,6 +225,7 @@ namespace Sandbox.Tools
 			if ( owner.Inventory.Active is Tool toolgun2 && toolgun2.CurrentTool is WiringTool wiringTool2) {
 				wiringTool2.CreateHitEffects( tr.EndPos, tr.Normal );
 			}
+			Sandbox.Hooks.Entities.TriggerOnSpawned( ent, owner );
 		}
 
 
@@ -351,6 +352,8 @@ namespace Sandbox.Tools
 			ModelSelector.AddToSpawnlist( "gate", new string[] {
 				"models/citizen_props/hotdog01.vmdl",
 				"models/wirebox/katlatze/chip_rectangle.vmdl",
+				"models/wirebox/katlatze/chip_rectangle_logo.vmdl",
+				"models/wirebox/katlatze/constant_value.vmdl",
 			} );
 		}
 		public bool ReloadOnHotload => true;

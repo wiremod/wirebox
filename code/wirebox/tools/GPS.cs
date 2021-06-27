@@ -30,8 +30,12 @@ namespace Sandbox.Tools
 		public ControllerModels()
 		{
 			UI.ModelSelector.AddToSpawnlist( "controller", new string[] {
+				"models/wirebox/katlatze/apc.vmdl",
 				"models/citizen_props/icecreamcone01.vmdl",
 				"models/citizen_props/roadcone01.vmdl",
+			} );
+			UI.ModelSelector.AddToSpawnlist( "gyroscope", new string[] {
+				"models/wirebox/katlatze/gyroscope.vmdl",
 			} );
 		}
 		public bool ReloadOnHotload => true;
