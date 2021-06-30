@@ -15,7 +15,7 @@
 						game_keys = 
 						{
 							base = ""
-							allowstatic = true
+							allowstatic = false
 							bakelighting = true
 							damage_table = ""
 							"dmg.bullets" = -1.0
@@ -24,6 +24,8 @@
 							"dmg.fire" = -1.0
 							health = -1.0
 							spawn_motion_disabled = false
+							min_impact_damage_speed = -1.0
+							impact_damage = -1.0
 							parent_bodygroup_name = ""
 							parent_bodygroup_value = 0
 						}
@@ -40,26 +42,53 @@
 						[
 							{
 								from = "button_base.vmat"
-								to = "materials/dev/dev_metal_rough70.vmat"
+								to = "materials/wirebox/katlatze/button_base.vmat"
 							},
 							{
 								from = "button_top.vmat"
-								to = "models/rust_props/pipelines/pipelines_rusty_metal.vmat"
+								to = "materials/wirebox/katlatze/button_top.vmat"
 							},
 						]
 						use_global_default = false
-						global_default_material = "materials/rust_hands.vmat"
+						global_default_material = ""
 					},
 					{
 						_class = "MaterialGroup"
-						name = "1"
+						name = "on"
 						remaps = 
 						[
 							{
-								from = "models/rust_props/pipelines/pipelines_rusty_metal.vmat"
+								from = "materials/wirebox/katlatze/button_top.vmat"
 								to = "materials/dev/green.vmat"
 							},
 						]
+					},
+				]
+			},
+			{
+				_class = "PhysicsShapeList"
+				children = 
+				[
+					{
+						_class = "PhysicsHullFile"
+						name = "button_v2"
+						parent_bone = ""
+						surface_prop = "default"
+						collision_prop = "default"
+						recenter_on_parent_bone = false
+						offset_origin = [ 0.0, 0.0, 0.0 ]
+						offset_angles = [ 0.0, 0.0, 0.0 ]
+						filename = "models/wirebox/katlatze/button.fbx"
+						import_scale = 1.0
+						faceMergeAngle = 10.0
+						maxHullVertices = 0
+						import_mode = "SingleHull"
+						optimization_algorithm = "QEM"
+						import_filter = 
+						{
+							exclude_by_default = false
+							exception_list = [  ]
+						}
 					},
 				]
 			},
@@ -72,38 +101,11 @@
 						filename = "models/wirebox/katlatze/button.fbx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
-						import_scale = 0.1
+						import_scale = 1.0
 						align_origin_x_type = "None"
 						align_origin_y_type = "None"
 						align_origin_z_type = "None"
 						parent_bone = ""
-						import_filter = 
-						{
-							exclude_by_default = false
-							exception_list = [  ]
-						}
-					},
-				]
-			},
-			{
-				_class = "PhysicsShapeList"
-				children = 
-				[
-					{
-						_class = "PhysicsHullFile"
-						name = "button"
-						parent_bone = ""
-						surface_prop = "plastic"
-						collision_prop = "default"
-						recenter_on_parent_bone = false
-						offset_origin = [ 0.0, 0.0, 0.0 ]
-						offset_angles = [ 0.0, 0.0, 0.0 ]
-						filename = "models/wirebox/katlatze/button.fbx"
-						import_scale = 0.1
-						faceMergeAngle = 10.0
-						maxHullVertices = 0
-						import_mode = "HullPerMesh"
-						optimization_algorithm = "QEM"
 						import_filter = 
 						{
 							exclude_by_default = false
