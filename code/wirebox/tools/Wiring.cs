@@ -31,6 +31,8 @@ namespace Sandbox.Tools
 
 		[ConVar.ClientData( "tool_wiring_model" )]
 		public string _ { get; set; } = "models/wirebox/katlatze/chip_rectangle.vmdl";
+		[ConVar.ClientData( "tool_wiring_materialgroup" )]
+		public int _2 { get; set; } = 0;
 
 		public override void Simulate()
 		{
@@ -217,6 +219,8 @@ namespace Sandbox.Tools
 				GateType = gateType,
 			};
 			ent.SetModel( ConsoleSystem.Caller.GetUserString( "tool_wiring_model" ) );
+			int.TryParse(ConsoleSystem.Caller.GetUserString("tool_wiring_materialgroup"), out int matGroup);
+			ent.SetMaterialGroup(matGroup);
 
 			var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
 			if ( attachEnt.IsValid() ) {
@@ -353,6 +357,12 @@ namespace Sandbox.Tools
 				"models/citizen_props/hotdog01.vmdl",
 				"models/wirebox/katlatze/chip_rectangle.vmdl",
 				"models/wirebox/katlatze/chip_rectangle_logo.vmdl",
+				"models/wirebox/katlatze/e2.vmdl",
+				"models/wirebox/katlatze/e2--1.vmdl",
+				"models/wirebox/katlatze/e2--2.vmdl",
+				"models/wirebox/katlatze/e2--3.vmdl",
+				"models/wirebox/katlatze/e2--4.vmdl",
+				"models/wirebox/katlatze/e2--5.vmdl",
 				"models/wirebox/katlatze/constant_value.vmdl",
 			} );
 		}
