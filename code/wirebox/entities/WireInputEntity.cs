@@ -27,8 +27,9 @@ namespace Sandbox
 	{
 		public void WireTriggerInput<T>( string inputName, T value )
 		{
-			if ( WirePorts.inputHandlers.Count == 0 ) { // these get cleared by hot reloading
+			if ( !WirePorts.inputsInitialized ) { // these get cleared by hot reloading
 				WireInitialize();
+				WirePorts.inputsInitialized = true;
 			}
 			WirePorts.inputs[inputName].value = value;
 			WirePorts.inputHandlers[inputName]( value );
@@ -37,15 +38,17 @@ namespace Sandbox
 
 		public WireInput GetInput( string inputName )
 		{
-			if ( WirePorts.inputHandlers.Count == 0 ) {
+			if ( !WirePorts.inputsInitialized ) {
 				WireInitialize();
+				WirePorts.inputsInitialized = true;
 			}
 			return WirePorts.inputs[inputName];
 		}
 		public string[] GetInputNames( bool withValues = false )
 		{
-			if ( WirePorts.inputHandlers.Count == 0 ) {
+			if ( !WirePorts.inputsInitialized ) {
 				WireInitialize();
+				WirePorts.inputsInitialized = true;
 			}
 			return !withValues
 				? WirePorts.inputs.Keys.ToArray()

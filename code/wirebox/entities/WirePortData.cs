@@ -8,6 +8,7 @@ namespace Sandbox
 {
 	public class WirePortData
 	{
+		public bool inputsInitialized = false;
 		public Dictionary<string, Action<object>> inputHandlers { get; } = new Dictionary<string, Action<object>>();
 		public Dictionary<string, WireInput> inputs = new Dictionary<string, WireInput>();
 		public Dictionary<string, WireOutput> outputs = new Dictionary<string, WireOutput>();

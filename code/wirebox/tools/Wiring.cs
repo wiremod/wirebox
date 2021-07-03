@@ -112,7 +112,7 @@ namespace Sandbox.Tools
 
 							var attachLocalPos = tr.Body.Transform.PointToLocal( tr.EndPos );
 							if ( attachEnt.IsWorld ) {
-								rope.Particle.SetPos( 1, attachLocalPos );
+								rope.Particle.SetPosition( 1, attachLocalPos );
 							}
 							else {
 								rope.Particle.SetEntityBone( 1, attachEnt, tr.Bone, new Transform( attachLocalPos ) );
@@ -138,7 +138,7 @@ namespace Sandbox.Tools
 					return;
 				}
 				else if ( Input.Pressed( InputButton.Reload ) ) {
-					if ( tr.Entity is WireInputEntity wireEntity && Host.IsServer) {
+					if ( tr.Entity is WireInputEntity wireEntity && Host.IsServer ) {
 						wireEntity.DisconnectInput( wireEntity.GetInputNames()[InputPortIndex] );
 					}
 					else {

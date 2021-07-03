@@ -61,19 +61,21 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 
 	public void WireInitialize()
 	{
-		var allGates = GetGates();
-		if (GateType == "Constant") {
-			SetMaterialGroup(6);
-		} else if (allGates["Math"].Contains(GateType)) {
-			SetMaterialGroup(2);
-		} else if (allGates["Logic"].Contains(GateType)) {
-			SetMaterialGroup(3);
-		} else if (allGates["Comparison"].Contains(GateType)) {
-			SetMaterialGroup(4);
-		} else if (allGates["Time"].Contains(GateType)) {
-			SetMaterialGroup(5);
-		} else {
-			SetMaterialGroup(0);
+		if (GetModelName().Contains("chip_rectangle.vmdl")) {
+			var allGates = GetGates();
+			if (GateType == "Constant") {
+				SetMaterialGroup(6);
+			} else if (allGates["Math"].Contains(GateType)) {
+				SetMaterialGroup(2);
+			} else if (allGates["Logic"].Contains(GateType)) {
+				SetMaterialGroup(3);
+			} else if (allGates["Comparison"].Contains(GateType)) {
+				SetMaterialGroup(4);
+			} else if (allGates["Time"].Contains(GateType)) {
+				SetMaterialGroup(5);
+			} else {
+				SetMaterialGroup(0);
+			}
 		}
 
 		var inputs = ((IWireEntity)this).WirePorts.inputs;
@@ -284,6 +286,8 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 	{
 		if ( GateType == "Constant" && Host.IsServer ) {
 			constantValue += Input.Down( InputButton.Run ) ? -1 : 1;
+			DebugText = $" value: {constantValue}";
+			this.WireTriggerOutput( "Out", constantValue );
 		}
 		return false;
 	}
