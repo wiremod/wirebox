@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 
 [Library( "ent_wiregps", Title = "Wire GPS" )]
-public partial class WireGPSEntity : Prop, WireOutputEntity, IPhysicsUpdate
+public partial class WireGPSEntity : Prop, WireOutputEntity
 {
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 	public PortType[] WireGetOutputs()
@@ -14,7 +14,8 @@ public partial class WireGPSEntity : Prop, WireOutputEntity, IPhysicsUpdate
 		};
 	}
 
-	public void OnPostPhysicsStep( float dt )
+	[Event.Physics.PostStep]
+	public void OnPostPhysicsStep()
 	{
 		if ( !this.IsValid() )
 			return;

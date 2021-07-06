@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 [Library( "ent_wiregate", Title = "Wire Gate" )]
-public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, IUse, IPhysicsUpdate
+public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, IUse
 {
 	[Net]
 	public string GateType { get; set; } = "Add";
@@ -252,7 +252,8 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 		}
 	}
 
-	public void OnPostPhysicsStep( float dt )
+	[Event.Physics.PostStep]
+	public void OnPostPhysicsStep()
 	{
 		// todo: it sucks to bind this for gates that don't need it, perhaps move to separate entity?
 		if ( GateType == "Tick" ) {

@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 
 [Library( "ent_wiregyroscope", Title = "Wire Gyroscope" )]
-public partial class WireGyroscopeEntity : Prop, WireOutputEntity, IPhysicsUpdate
+public partial class WireGyroscopeEntity : Prop, WireOutputEntity
 {
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 	public PortType[] WireGetOutputs()
@@ -15,7 +15,8 @@ public partial class WireGyroscopeEntity : Prop, WireOutputEntity, IPhysicsUpdat
 		};
 	}
 
-	public void OnPostPhysicsStep( float dt )
+	[Event.Physics.PostStep]
+	public void OnPostPhysicsStep()
 	{
 		if ( !this.IsValid() )
 			return;
