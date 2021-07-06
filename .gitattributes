@@ -1,0 +1,3 @@
+*.vmdl text eol=lf
+*.vmat text eol=lf
+*.cs text eol=lf
