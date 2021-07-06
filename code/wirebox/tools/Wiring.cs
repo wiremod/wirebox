@@ -347,26 +347,4 @@ namespace Sandbox.Tools
 			SetClass( "visible", Input.Down( InputButton.Drop ) );
 		}
 	}
-	
-	[Library]
-	public class GateModels : MinimalExtended.IAutoload
-	{
-		public GateModels()
-		{
-			ModelSelector.AddToSpawnlist( "gate", new string[] {
-				"models/citizen_props/hotdog01.vmdl",
-				"models/wirebox/katlatze/chip_rectangle.vmdl",
-				"models/wirebox/katlatze/chip_rectangle_logo.vmdl",
-				"models/wirebox/katlatze/e2.vmdl",
-				"models/wirebox/katlatze/e2--1.vmdl",
-				"models/wirebox/katlatze/e2--2.vmdl",
-				"models/wirebox/katlatze/e2--3.vmdl",
-				"models/wirebox/katlatze/e2--4.vmdl",
-				"models/wirebox/katlatze/e2--5.vmdl",
-				"models/wirebox/katlatze/constant_value.vmdl",
-			} );
-		}
-		public bool ReloadOnHotload => true;
-		public void Dispose() { }
-	}
 }

@@ -20,17 +20,4 @@ namespace Sandbox.Tools
 			};
 		}
 	}
-	[Library]
-	public class ButtonModels : MinimalExtended.IAutoload
-	{
-		public ButtonModels()
-		{
-			UI.ModelSelector.AddToSpawnlist( "button", new string[] {
-				"models/wirebox/katlatze/button.vmdl",
-				"models/citizen_props/coin01.vmdl",
-			} );
-		}
-		public bool ReloadOnHotload => true;
-		public void Dispose() { }
-	}
 }

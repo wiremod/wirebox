@@ -23,22 +23,4 @@ namespace Sandbox.Tools
 			return new string[] { "gps", "controller" };
 		}
 	}
-
-	[Library]
-	public class ControllerModels : MinimalExtended.IAutoload
-	{
-		public ControllerModels()
-		{
-			UI.ModelSelector.AddToSpawnlist( "controller", new string[] {
-				"models/wirebox/katlatze/apc.vmdl",
-				"models/citizen_props/icecreamcone01.vmdl",
-				"models/citizen_props/roadcone01.vmdl",
-			} );
-			UI.ModelSelector.AddToSpawnlist( "gyroscope", new string[] {
-				"models/wirebox/katlatze/gyroscope.vmdl",
-			} );
-		}
-		public bool ReloadOnHotload => true;
-		public void Dispose() { }
-	}
 }
