@@ -10,6 +10,8 @@ namespace Sandbox
 		public string outputName;
 		public string type;
 		public List<WireInput> connected = new();
+		public int executions = 0;
+		public int executionsTick = 0;
 
 		public WireOutput( Entity entity, string outputName, string type )
 		{
@@ -44,18 +46,19 @@ namespace Sandbox
 	{
 		public void WireTriggerOutput<T>( string outputName, T value )
 		{
-			if ( WirePorts.outputExecutionsTick != Time.Tick ) {
-				WirePorts.outputExecutionsTick = Time.Tick;
-				WirePorts.outputExecutions = 0;
+			var output = GetOutput( outputName );
+			output.value = value;
+
+			if (output.executionsTick != Time.Tick ) {
+				output.executionsTick = Time.Tick;
+				output.executions = 0;
 			}
-			if ( WirePorts.outputExecutions >= 4 ) {
+			if ( output.executions >= 4 ) {
 				// prevent infinite loops
 				return; // todo: queue for next tick?
 			}
-			WirePorts.outputExecutions++;
+			output.executions++;
 
-			var output = GetOutput( outputName );
-			output.value = value;
 			foreach ( var input in output.connected ) {
 				if ( !input.entity.IsValid() ) continue;
 				if ( input.entity is WireInputEntity inputEntity ) {
