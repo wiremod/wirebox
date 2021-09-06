@@ -2,8 +2,8 @@
 using System;
 using System.Linq;
 
-[Library( "ent_button", Title = "Button", Spawnable = true )]
-public partial class ButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
+[Library( "ent_wirebutton", Title = "Wire Button", Spawnable = true )]
+public partial class WireButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
 {
 	public bool On { get; set; } = false;
 	public bool IsToggle { get; set; } = false;

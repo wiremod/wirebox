@@ -218,8 +218,8 @@ namespace Sandbox.Tools
 				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 				GateType = gateType,
 			};
-			ent.SetModel( ConsoleSystem.Caller.GetUserString( "tool_wiring_model" ) );
-			int.TryParse(ConsoleSystem.Caller.GetUserString("tool_wiring_materialgroup"), out int matGroup);
+			ent.SetModel( ConsoleSystem.Caller.GetClientData<string>( "tool_wiring_model" ) );
+			int.TryParse(ConsoleSystem.Caller.GetClientData<string>("tool_wiring_materialgroup"), out int matGroup);
 			ent.SetMaterialGroup(matGroup);
 
 			var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;

@@ -9,11 +9,11 @@ namespace Sandbox.Tools
 
 		protected override Type GetEntityType()
 		{
-			return typeof( ButtonEntity );
+			return typeof( WireButtonEntity );
 		}
 		protected override ModelEntity SpawnEntity( TraceResult tr )
 		{
-			return new ButtonEntity {
+			return new WireButtonEntity {
 				Position = tr.EndPos,
 				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 				IsToggle = Input.Down( InputButton.Run ),
