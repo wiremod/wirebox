@@ -18,7 +18,7 @@ public partial class LightBridgeEntity : Prop, WireInputEntity
 				bridgeEntity.Position = Transform.PointToWorld( new Vector3( 4, -50, 9.5f ) - bridgeEntity.CollisionBounds.Mins );
 				bridgeEntity.Rotation = Rotation;
 				bridgeEntity.MaterialOverride = "materials/wirebox/katlatze/metal.vmat";
-				bridgeEntity.RenderColorAndAlpha = new Color32( 0, 90, 255, 180 );
+				bridgeEntity.RenderColor = new Color( 0, 90, 255, 180 );
 				this.Weld( bridgeEntity );
 			}
 			else {

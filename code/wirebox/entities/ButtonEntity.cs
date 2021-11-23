@@ -55,7 +55,7 @@ public partial class WireButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
 			SetMaterialGroup( On ? 1 : 0 );
 		}
 		else {
-			RenderColor = On ? Color32.Green : Color32.Red;
+			RenderColor = On ? Color.Green : Color.Red;
 		}
 		this.WireTriggerOutput( "On", On );
 	}
