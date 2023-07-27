@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 
-[Library( "ent_lightbridge", Title = "Light Bridge", Spawnable = true )]
+[Spawnable]
+[Library( "ent_lightbridge", Title = "Light Bridge" )]
 public partial class LightBridgeEntity : Prop, WireInputEntity
 {
 	private MeshEntity bridgeEntity;
@@ -8,12 +9,15 @@ public partial class LightBridgeEntity : Prop, WireInputEntity
 
 	public void WireInitialize()
 	{
-		this.RegisterInputHandler( "Length", ( float length ) => {
-			if ( length < 10 ) {
+		this.RegisterInputHandler( "Length", ( float length ) =>
+		{
+			if ( length < 10 )
+			{
 				bridgeEntity?.Delete();
 				return;
 			}
-			if ( !bridgeEntity.IsValid() ) {
+			if ( !bridgeEntity.IsValid() )
+			{
 				bridgeEntity = VertexMeshBuilder.SpawnEntity( (int)length, 100, 1, 64 );
 				bridgeEntity.Position = Transform.PointToWorld( new Vector3( 4, -50, 9.5f ) - bridgeEntity.CollisionBounds.Mins );
 				bridgeEntity.Rotation = Rotation;
@@ -21,8 +25,9 @@ public partial class LightBridgeEntity : Prop, WireInputEntity
 				bridgeEntity.RenderColor = new Color( 0, 90, 255, 180 );
 				this.Weld( bridgeEntity );
 			}
-			else {
-				bridgeEntity.Model = VertexMeshBuilder.GenerateRectangleServer( (int)length, 100, 1, 64 );
+			else
+			{
+				bridgeEntity.Model = VertexMeshBuilder.Models[VertexMeshBuilder.GenerateRectangleServer( (int)length, 100, 1, 64 )];
 				bridgeEntity.Tick();
 				bridgeEntity.Position = Transform.PointToWorld( new Vector3( 4, -50, 9.5f ) - bridgeEntity.CollisionBounds.Mins );
 			}
@@ -31,7 +36,8 @@ public partial class LightBridgeEntity : Prop, WireInputEntity
 
 	protected override void OnDestroy()
 	{
-		if ( bridgeEntity.IsValid() ) {
+		if ( bridgeEntity.IsValid() )
+		{
 			bridgeEntity.Delete();
 		}
 		base.OnDestroy();
@@ -39,13 +45,15 @@ public partial class LightBridgeEntity : Prop, WireInputEntity
 
 	public static void CreateFromTool( Player owner, TraceResult tr )
 	{
-		var ent = new LightBridgeEntity {
-			Position = tr.EndPos,
-			Rotation = Rotation.LookAt( tr.Normal, owner.EyeRot.Forward ) * Rotation.From( new Angles( 90, 0, 0 ) ),
+		var ent = new LightBridgeEntity
+		{
+			Position = tr.EndPosition,
+			Rotation = Rotation.LookAt( tr.Normal, owner.EyeRotation.Forward ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 		};
 
-		if ( tr.Body.IsValid() && !tr.Entity.IsWorld ) {
-			ent.SetParent( tr.Entity, tr.Body.PhysicsGroup.GetBodyBoneName( tr.Body ) );
+		if ( tr.Body.IsValid() && !tr.Entity.IsWorld )
+		{
+			ent.SetParent( tr.Body.GetEntity(), tr.Body.GroupName );
 		}
 
 		ent.SetModel( "models/wirebox/katlatze/lightbridge.vmdl" );

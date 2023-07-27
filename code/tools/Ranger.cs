@@ -12,8 +12,9 @@ namespace Sandbox.Tools
 		}
 		protected override ModelEntity SpawnEntity( TraceResult tr )
 		{
-			return new WireRangerEntity {
-				Position = tr.EndPos,
+			return new WireRangerEntity
+			{
+				Position = tr.EndPosition,
 				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) )
 			};
 		}

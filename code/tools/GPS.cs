@@ -13,8 +13,9 @@ namespace Sandbox.Tools
 		}
 		protected override ModelEntity SpawnEntity( TraceResult tr )
 		{
-			return new WireGPSEntity {
-				Position = tr.EndPos,
+			return new WireGPSEntity
+			{
+				Position = tr.EndPosition,
 				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) )
 			};
 		}

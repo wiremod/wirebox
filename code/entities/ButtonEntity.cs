@@ -2,7 +2,8 @@
 using System;
 using System.Linq;
 
-[Library( "ent_wirebutton", Title = "Wire Button", Spawnable = true )]
+[Spawnable]
+[Library( "ent_wirebutton", Title = "Wire Button" )]
 public partial class WireButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
 {
 	public bool On { get; set; } = false;
@@ -23,7 +24,8 @@ public partial class WireButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
 	private bool ModelUsesMaterialGroups()
 	{
 		var model = GetModelName();
-		if ( model == "models/wirebox/katlatze/button.vmdl" ) {
+		if ( model == "models/wirebox/katlatze/button.vmdl" )
+		{
 			return true;
 		}
 		return false;
@@ -31,11 +33,13 @@ public partial class WireButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
 
 	public bool OnUse( Entity user )
 	{
-		if ( IsToggle ) {
+		if ( IsToggle )
+		{
 			SetOn( !On );
 			return false;
 		}
-		else {
+		else
+		{
 			SetOn( true );
 			return true;
 		}
@@ -43,7 +47,8 @@ public partial class WireButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
 
 	public void OnStopUsing( Entity user )
 	{
-		if ( !IsToggle ) {
+		if ( !IsToggle )
+		{
 			SetOn( false );
 		}
 	}
@@ -51,10 +56,12 @@ public partial class WireButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
 	protected void SetOn( bool on )
 	{
 		On = on;
-		if ( ModelUsesMaterialGroups() ) {
+		if ( ModelUsesMaterialGroups() )
+		{
 			SetMaterialGroup( On ? 1 : 0 );
 		}
-		else {
+		else
+		{
 			RenderColor = On ? Color.Green : Color.Red;
 		}
 		this.WireTriggerOutput( "On", On );
@@ -63,7 +70,7 @@ public partial class WireButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
 
 	public PortType[] WireGetOutputs()
 	{
-		return new PortType[] { PortType.Bool("On") };
+		return new PortType[] { PortType.Bool( "On" ) };
 	}
 }
 

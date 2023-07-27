@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Sandbox.Tools
 {
 	[Library( "tool_wirekeyboard", Title = "Wire Keyboard", Description = "Create Wire Keyboards for reading Player input", Group = "construction" )]
@@ -12,8 +13,9 @@ namespace Sandbox.Tools
 		}
 		protected override ModelEntity SpawnEntity( TraceResult tr )
 		{
-			return new KeyboardEntity {
-				Position = tr.EndPos,
+			return new KeyboardEntity
+			{
+				Position = tr.EndPosition,
 				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 			};
 		}

@@ -23,10 +23,12 @@ namespace Sandbox.Tools
 
 		protected override bool IsPreviewTraceValid( TraceResult tr )
 		{
-			if ( !base.IsPreviewTraceValid( tr ) ) {
+			if ( !base.IsPreviewTraceValid( tr ) )
+			{
 				return false;
 			}
-			if ( tr.Entity.GetType() == GetEntityType() ) {
+			if ( tr.Entity.GetType() == GetEntityType() )
+			{
 				return false;
 			}
 
@@ -35,7 +37,8 @@ namespace Sandbox.Tools
 
 		public override void CreatePreviews()
 		{
-			if ( TryCreatePreview( ref previewModel, GetModel() ) ) {
+			if ( TryCreatePreview( ref previewModel, GetModel() ) )
+			{
 				previewModel.RelativeToNormal = true;
 				previewModel.RotationOffset = Rotation.From( new Angles( 90, 0, 0 ) );
 			}
@@ -43,31 +46,36 @@ namespace Sandbox.Tools
 
 		public override void Simulate()
 		{
-			if ( GetModel() != previewModel.GetModelName() ) {
+			if ( previewModel.IsValid() && GetModel() != previewModel.GetModelName() )
+			{
 				previewModel.SetModel( GetModel() );
 			}
-			if ( !Host.IsServer ) {
+			if ( !Game.IsServer )
+			{
 				return;
 			}
 
-			using ( Prediction.Off() ) {
-				if ( !Input.Pressed( InputButton.Attack1 ) )
+			using ( Prediction.Off() )
+			{
+				if ( !Input.Pressed( "attack1" ) )
 					return;
 
-				var startPos = Owner.EyePos;
-				var dir = Owner.EyeRot.Forward;
+				var startPos = Owner.EyePosition;
+				var dir = Owner.EyeRotation.Forward;
 
 				var tr = Trace.Ray( startPos, startPos + dir * MaxTraceDistance )
 					.Ignore( Owner )
 					.Run();
 
-				if ( !tr.Hit || !tr.Entity.IsValid() ) {
+				if ( !tr.Hit || !tr.Entity.IsValid() )
+				{
 					return;
 				}
 
-				CreateHitEffects( tr.EndPos, tr.Normal );
+				CreateHitEffects( tr.EndPosition, tr.Normal );
 
-				if ( tr.Entity.GetType() == GetEntityType() ) {
+				if ( tr.Entity.GetType() == GetEntityType() )
+				{
 					UpdateEntity( tr.Entity );
 					return;
 				}
@@ -75,10 +83,11 @@ namespace Sandbox.Tools
 				var ent = SpawnEntity( tr );
 				ent.SetModel( GetModel() );
 
-				var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
+				var attachEnt = tr.Body.IsValid() ? tr.Body.GetEntity() : tr.Entity;
 
-				if ( attachEnt.IsValid() ) {
-					ent.SetParent( tr.Body.Entity, tr.Body.PhysicsGroup.GetBodyBoneName( tr.Body ) );
+				if ( attachEnt.IsValid() )
+				{
+					ent.SetParent( attachEnt, tr.Body.GroupName );
 				}
 
 				Sandbox.Hooks.Entities.TriggerOnSpawned( ent, Owner );
@@ -88,9 +97,11 @@ namespace Sandbox.Tools
 		public override void Activate()
 		{
 			base.Activate();
-			if ( Host.IsClient ) {
+			if ( Game.IsClient )
+			{
 				var current_tool = GetConvarValue( "tool_current" );
-				if ( GetConvarValue( $"{current_tool}_model" ) != null ) {
+				if ( GetConvarValue( $"{current_tool}_model" ) != null )
+				{
 					var modelSelector = new ModelSelector( GetSpawnLists() );
 					SpawnMenu.Instance?.ToolPanel?.AddChild( modelSelector );
 				}

@@ -17,27 +17,32 @@ public partial class WireRangerEntity : Prop, WireOutputEntity, WireInputEntity
 	public void WireInitialize()
 	{
 		var inputs = ((IWireEntity)this).WirePorts.inputs;
-		this.RegisterInputHandler( "Length", ( float value ) => {
+		this.RegisterInputHandler( "Length", ( float value ) =>
+		{
 			Length = value;
 		} );
-		inputs["HitWorld"].value = Length;
+		inputs["Length"].value = Length;
 
-		this.RegisterInputHandler( "HitWater", ( bool value ) => {
+		this.RegisterInputHandler( "HitWater", ( bool value ) =>
+		{
 			HitWater = value;
 		} );
 		inputs["HitWater"].value = HitWater;
 
-		this.RegisterInputHandler( "HitWorld", ( bool value ) => {
+		this.RegisterInputHandler( "HitWorld", ( bool value ) =>
+		{
 			HitWorld = value;
 		} );
 		inputs["HitWorld"].value = HitWorld;
 
-		this.RegisterInputHandler( "ShowBeam", ( bool value ) => {
+		this.RegisterInputHandler( "ShowBeam", ( bool value ) =>
+		{
 			ShowBeam = value;
 		} );
 		inputs["ShowBeam"].value = ShowBeam;
 
-		this.RegisterInputHandler( "DefaultZero", ( bool value ) => {
+		this.RegisterInputHandler( "DefaultZero", ( bool value ) =>
+		{
 			DefaultZero = value;
 		} );
 		inputs["DefaultZero"].value = DefaultZero;
@@ -63,13 +68,16 @@ public partial class WireRangerEntity : Prop, WireOutputEntity, WireInputEntity
 			return;
 
 		var outputs = ((IWireEntity)this).WirePorts.outputs;
-		if ( !outputs.ContainsKey( "Distance" ) ) {
+		if ( !outputs.ContainsKey( "Distance" ) )
+		{
 			return;
 		}
 		var tr = DoTrace();
 
-		if ( !tr.Hit && DefaultZero ) {
-			if ( outputs["Distance"].value is not float oldDistance || oldDistance != 0 ) {
+		if ( !tr.Hit && DefaultZero )
+		{
+			if ( outputs["Distance"].value is not float oldDistance || oldDistance != 0 )
+			{
 				this.WireTriggerOutput( "Distance", 0 );
 				this.WireTriggerOutput( "X", 0 );
 				this.WireTriggerOutput( "Y", 0 );
@@ -79,16 +87,19 @@ public partial class WireRangerEntity : Prop, WireOutputEntity, WireInputEntity
 				this.WireTriggerOutput( "EntityID", 0 );
 			}
 		}
-		else {
+		else
+		{
 			var newDistance = tr.Hit ? tr.Distance : Length;
-			if ( outputs["Distance"].value is not float oldDistance || oldDistance != newDistance ) {
+			if ( outputs["Distance"].value is not float oldDistance || oldDistance != newDistance )
+			{
 				this.WireTriggerOutput( "Distance", newDistance );
 			}
-			if ( outputs["Position"].value is not Vector3 oldValue || !oldValue.Equals( tr.EndPos ) ) {
-				this.WireTriggerOutput( "X", tr.EndPos.x );
-				this.WireTriggerOutput( "Y", tr.EndPos.y );
-				this.WireTriggerOutput( "Z", tr.EndPos.z );
-				this.WireTriggerOutput( "Position", tr.EndPos );
+			if ( outputs["Position"].value is not Vector3 oldValue || !oldValue.Equals( tr.EndPosition ) )
+			{
+				this.WireTriggerOutput( "X", tr.EndPosition.x );
+				this.WireTriggerOutput( "Y", tr.EndPosition.y );
+				this.WireTriggerOutput( "Z", tr.EndPosition.z );
+				this.WireTriggerOutput( "Position", tr.EndPosition );
 				this.WireTriggerOutput( "Normal", tr.Normal );
 				this.WireTriggerOutput( "EntityID", tr.Entity?.NetworkIdent );
 			}
@@ -101,31 +112,36 @@ public partial class WireRangerEntity : Prop, WireOutputEntity, WireInputEntity
 		var trace = Trace.Ray( Position + Offset, Position + Offset + Rotation.Up * Length )
 			.Ignore( this );
 
-		if ( HitWater ) {
-			trace.HitLayer( CollisionLayer.Water );
+		if ( HitWater )
+		{
+			trace.WithoutTags( "water" );
 		}
 
-		if ( !HitWorld ) {
-			trace.EntitiesOnly();
+		if ( !HitWorld )
+		{
+			trace.DynamicOnly();
 		}
 
 		return trace.Run();
 	}
 
-	[Event.Frame]
+	[GameEvent.Client.Frame]
 	public void OnFrame()
 	{
-		if ( !ShowBeam ) {
-			if ( Beam != null ) {
+		if ( !ShowBeam )
+		{
+			if ( Beam != null )
+			{
 				Beam.Destroy( true );
 				Beam = null;
 			}
 			return;
 		}
 		var tr = DoTrace();
-		if ( Beam == null ) {
+		if ( Beam == null )
+		{
 			Beam = Particles.Create( "particles/wirebox/ranger_beam.vpcf", this, "root" );
 		}
-		Beam.SetPosition( 1, tr.EndPos );
+		Beam.SetPosition( 1, tr.EndPosition );
 	}
 }

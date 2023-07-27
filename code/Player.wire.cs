@@ -1,29 +1,27 @@
 using Sandbox;
 
+/* Todo 2023: partial classes don't stretch between assemblies, so this won't work as of being an addon
 partial class SandboxPlayer
 {
 	// basic ugly overlay
-	[Event.Frame]
+	[GameEvent.Client.Frame]
 	public void OnFrame()
 	{
-		var startPos = EyePos;
-		var dir = EyeRot.Forward;
+
+		var startPos = EyePosition;
+		var dir = EyeRotation.Forward;
 
 		var tr = Trace.Ray( startPos, startPos + dir * 200 )
 			.Ignore( this )
 			.Run();
-		if ( tr.Entity is IWireEntity wireEntity ) {
+		if ( tr.Entity is IWireEntity wireEntity )
+		{
 			var text = wireEntity.GetOverlayText();
-			if ( text != "" ) {
-				DebugOverlay.Text( tr.Entity.Position, wireEntity.GetOverlayText() );
+			if ( text != "" )
+			{
+				DebugOverlay.Text( wireEntity.GetOverlayText(), tr.Entity.Position );
 			}
 		}
 	}
-	public override void OnAnimEventFootstep( Vector3 pos, int foot, float volume )
-	{
-		if ( GetActiveController()?.GetType() == typeof( LockedPositionController ) ) {
-			return;
-		}
-		base.OnAnimEventFootstep( pos, foot, volume );
-	}
 }
+*/

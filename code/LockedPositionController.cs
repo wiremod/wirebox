@@ -7,21 +7,24 @@ namespace Sandbox
 
 		public override void Simulate()
 		{
-			EyePosLocal = Vector3.Up * (EyeHeight * Pawn.Scale);
+			EyeLocalPosition = Vector3.Up * (EyeHeight * Pawn.Scale);
 			UpdateBBox();
 
-			EyePosLocal += TraceOffset;
-			EyeRot = Input.Rotation;
+			EyeLocalPosition += TraceOffset;
+			EyeRotation = (Pawn as Player).ViewAngles.ToRotation();
 
-			if ( GroundBody == null ) {
-				Pawn.Inventory.SetActiveSlot(-1, true);
+			if ( GroundBody == null )
+			{
+				(Pawn as Player).Inventory.SetActiveSlot( -1, true );
 				var trace = TraceBBox( Position, Position + Velocity * Time.Delta - new Vector3( 0, 0, 5 ) );
-				if ( trace.Hit && trace.Body != null ) {
+				if ( trace.Hit && trace.Body != null )
+				{
 					GroundBody = trace.Body;
 					GroundLocalPos = trace.Body.Transform.PointToLocal( Position );
 				}
 			}
-			if ( GroundBody != null ) {
+			if ( GroundBody != null )
+			{
 				Position = GroundBody.Transform.PointToWorld( GroundLocalPos ) - GroundBody.Velocity * Time.Delta;
 				Velocity = GroundBody.Velocity;
 			}

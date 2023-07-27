@@ -42,27 +42,33 @@ namespace Sandbox
 		[Event( "hotloaded" )]
 		public static async void InitCleanupTimer()
 		{
-			if ( Host.IsClient ) {
+			if ( Game.IsClient )
+			{
 				return;
 			}
 			StopCleanupTimer();
 			cancellationTokenSource = new CancellationTokenSource();
-			try {
-				while ( true ) {
+			try
+			{
+				while ( true )
+				{
 					CleanupOrphanedCables();
 					await Task.Delay( 1500, cancellationTokenSource.Token );
 				}
 			}
-			catch ( TaskCanceledException ) {
+			catch ( TaskCanceledException )
+			{
 				return;
 			}
 		}
 
 		private static void CleanupOrphanedCables()
 		{
-			foreach ( var wireCable in WireCables.Reverse<WireCable>() ) {
+			foreach ( var wireCable in WireCables.Reverse<WireCable>() )
+			{
 				if ( wireCable?.ent1 == null || !wireCable.ent1.IsValid()
-					|| wireCable?.ent2 == null || !wireCable.ent2.IsValid() ) {
+					|| wireCable?.ent2 == null || !wireCable.ent2.IsValid() )
+				{
 					wireCable.Destroy( true );
 				}
 			}
