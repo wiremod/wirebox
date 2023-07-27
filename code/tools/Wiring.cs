@@ -171,7 +171,7 @@ namespace Sandbox.Tools
 			base.Activate();
 
 			if ( Host.IsClient ) {
-				Local.Hud.StyleSheet.Load( "/wirebox/ui/wiringhud.scss" );
+				Local.Hud.StyleSheet.Load( "/ui/wiringhud.scss" );
 				wiringHud = Local.Hud.AddChild<WiringPanel>();
 				wireGatePanel = Local.Hud.AddChild<WireGatePanel>( "wire-gate-menu" );
 
@@ -278,7 +278,7 @@ namespace Sandbox.Tools
 
 		public WiringPanel()
 		{
-			SetTemplate( "/wirebox/ui/wiringhud.html" );
+			SetTemplate( "/ui/wiringhud.html" );
 			InputsPanel = GetChild( 0 ).GetChild( 0 );
 			OutputsPanel = GetChild( 0 ).GetChild( 1 );
 		}
