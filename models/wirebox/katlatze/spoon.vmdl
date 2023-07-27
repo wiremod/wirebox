@@ -26,6 +26,8 @@
 							spawn_motion_disabled = false
 							parent_bodygroup_name = ""
 							parent_bodygroup_value = 0
+							min_impact_damage_speed = -1.0
+							impact_damage = -1.0
 						}
 					},
 				]
@@ -39,7 +41,7 @@
 						remaps = 
 						[
 							{
-								from = "materials/error.vmat"
+								from = "models/spoon/material.001.vmat"
 								to = "materials/generic/metal_brushed.vmat"
 							},
 						]
@@ -57,10 +59,13 @@
 						name = "spoon"
 						parent_bone = ""
 						surface_prop = "metal"
-						collision_prop = "default"
+						collision_tags = "solid"
 						recenter_on_parent_bone = false
 						offset_origin = [ 0.0, 0.0, 0.0 ]
 						offset_angles = [ 0.0, 0.0, 0.0 ]
+						align_origin_x_type = "None"
+						align_origin_y_type = "None"
+						align_origin_z_type = "None"
 						filename = "models/wirebox/katlatze/spoon.dmx"
 						import_scale = 1.0
 						faceMergeAngle = 25.0
@@ -101,5 +106,6 @@
 		model_archetype = "physics_prop_model"
 		primary_associated_entity = "prop_physics"
 		anim_graph_name = ""
+		base_model_name = ""
 	}
 }
