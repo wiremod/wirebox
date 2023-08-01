@@ -2,7 +2,7 @@
 
 ## Current status
 
-Very early WIP (as is S&box itself).
+Very early WIP (as is S&box itself), compiles as of August 2023.
 
 - Wiring Tool is equivalent to G-Wiremod's non-Adv version, with basic Debugger and Gate spawning functionalities too
 - Outputs: Buttons, GPS, Gyroscope, and a Wire Keyboard (effectively a Pod Controller with a builtin vehicle)
@@ -13,35 +13,23 @@ Message Nebual on Discord with any questions about contributing! See [todos](htt
 
 ## Setup
 
-S&box is currently focused around 'Gamemodes', not modular addons,
-however [[A]lex is working on a modular Gamemode framework](https://github.com/Ceveos/minimal-extended) which might work for us.
-We also use [SandboxPlus](https://github.com/Nebual/sandbox-plus), an extension of FP's Sandbox gamemode, modified to be more extendable.  
-Thus, grabbing the latest Github Release with that already setup is easiest.
+Wirebox is an addon intended to be used with on top of [SandboxPlus](https://github.com/Nebual/sandbox-plus), a fork of FP's Sandbox gamemode, modified to be more extendable for addons.
 
-### Using the latest Github Release
+Its recommended to add it to SandboxPlus/addons/wirebox, and then configure SandboxPlus to additionally load Wirebox as an addon.
 
-1. Download it to `steamapps/common/sbox/workspace/`
-2. `cd workspace/modules/wirebox && git pull`
-3. `cd workspace/ && .\watcher.ps1 wirebox -build`
-
-
-### Building from scratch
-
-1. `cd steamapps/common/sbox/`
-2. `git clone https://github.com/Ceveos/minimal-extended.git workspace && cd workspace`
-3. `.\watcher.ps1 -create`, say yes to prompt to download SandboxPlus
-4. `git clone https://github.com/wiremod/wirebox.git modules/wirebox`
-5. `.\watcher.ps1 wirebox -build`
-
-The watcher script will combine all modules/* (so you can throw extra mods there), and output a new "gamemode" into `steamapps/sbox/addons/wirebox/`, where S&Box is looking for it.
-
+```
+git clone https://github.com/Nebual/sandbox-plus.git SandboxPlus
+git clone https://github.com/wiremod/wirebox.git SandboxPlus/addons/wirebox
+```
 
 ## Developing
 
-Often the base Sandbox gamemode isn't extendable enough; direct PR's to enhance flexibility to [SandboxPlus](https://github.com/Nebual/sandbox-plus),
-which is wire-agnostic, but obviously quite wire-friendly :D
+Often the base Sandbox gamemode isn't extendable enough; direct PR's to enhance flexibility to [SandboxPlus](https://github.com/Nebual/sandbox-plus).
 
 Hotreloading is neat, and generally works well - limitations include:
 - seems a bit less reliable for non-host players, though often works
 - some Model properties don't reload, such as Prop breakability
-- You'll need `./watcher.ps1 wirebox` running to copy changes from workspace/modules/* to sbox/addons/wirebox (the output gamemode); this lets us keep git repos separate while merging together assets from multiple modules into their respective top-level folders in the resulting gamemde.
+
+# Wirelib
+
+Wirelib is a separate Library addon, intended to be a lightweight set of interfaces (eg. `IWireInputEntity`) for wire-compatible third party addons to implement, without needing to depend on Wirebox directly. This could be used by a Stargate addon to implement optional Wire support, which would have no gameplay impact unless Wirebox was also enabled.
