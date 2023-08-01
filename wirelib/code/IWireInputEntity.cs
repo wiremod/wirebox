@@ -23,11 +23,12 @@ namespace Sandbox
 			this.type = type;
 		}
 	}
-	public interface WireInputEntity : IWireEntity
+	public interface IWireInputEntity : IWireEntity
 	{
 		public void WireTriggerInput<T>( string inputName, T value )
 		{
-			if ( !WirePorts.inputsInitialized ) { // these get cleared by hot reloading
+			if ( !WirePorts.inputsInitialized )
+			{ // these get cleared by hot reloading
 				WireInitialize();
 				WirePorts.inputsInitialized = true;
 			}
@@ -38,7 +39,8 @@ namespace Sandbox
 
 		public WireInput GetInput( string inputName )
 		{
-			if ( !WirePorts.inputsInitialized ) {
+			if ( !WirePorts.inputsInitialized )
+			{
 				WireInitialize();
 				WirePorts.inputsInitialized = true;
 			}
@@ -46,13 +48,15 @@ namespace Sandbox
 		}
 		public string[] GetInputNames( bool withValues = false )
 		{
-			if ( !WirePorts.inputsInitialized ) {
+			if ( !WirePorts.inputsInitialized )
+			{
 				WireInitialize();
 				WirePorts.inputsInitialized = true;
 			}
 			return !withValues
 				? WirePorts.inputs.Keys.ToArray()
-				: WirePorts.inputs.Keys.Select( ( string key ) => {
+				: WirePorts.inputs.Keys.Select( ( string key ) =>
+				{
 					return $"{key} [{WirePorts.inputs[key].type}]: {WirePorts.inputs[key].value}";
 				} ).ToArray();
 		}
@@ -63,11 +67,13 @@ namespace Sandbox
 		}
 		public void DisconnectInput( WireInput input )
 		{
-			if ( input.connectedOutput != null ) {
+			if ( input.connectedOutput != null )
+			{
 				input.connectedOutput.connected.Remove( input );
 				input.connectedOutput = null;
 			}
-			if ( input.AttachRope != null ) {
+			if ( input.AttachRope != null )
+			{
 				input.AttachRope.Destroy( true );
 				input.AttachRope = null;
 			}
@@ -76,38 +82,46 @@ namespace Sandbox
 	}
 
 	// Extension methods to allow calling the interface methods without explicit casting
-	public static class WireInputEntityUtils
+	public static class IWireInputEntityUtils
 	{
-		public static void RegisterInputHandler( this WireInputEntity instance, string inputName, Action<float> handler )
+		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<float> handler )
 		{
-			instance.WirePorts.inputHandlers[inputName] = (( value ) => {
-				if ( value is bool valueBool ) {
+			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
+			{
+				if ( value is bool valueBool )
+				{
 					handler( valueBool ? 1.0f : 0.0f );
 				}
-				else {
+				else
+				{
 					handler( Convert.ToSingle( value ) );
 				}
 			});
 			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "float" );
 		}
-		public static void RegisterInputHandler( this WireInputEntity instance, string inputName, Action<bool> handler )
+		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<bool> handler )
 		{
-			instance.WirePorts.inputHandlers[inputName] = (( value ) => {
-				if ( value is int valueInt ) {
+			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
+			{
+				if ( value is int valueInt )
+				{
 					handler( valueInt != 0 );
 				}
-				else if ( value is float valueFloat ) {
+				else if ( value is float valueFloat )
+				{
 					handler( valueFloat != 0.0f );
 				}
-				else {
+				else
+				{
 					handler( (bool)value );
 				}
 			});
 			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "bool" );
 		}
-		public static void RegisterInputHandler( this WireInputEntity instance, string inputName, Action<int> handler )
+		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<int> handler )
 		{
-			instance.WirePorts.inputHandlers[inputName] = (( value ) => {
+			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
+			{
 				handler( (int)value );
 			});
 			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "int" );

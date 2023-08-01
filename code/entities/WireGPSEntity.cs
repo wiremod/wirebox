@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 
 [Library( "ent_wiregps", Title = "Wire GPS" )]
-public partial class WireGPSEntity : Prop, WireOutputEntity
+public partial class WireGPSEntity : Prop, IWireOutputEntity
 {
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 	public PortType[] WireGetOutputs()
@@ -21,10 +21,12 @@ public partial class WireGPSEntity : Prop, WireOutputEntity
 			return;
 
 		var outputs = ((IWireEntity)this).WirePorts.outputs;
-		if ( !outputs.ContainsKey( "Position" ) ) {
+		if ( !outputs.ContainsKey( "Position" ) )
+		{
 			return;
 		}
-		if ( outputs["Position"].value is Vector3 oldValue && oldValue.Equals( Position ) ) {
+		if ( outputs["Position"].value is Vector3 oldValue && oldValue.Equals( Position ) )
+		{
 			return;
 		}
 		this.WireTriggerOutput( "X", Position.x );

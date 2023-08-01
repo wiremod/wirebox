@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 
 [Library( "ent_wiregyroscope", Title = "Wire Gyroscope" )]
-public partial class WireGyroscopeEntity : Prop, WireOutputEntity
+public partial class WireGyroscopeEntity : Prop, IWireOutputEntity
 {
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 	public PortType[] WireGetOutputs()
@@ -22,11 +22,13 @@ public partial class WireGyroscopeEntity : Prop, WireOutputEntity
 			return;
 
 		var outputs = ((IWireEntity)this).WirePorts.outputs;
-		if ( !outputs.ContainsKey( "Angle" ) ) {
+		if ( !outputs.ContainsKey( "Angle" ) )
+		{
 			return;
 		}
 		var angle = Rotation.Angles();
-		if ( outputs["Angle"].value is Angles oldValue && oldValue.Equals( angle ) ) {
+		if ( outputs["Angle"].value is Angles oldValue && oldValue.Equals( angle ) )
+		{
 			return;
 		}
 		this.WireTriggerOutput( "Pitch", angle.pitch );

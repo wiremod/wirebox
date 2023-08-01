@@ -2,7 +2,7 @@
 
 [Spawnable]
 [Library( "ent_lightbridge", Title = "Light Bridge" )]
-public partial class LightBridgeEntity : Prop, WireInputEntity
+public partial class LightBridgeEntity : Prop, IWireInputEntity
 {
 	private MeshEntity bridgeEntity;
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 [Library( "ent_wirekeyboard", Title = "Wire Keyboard" )]
-public partial class KeyboardEntity : Prop, IUse, WireOutputEntity
+public partial class KeyboardEntity : Prop, IUse, IWireOutputEntity
 {
 	public bool IsToggle { get; set; } = false;
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
@@ -78,7 +78,7 @@ public partial class KeyboardEntity : Prop, IUse, WireOutputEntity
 		{
 			var inputButton = inputButtons[name];
 			var newState = Input.Down( inputButton );
-			if ( newState != (bool)((WireOutputEntity)this).GetOutput( name ).value )
+			if ( newState != (bool)((IWireOutputEntity)this).GetOutput( name ).value )
 			{
 				this.WireTriggerOutput( name, newState );
 			}

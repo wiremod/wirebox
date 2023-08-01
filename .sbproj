@@ -11,7 +11,9 @@
   "MenuResources": null,
   "HasCode": true,
   "CodePath": "/code/",
-  "PackageReferences": [],
+  "PackageReferences": [
+    "wiremod.wirelib"
+  ],
   "EditorReferences": null,
   "Metadata": {
     "CsProjName": "",

@@ -46,10 +46,10 @@ namespace Sandbox.Tools
 					.Run();
 
 
-				if ( inputEnt is WireInputEntity wireInputEnt )
+				if ( inputEnt is IWireInputEntity wireInputEnt )
 				{
 					ShowInputs( wireInputEnt, true );
-					if ( tr.Entity is WireOutputEntity wireOutputProp1 )
+					if ( tr.Entity is IWireOutputEntity wireOutputProp1 )
 					{
 						if ( Game.IsServer )
 						{
@@ -64,7 +64,7 @@ namespace Sandbox.Tools
 				}
 				else
 				{
-					if ( tr.Entity is WireInputEntity wireInputEnt2 )
+					if ( tr.Entity is IWireInputEntity wireInputEnt2 )
 					{
 						if ( Game.IsServer )
 						{
@@ -76,7 +76,7 @@ namespace Sandbox.Tools
 					{
 						ShowInputs( null, false );
 					}
-					if ( tr.Entity is WireOutputEntity wireOutputProp2 )
+					if ( tr.Entity is IWireOutputEntity wireOutputProp2 )
 					{
 						ShowOutputs( wireOutputProp2 );
 					}
@@ -100,7 +100,7 @@ namespace Sandbox.Tools
 						// stage 1
 
 						Log.Info( "in stage 1" );
-						if ( tr.Entity is not WireInputEntity wireProp || wireProp.GetInputNames().Length == 0 )
+						if ( tr.Entity is not IWireInputEntity wireProp || wireProp.GetInputNames().Length == 0 )
 						{
 							Log.Info( "in early return" );
 							return;
@@ -116,9 +116,9 @@ namespace Sandbox.Tools
 					else
 					{
 						// stage 2
-						if ( inputEnt is not WireInputEntity wireInputProp )
+						if ( inputEnt is not IWireInputEntity wireInputProp )
 							return;
-						if ( tr.Entity is not WireOutputEntity wireOutputProp || wireOutputProp.GetOutputNames().Length == 0 )
+						if ( tr.Entity is not IWireOutputEntity wireOutputProp || wireOutputProp.GetOutputNames().Length == 0 )
 							return;
 
 						if ( Game.IsServer )
@@ -155,7 +155,7 @@ namespace Sandbox.Tools
 					}
 					var portDirection = Input.Down( "run" ) ? -1 : 1;
 
-					if ( inputEnt is WireInputEntity )
+					if ( inputEnt is IWireInputEntity )
 					{
 						OutputPortIndex += portDirection;
 					}
@@ -168,7 +168,7 @@ namespace Sandbox.Tools
 				}
 				else if ( Input.Pressed( "reload" ) )
 				{
-					if ( tr.Entity is WireInputEntity wireEntity && Game.IsServer )
+					if ( tr.Entity is IWireInputEntity wireEntity && Game.IsServer )
 					{
 						wireEntity.DisconnectInput( wireEntity.GetInputNames()[InputPortIndex] );
 					}
@@ -273,7 +273,7 @@ namespace Sandbox.Tools
 
 
 		// A wrapper around wiringHud.SetInputs that helps sync the server port state to the client for display
-		private void ShowInputs( WireInputEntity ent, bool entSelected = false )
+		private void ShowInputs( IWireInputEntity ent, bool entSelected = false )
 		{
 			string[] names = Array.Empty<string>();
 			if ( ent != null )
@@ -293,7 +293,7 @@ namespace Sandbox.Tools
 				wiringHud?.SetInputs( names, entSelected, InputPortIndex );
 			}
 		}
-		private void ShowOutputs( WireOutputEntity ent, bool selectingOutput = false )
+		private void ShowOutputs( IWireOutputEntity ent, bool selectingOutput = false )
 		{
 			string[] names = Array.Empty<string>();
 			if ( ent != null )

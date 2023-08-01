@@ -4,7 +4,7 @@ using Sandbox.Tools;
 using System;
 
 [Library( "ent_constraintcontroller", Title = "Constraint Controller" )]
-public partial class ConstraintControllerEntity : Prop, WireInputEntity
+public partial class ConstraintControllerEntity : Prop, IWireInputEntity
 {
 	public PhysicsJoint Joint { get; set; }
 	public ConstraintType JointType { get; set; }

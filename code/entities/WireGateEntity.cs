@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 [Library( "ent_wiregate", Title = "Wire Gate" )]
-public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, IUse
+public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity, IUse
 {
 	[Net]
 	public string GateType { get; set; } = "Add";
@@ -44,11 +44,11 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 			if ( oldInputs.ContainsKey( inputName ) )
 			{
 				var output = oldInputs[inputName].connectedOutput;
-				if ( output != null && output.entity is WireOutputEntity outputEnt )
+				if ( output != null && output.entity is IWireOutputEntity outputEnt )
 				{
 					var rope = oldInputs[inputName].AttachRope;
 					oldInputs[inputName].AttachRope = null;
-					((WireInputEntity)this).DisconnectInput( oldInputs[inputName] );
+					((IWireInputEntity)this).DisconnectInput( oldInputs[inputName] );
 					oldInputs.Remove( inputName );
 
 					outputEnt.WireConnect( this, output.outputName, inputName );
@@ -58,7 +58,7 @@ public partial class WireGateEntity : Prop, WireInputEntity, WireOutputEntity, I
 		}
 		foreach ( var kv in oldInputs )
 		{
-			((WireInputEntity)this).DisconnectInput( kv.Value );
+			((IWireInputEntity)this).DisconnectInput( kv.Value );
 		}
 
 		// todo: outputs, once we got more than 1

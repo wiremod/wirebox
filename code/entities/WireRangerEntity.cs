@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 
 [Library( "ent_wireranger", Title = "Wire Ranger" )]
-public partial class WireRangerEntity : Prop, WireOutputEntity, WireInputEntity
+public partial class WireRangerEntity : Prop, IWireOutputEntity, IWireInputEntity
 {
 	[Net]
 	public float Length { get; set; } = 100;

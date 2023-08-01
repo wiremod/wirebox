@@ -4,7 +4,7 @@ using System.Linq;
 
 [Spawnable]
 [Library( "ent_wirebutton", Title = "Wire Button" )]
-public partial class WireButtonEntity : Prop, IUse, IStopUsing, WireOutputEntity
+public partial class WireButtonEntity : Prop, IUse, IStopUsing, IWireOutputEntity
 {
 	public bool On { get; set; } = false;
 	public bool IsToggle { get; set; } = false;
