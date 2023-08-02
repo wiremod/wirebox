@@ -3,16 +3,17 @@
   "Type": "addon",
   "Org": "wiremod",
   "Ident": "wirebox",
-  "Tags": "sandbox",
+  "Tags": "sandbox wirebox",
   "Schema": 1,
   "HasAssets": true,
   "AssetsPath": "",
-  "Resources": null,
+  "Resources": "/config/*.spawnlist\n/entity/*.png",
   "MenuResources": null,
   "HasCode": true,
   "CodePath": "/code/",
   "PackageReferences": [
-    "wiremod.wirelib"
+    "wiremod.wirelib",
+    "wiremod.sandboxplus"
   ],
   "EditorReferences": null,
   "Metadata": {

@@ -58,10 +58,13 @@
 						name = "chip_rectangle"
 						parent_bone = ""
 						surface_prop = "plastic"
-						collision_prop = "default"
+						collision_tags = "solid"
 						recenter_on_parent_bone = false
 						offset_origin = [ 0.0, 0.0, 0.0 ]
 						offset_angles = [ 0.0, 0.0, 0.0 ]
+						align_origin_x_type = "None"
+						align_origin_y_type = "None"
+						align_origin_z_type = "None"
 						filename = "models/wirebox/katlatze/chip_rectangle.fbx"
 						import_scale = 0.5
 						faceMergeAngle = 10.0
@@ -102,5 +105,6 @@
 		model_archetype = "physics_prop_model"
 		primary_associated_entity = "prop_physics"
 		anim_graph_name = ""
+		base_model_name = ""
 	}
 }

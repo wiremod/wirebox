@@ -14,10 +14,6 @@
 						remaps = 
 						[
 							{
-								from = ""
-								to = "materials/wirebox/fasteroid/gate_logo.vmat"
-							},
-							{
 								from = "gate_plastic.vmat"
 								to = "materials/wirebox/fasteroid/gate_plastic.vmat"
 							},
@@ -28,6 +24,10 @@
 							{
 								from = "gate_metal.vmat"
 								to = "materials/wirebox/fasteroid/gate_metal.vmat"
+							},
+							{
+								from = "gate_logo.002.vmat"
+								to = "materials/wirebox/fasteroid/gate_logo.vmat"
 							},
 						]
 						use_global_default = false
