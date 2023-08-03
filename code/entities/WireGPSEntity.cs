@@ -14,7 +14,7 @@ public partial class WireGPSEntity : Prop, IWireOutputEntity
 		};
 	}
 
-	[Event.Physics.PostStep]
+	[GameEvent.Physics.PostStep]
 	public void OnPostPhysicsStep()
 	{
 		if ( !this.IsValid() )

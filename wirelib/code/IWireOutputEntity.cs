@@ -67,14 +67,17 @@ namespace Sandbox
 			if ( output.executionsTick != Time.Tick )
 			{
 				output.executionsTick = Time.Tick;
-				output.executions = 0;
+				output.executions = 1;
 			}
-			if ( output.executions >= 4 )
+			else if ( output.executions >= 4 )
 			{
 				// prevent infinite loops
 				return; // todo: queue for next tick?
 			}
-			output.executions++;
+			else
+			{
+				output.executions++;
+			}
 
 			foreach ( var input in output.connected )
 			{
