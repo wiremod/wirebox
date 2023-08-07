@@ -268,7 +268,7 @@ namespace Sandbox.Tools
 			{
 				wiringTool2.CreateHitEffects( tr.EndPosition, tr.Normal );
 			}
-			Sandbox.Hooks.Entities.TriggerOnSpawned( ent, owner );
+			Event.Run( "entity.spawned", ent, owner );
 		}
 
 

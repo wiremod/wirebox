@@ -58,7 +58,7 @@ public partial class LightBridgeEntity : Prop, IWireInputEntity
 
 		ent.SetModel( "models/wirebox/katlatze/lightbridge.vmdl" );
 
-		Sandbox.Hooks.Entities.TriggerOnSpawned( ent, owner );
+		Event.Run( "entity.spawned", ent, owner );
 	}
 	public override void Spawn()
 	{

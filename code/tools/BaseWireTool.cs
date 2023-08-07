@@ -90,7 +90,7 @@ namespace Sandbox.Tools
 					ent.SetParent( attachEnt, tr.Body.GroupName );
 				}
 
-				Sandbox.Hooks.Entities.TriggerOnSpawned( ent, Owner );
+				Event.Run( "entity.spawned", ent, Owner );
 			}
 		}
 

@@ -82,7 +82,7 @@ public partial class ConstraintControllerEntity : Prop, IWireInputEntity
 
 		ent.SetModel( "models/citizen_props/coin01.vmdl" );
 
-		Sandbox.Hooks.Entities.TriggerOnSpawned( ent, owner );
+		Event.Run( "entity.spawned", ent, owner );
 	}
 }
 
