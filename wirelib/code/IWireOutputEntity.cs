@@ -18,21 +18,21 @@ namespace Sandbox
 			this.entity = entity;
 			this.outputName = outputName;
 			this.type = type;
-			if (type == "bool") {
+
+			if (type == "bool")
 				value = false;
-			} else if (type == "int") {
+			else if (type == "int")
 				value = 0;
-			} else if (type == "float") {
+			else if (type == "float")
 				value = 0.0f;
-			} else if (type == "string") {
+			else if (type == "string")
 				value = "";
-			} else if (type == "vector3") {
+			else if (type == "vector3")
 				value = Vector3.Zero;
-			} else if (type == "angle") {
+			else if (type == "angle")
 				value = Angles.Zero;
-			} else if (type == "rotation") {
+			else if (type == "rotation")
 				value = Rotation.Identity;
-			}
 		}
 	}
 
@@ -62,6 +62,12 @@ namespace Sandbox
 		public void WireTriggerOutput<T>( string outputName, T value )
 		{
 			var output = GetOutput( outputName );
+			var type = output.type;
+
+			// return early if new value is the same as current value, so nothing should trigger
+			if (output.value == (object) value) 
+				return;
+
 			output.value = value;
 
 			if ( output.executionsTick != Time.Tick )
@@ -120,7 +126,11 @@ namespace Sandbox
 				? WirePorts.outputs.Keys.ToArray()
 				: WirePorts.outputs.Keys.Select( ( string key ) =>
 				{
-					return $"{key} [{WirePorts.outputs[key].type}]: {WirePorts.outputs[key].value}";
+					var type = WirePorts.outputs[key].type;
+					if (type == "string")
+						return $"{key} [{type}]: \"{WirePorts.outputs[key].value}\"";
+
+					return $"{key} [{type}]: {WirePorts.outputs[key].value}";
 				} ).ToArray();
 		}
 
