@@ -11,6 +11,14 @@ Properties/*
 code/obj/*
 code/Properties/*
 
+wirelib/.vs/*
+wirelib/.vscode/*
+wirelib/*.csproj
+wirelib/obj/*
+wirelib/Properties/*
+wirelib/code/obj/*
+wirelib/code/Properties/*
+
 # Auto-generated asset related files
 *.generated.*
 *.*_c
