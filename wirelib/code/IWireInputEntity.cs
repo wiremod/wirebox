@@ -21,8 +21,24 @@ namespace Sandbox
 			this.entity = entity;
 			this.inputName = inputName;
 			this.type = type;
+
+			if (type == "bool")
+				value = false;
+			else if (type == "int")
+				value = 0;
+			else if (type == "float")
+				value = 0.0f;
+			else if (type == "string")
+				value = "";
+			else if (type == "vector3")
+				value = Vector3.Zero;
+			else if (type == "angle")
+				value = Angles.Zero;
+			else if (type == "rotation")
+				value = Rotation.Identity;
 		}
 	}
+
 	public interface IWireInputEntity : IWireEntity
 	{
 		public void WireTriggerInput<T>( string inputName, T value )
@@ -57,7 +73,11 @@ namespace Sandbox
 				? WirePorts.inputs.Keys.ToArray()
 				: WirePorts.inputs.Keys.Select( ( string key ) =>
 				{
-					return $"{key} [{WirePorts.inputs[key].type}]: {WirePorts.inputs[key].value}";
+					var type = WirePorts.inputs[key].type;
+					if (type == "string")
+						return $"{key} [{type}]: \"{WirePorts.inputs[key].value}\"";
+
+					return $"{key} [{type}]: {WirePorts.inputs[key].value}";
 				} ).ToArray();
 		}
 
@@ -84,7 +104,7 @@ namespace Sandbox
 	// Extension methods to allow calling the interface methods without explicit casting
 	public static class IWireInputEntityUtils
 	{
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<float> handler )
+		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<float> handler)
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
@@ -99,7 +119,8 @@ namespace Sandbox
 			});
 			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "float" );
 		}
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<bool> handler )
+
+		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<bool> handler)
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
@@ -118,13 +139,50 @@ namespace Sandbox
 			});
 			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "bool" );
 		}
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<int> handler )
+
+		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<int> handler)
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
 				handler( (int)value );
 			});
 			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "int" );
+		}
+
+		public static void RegisterInputHandler(this IWireInputEntity instance, string inputName, Action<string> handler)
+		{
+			instance.WirePorts.inputHandlers[inputName] = ((value) =>
+			{
+				handler((string)value);
+			});
+			instance.WirePorts.inputs[inputName] = new WireInput((Entity)instance, inputName, "string");
+		}
+
+		public static void RegisterInputHandler(this IWireInputEntity instance, string inputName, Action<Vector3> handler)
+		{
+			instance.WirePorts.inputHandlers[inputName] = ((value) =>
+			{
+				handler((Vector3)value);
+			});
+			instance.WirePorts.inputs[inputName] = new WireInput((Entity)instance, inputName, "vector3");
+		}
+
+		public static void RegisterInputHandler(this IWireInputEntity instance, string inputName, Action<Angles> handler)
+		{
+			instance.WirePorts.inputHandlers[inputName] = ((value) =>
+			{
+				handler((Angles)value);
+			});
+			instance.WirePorts.inputs[inputName] = new WireInput((Entity)instance, inputName, "angle");
+		}
+
+		public static void RegisterInputHandler(this IWireInputEntity instance, string inputName, Action<Rotation> handler)
+		{
+			instance.WirePorts.inputHandlers[inputName] = ((value) =>
+			{
+				handler((Rotation)value);
+			});
+			instance.WirePorts.inputs[inputName] = new WireInput((Entity)instance, inputName, "rotation");
 		}
 	}
 
