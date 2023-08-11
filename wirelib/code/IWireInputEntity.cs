@@ -97,6 +97,8 @@ namespace Sandbox
 				input.AttachRope.Destroy( true );
 				input.AttachRope = null;
 			}
+
+			WireTriggerInput( input.inputName, 0 );
 		}
 
 	}
