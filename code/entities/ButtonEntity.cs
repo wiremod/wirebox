@@ -64,13 +64,16 @@ public partial class WireButtonEntity : Prop, IUse, IStopUsing, IWireOutputEntit
 		{
 			RenderColor = On ? Color.Green : Color.Red;
 		}
-		this.WireTriggerOutput( "On", On );
-	}
 
+		var curOn = (bool)(this as IWireOutputEntity).GetOutput("On").value;
+		if (curOn != On)
+		{
+			this.WireTriggerOutput("On", On);
+		}
+	}
 
 	public PortType[] WireGetOutputs()
 	{
 		return new PortType[] { PortType.Bool( "On" ) };
 	}
 }
-
