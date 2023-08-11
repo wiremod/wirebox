@@ -98,4 +98,11 @@ public partial class WireForcerEntity : Prop, IWireInputEntity
 		}
 		Beam.SetPosition( 1, tr.EndPosition );
 	}
+
+	protected override void OnDestroy()
+	{
+		base.OnDestroy();
+
+		Beam?.Destroy( true );
+	}
 }
