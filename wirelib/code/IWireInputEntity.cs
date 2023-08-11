@@ -22,20 +22,7 @@ namespace Sandbox
 			this.inputName = inputName;
 			this.type = type;
 
-			if (type == "bool")
-				value = false;
-			else if (type == "int")
-				value = 0;
-			else if (type == "float")
-				value = 0.0f;
-			else if (type == "string")
-				value = "";
-			else if (type == "vector3")
-				value = Vector3.Zero;
-			else if (type == "angle")
-				value = Angles.Zero;
-			else if (type == "rotation")
-				value = Rotation.Identity;
+			value = IWireEntity.GetDefaultValueFromType( type );
 		}
 	}
 
@@ -98,7 +85,7 @@ namespace Sandbox
 				input.AttachRope = null;
 			}
 
-			WireTriggerInput( input.inputName, 0 );
+			WireTriggerInput(input.inputName, IWireEntity.GetDefaultValueFromType(input.type));
 		}
 
 	}
