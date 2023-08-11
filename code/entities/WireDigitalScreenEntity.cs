@@ -34,6 +34,13 @@ public partial class WireDigitalScreenEntity : Prop, IWireInputEntity
 		worldPanel.Label.Style.FontColor = Color.White;
 	}
 
+	protected override void OnDestroy()
+	{
+		base.OnDestroy();
+
+		worldPanel?.Delete();
+	}
+
 	[GameEvent.Client.Frame]
 	protected void UpdatePanel()
 	{
