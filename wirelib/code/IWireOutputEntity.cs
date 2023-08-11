@@ -104,7 +104,7 @@ namespace Sandbox
 			}
 			input.connectedOutput = output;
 			connected.Add( input );
-			WireTriggerOutput( outputName, output.value );
+			inputEnt.WireTriggerInput( input.inputName, output.value );
 		}
 
 		public WireOutput GetOutput( string inputName )
