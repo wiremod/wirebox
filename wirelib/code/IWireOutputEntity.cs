@@ -62,10 +62,9 @@ namespace Sandbox
 		public void WireTriggerOutput<T>( string outputName, T value )
 		{
 			var output = GetOutput( outputName );
-			var type = output.type;
 
 			// return early if new value is the same as current value, so nothing should trigger
-			if (output.value == (object) value) 
+			if ( output.value.Equals( value ) )
 				return;
 
 			output.value = value;
