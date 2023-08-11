@@ -2,7 +2,7 @@
   "Title": "Wirebox",
   "Type": "addon",
   "Org": "wiremod",
-  "Ident": "wirebox",
+  "Ident": "wireboxaddon",
   "Tags": "sandbox wirebox",
   "Schema": 1,
   "HasAssets": true,
