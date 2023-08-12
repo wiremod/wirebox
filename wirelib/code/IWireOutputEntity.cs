@@ -42,6 +42,8 @@ namespace Sandbox
 			new() { Name = name, Type = "angle" };
 		public static PortType Rotation( string name ) =>
 			new() { Name = name, Type = "rotation" };
+		public static PortType Entity( string name ) =>
+			new() { Name = name, Type = "entity" };
 	}
 
 	public interface IWireOutputEntity : IWireEntity

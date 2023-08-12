@@ -123,8 +123,18 @@ namespace Sandbox.Tools
 
 						if ( Game.IsServer )
 						{
-							var outputName = wireOutputProp.GetOutputNames()[OutputPortIndex];
-							var inputName = wireInputProp.GetInputNames()[InputPortIndex];
+							string outputName;
+							string inputName;
+							try
+							{
+								outputName = wireOutputProp.GetOutputNames()[OutputPortIndex];
+								inputName = wireInputProp.GetInputNames()[InputPortIndex];
+							}
+							catch ( IndexOutOfRangeException e )
+							{
+								Reset();
+								return;
+							}
 
 							// Log.Info("Wiring " + wireInputProp + "'s " + inputName + " to " + wireOutputProp + "'s " + outputName);
 							wireOutputProp.WireConnect( wireInputProp, outputName, inputName );

@@ -11,6 +11,7 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 
 	private int constantValue = 3;
 	private float storedFloat = 0;
+	private Entity storedEnt;
 
 	[Net]
 	public string DebugText { get; set; } = "";
@@ -25,6 +26,7 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 			["Logic"] = new string[] { "Not", "And", "Or", "GreaterThan", "LessThan", "Equal" },
 			["Comparison"] = new string[] { "Max", "Min", "Clamp" },
 			["Time"] = new string[] { "Delta", "Tick", "Smoother" },
+			["Entity"] = new string[] { "Position", "Velocity", "Owner" },
 		};
 	}
 
@@ -316,6 +318,24 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 				}
 			} );
 		}
+		else if ( GateType == "Owner" )
+		{
+			this.WireTriggerOutput( "Out", this.Owner );
+		}
+		else if ( GateType == "Position" )
+		{
+			this.RegisterInputHandler( "Ent", ( Entity value ) =>
+			{
+				storedEnt = value;
+			} );
+		}
+		else if ( GateType == "Velocity" )
+		{
+			this.RegisterInputHandler( "Ent", ( Entity value ) =>
+			{
+				storedEnt = value;
+			} );
+		}
 	}
 
 	[Event.Physics.PostStep]
@@ -325,6 +345,14 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 		if ( GateType == "Tick" )
 		{
 			this.WireTriggerOutput( "Out", Time.Tick );
+		}
+		else if ( GateType == "Position" )
+		{
+			this.WireTriggerOutput( "Out", storedEnt.IsValid() ? storedEnt.Position : Vector3.Zero );
+		}
+		else if ( GateType == "Velocity" )
+		{
+			this.WireTriggerOutput( "Out", storedEnt.IsValid() ? storedEnt.Velocity : Vector3.Zero );
 		}
 	}
 
@@ -344,6 +372,14 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 	}
 	public PortType[] WireGetOutputs()
 	{
+		if ( GateType == "Owner" )
+		{
+			return new PortType[] { PortType.Entity( "Out" ) };
+		}
+		if ( GateType == "Position" || GateType == "Velocity" )
+		{
+			return new PortType[] { PortType.Vector3( "Out" ) };
+		}
 		return new PortType[] { PortType.Float( "Out" ) };
 	}
 

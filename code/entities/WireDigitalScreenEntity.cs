@@ -8,16 +8,16 @@ public partial class WireDigitalScreenEntity : Prop, IWireInputEntity
 {
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 	[Net]
-	private float valueA { get; set; } = 0;
+	private string valueString { get; set; } = "0";
 
 	private string labelPrefix = "Wire Screen: ";
 	private DigitalScreenWorldPanel worldPanel;
 
 	public void WireInitialize()
 	{
-		this.RegisterInputHandler( "A", ( float value ) =>
+		this.RegisterInputHandler( "Text", ( string value ) =>
 		{
-			valueA = float.Round( value, 1 );
+			valueString = value;
 		} );
 	}
 
@@ -32,6 +32,10 @@ public partial class WireDigitalScreenEntity : Prop, IWireInputEntity
 		worldPanel.Label.Style.TextAlign = TextAlign.Center;
 		worldPanel.Label.Style.FontSize = Length.Pixels( Model.Bounds.Size.y * 1.25f );
 		worldPanel.Label.Style.FontColor = Color.White;
+		worldPanel.Value.Style.Width = Model.Bounds.Size.y * 8.5f;
+		worldPanel.Value.Style.TextAlign = TextAlign.Center;
+		worldPanel.Value.Style.FontSize = Length.Pixels( Model.Bounds.Size.y );
+		worldPanel.Value.Style.FontColor = Color.White;
 	}
 
 	protected override void OnDestroy()
@@ -48,7 +52,8 @@ public partial class WireDigitalScreenEntity : Prop, IWireInputEntity
 		var modelData = ScreenTransforms.GetValueOrDefault( Model.Name );
 		worldPanel.Position = Transform.PointToWorld( modelData.Position );
 		worldPanel.Rotation = Rotation.RotateAroundAxis( modelData.Rotation.Right, -modelData.Rotation.w );
-		worldPanel.Label.Text = labelPrefix + "\n" + valueA;
+		worldPanel.Label.Text = labelPrefix;
+		worldPanel.Value.Text = valueString;
 	}
 
 	[Event( "spawnlists.initialize" )]
@@ -71,8 +76,11 @@ public partial class WireDigitalScreenEntity : Prop, IWireInputEntity
 class DigitalScreenWorldPanel : WorldPanel
 {
 	public Label Label;
+	public Label Value;
 	public DigitalScreenWorldPanel()
 	{
-		Label = Add.Label( "Wire Screen: \n0", "ds-text" );
+		Style.FlexDirection = FlexDirection.Column;
+		Label = Add.Label( "Wire Screen:", "ds-text" );
+		Value = Add.Label( "0", "ds-text" );
 	}
 }

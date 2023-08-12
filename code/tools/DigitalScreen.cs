@@ -5,7 +5,7 @@ namespace Sandbox.Tools
 	public partial class DigitalScreenTool : BaseWireTool
 	{
 		[ConVar.ClientData( "tool_wiredigitalscreen_model" )]
-		public static string _ { get; set; } = "models/wirebox/katlatze/apc.vmdl";
+		public static string _ { get; set; } = "models/television/flatscreen_tv.vmdl";
 
 		protected override Type GetEntityType()
 		{
