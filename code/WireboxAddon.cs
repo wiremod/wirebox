@@ -1,18 +1,13 @@
 using Sandbox;
 
 [Library( "wirebox" )]
-public class WireboxAddon : IAutoload
+public static class WireboxAddon
 {
-	public void Initialize()
+	[Event( "game.init" )]
+	[Event( "package.mounted" )]
+	public static void Initialize()
 	{
 		Log.Info( "Init Wirebox" );
-		WireCable.InitCleanupTimer();
 		Sandbox.Tools.ConstraintTool.CreateWireboxConstraintController = ConstraintControllerEntity.CreateFromTool;
 	}
-
-	public void Dispose()
-	{
-		WireCable.StopCleanupTimer();
-	}
-
 }

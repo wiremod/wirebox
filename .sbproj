@@ -3,7 +3,7 @@
   "Type": "addon",
   "Org": "wiremod",
   "Ident": "wireboxaddon",
-  "Tags": "sandbox wirebox",
+  "Tags": "sandbox spawnmenu wirebox runtime",
   "Schema": 1,
   "HasAssets": true,
   "AssetsPath": "",

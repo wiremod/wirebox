@@ -59,7 +59,9 @@ namespace Sandbox
 
 		private static CancellationTokenSource cancellationTokenSource;
 
-		[Event( "hotloaded" )]
+		[Event( "game.init" )]
+		[Event( "package.mounted" )]
+		[Event.Hotload]
 		public static async void InitCleanupTimer()
 		{
 			if ( Game.IsClient )
