@@ -17,6 +17,15 @@ namespace Sandbox.Tools
 		private WireGatePanel wireGatePanel;
 		private WiringPanel wiringHud;
 
+		private int Stage
+		{
+			get
+			{
+				if ( !inputEnt.IsValid() ) return 0;
+				else { return 1; }
+			}
+		}
+
 		// Cache the inputs/outputs here, so we can network them to the client, as only the server knows the current port values
 		// These would be tidier over in the HUD class, but [Net] seems buggy over there
 		[Net, Local]
@@ -36,67 +45,26 @@ namespace Sandbox.Tools
 
 		public override void Simulate()
 		{
+			if ( Game.IsClient )
+			{
+				Description = CalculateDescription();
+			}
 			using ( Prediction.Off() )
 			{
 				var tr = DoTrace();
 
-				if ( inputEnt is IWireInputEntity wireInputEnt )
-				{
-					ShowInputs( wireInputEnt, true );
-					if ( tr.Entity is IWireOutputEntity wireOutputProp1 )
-					{
-						if ( Game.IsServer )
-						{
-							OutputPortIndex = Math.Clamp( OutputPortIndex - Input.MouseWheel, 0, Math.Max( 0, wireOutputProp1.GetOutputNames().Length - 1 ) );
-						}
-						ShowOutputs( wireOutputProp1, true );
-					}
-					else
-					{
-						ShowOutputs( null );
-					}
-				}
-				else
-				{
-					if ( tr.Entity is IWireInputEntity wireInputEnt2 )
-					{
-						if ( Game.IsServer )
-						{
-							InputPortIndex = Math.Clamp( InputPortIndex - Input.MouseWheel, 0, Math.Max( 0, wireInputEnt2.GetInputNames().Length - 1 ) );
-						}
-						ShowInputs( wireInputEnt2, false );
-					}
-					else
-					{
-						ShowInputs( null, false );
-					}
-					if ( tr.Entity is IWireOutputEntity wireOutputProp2 )
-					{
-						ShowOutputs( wireOutputProp2 );
-					}
-					else
-					{
-						ShowOutputs( null );
-					}
-				}
-
-
+				UpdateTraceEntPorts( tr );
 
 				if ( Input.Pressed( "attack1" ) )
 				{
-					Log.Info( "Clicked" );
-
 					if ( !tr.Hit || !tr.Body.IsValid() || !tr.Entity.IsValid() || tr.Entity.IsWorld )
 						return;
 
 					if ( !inputEnt.IsValid() )
 					{
 						// stage 1
-
-						Log.Info( "in stage 1" );
 						if ( tr.Entity is not IWireInputEntity wireProp || wireProp.GetInputNames().Length == 0 )
 						{
-							Log.Info( "in early return" );
 							return;
 						}
 						if ( Game.IsClient )
@@ -172,13 +140,24 @@ namespace Sandbox.Tools
 				}
 				else if ( Input.Pressed( "reload" ) )
 				{
-					if ( tr.Entity is IWireInputEntity wireEntity && Game.IsServer )
+					if ( Stage == 0 && tr.Entity is IWireInputEntity wireEntity && Game.IsServer )
 					{
 						wireEntity.DisconnectInput( wireEntity.GetInputNames()[InputPortIndex] );
 					}
 					else
 					{
 						Reset();
+					}
+				}
+				else if ( Input.Pressed( "flashlight" ) )
+				{
+					if ( Input.Down( "run" ) )
+					{
+						if ( Game.IsClient )
+						{
+							ConsoleSystem.Run( "tool_current", "tool_debugger" );
+							return;
+						}
 					}
 				}
 				else
@@ -192,6 +171,49 @@ namespace Sandbox.Tools
 			}
 		}
 
+		protected void UpdateTraceEntPorts( TraceResult tr )
+		{
+			if ( inputEnt is IWireInputEntity wireInputEnt )
+			{
+				ShowInputs( wireInputEnt, true );
+				if ( tr.Entity is IWireOutputEntity wireOutputProp1 )
+				{
+					if ( Game.IsServer )
+					{
+						OutputPortIndex = Math.Clamp( OutputPortIndex - Input.MouseWheel, 0, Math.Max( 0, wireOutputProp1.GetOutputNames().Length - 1 ) );
+					}
+					ShowOutputs( wireOutputProp1, true );
+				}
+				else
+				{
+					ShowOutputs( null );
+				}
+			}
+			else
+			{
+				if ( tr.Entity is IWireInputEntity wireInputEnt2 )
+				{
+					if ( Game.IsServer )
+					{
+						InputPortIndex = Math.Clamp( InputPortIndex - Input.MouseWheel, 0, Math.Max( 0, wireInputEnt2.GetInputNames().Length - 1 ) );
+					}
+					ShowInputs( wireInputEnt2, false );
+				}
+				else
+				{
+					ShowInputs( null, false );
+				}
+				if ( tr.Entity is IWireOutputEntity wireOutputProp2 )
+				{
+					ShowOutputs( wireOutputProp2 );
+				}
+				else
+				{
+					ShowOutputs( null );
+				}
+			}
+		}
+
 		private void Reset()
 		{
 			inputEnt = null;
@@ -201,6 +223,25 @@ namespace Sandbox.Tools
 			ShowOutputs( null );
 		}
 
+		private string CalculateDescription()
+		{
+			var desc = $"Connect wirable entities with wires.\nHold G to spawn Gates.\nShift-F for Debugger.\n";
+			if ( Stage == 0 )
+			{
+				desc += "\nMouse1: select Input";
+				desc += "\nMouse2: scroll to next Input (shift for previous)";
+				desc += "\nScroll Wheel: scroll between Inputs";
+				desc += "\nReload: Disconnect Input";
+			}
+			else if ( Stage == 1 )
+			{
+				desc += "\nMouse1: select Output";
+				desc += "\nMouse2: scroll to next Output (shift for previous)";
+				desc += "\nScroll Wheel: scroll between Outputs";
+				desc += "\nReload: Cancel";
+			}
+			return desc;
+		}
 
 		public override void Activate()
 		{
@@ -389,6 +430,7 @@ namespace Sandbox.Tools
 
 	public partial class WireGatePanel : Panel
 	{
+		private static bool UiVisible = false;
 		public WireGatePanel()
 		{
 			var container = Add.Panel( "wire-gate-container" );
@@ -413,7 +455,18 @@ namespace Sandbox.Tools
 		public override void Tick()
 		{
 			base.Tick();
-			SetClass( "visible", Input.Down( "drop" ) );
+			SetClass( "visible", UiVisible || Input.Down( "drop" ) );
+		}
+
+		[ConCmd.Client( "wire_spawn_gate_ui_show" )]
+		public static void ShowUi()
+		{
+			UiVisible = true;
+		}
+		[ConCmd.Client( "wire_spawn_gate_ui_hide" )]
+		public static void HideUi()
+		{
+			UiVisible = false;
 		}
 	}
 }

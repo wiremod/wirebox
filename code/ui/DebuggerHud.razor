@@ -1,0 +1,90 @@
+@using System.Threading.Tasks;
+@using System.Collections.Generic;
+@using Sandbox;
+@using Sandbox.Tools;
+@using Sandbox.UI;
+@inherits Panel;
+
+@if (DebuggerTool.TrackedEntities.Count > 0) {
+<root class="debugger-hud">
+	<label class="title">Debugger</label>
+	@foreach ( var ent in DebuggerTool.TrackedEntities )
+	{
+        <div class="ent">
+		    <label class="name">@(DisplayInfo.For(ent).Name) (@((ent as Entity).NetworkIdent))</label>
+		    @if ( ent is IWireInputEntity wireInputProp ) {
+            <div class="ports">
+                <label>Inputs:</label>
+                @foreach ( var portName in wireInputProp.GetInputNames() )
+                {
+                    <div class="port">
+                        <label class="name">@portName</label>:
+                        <label class="value">@(wireInputProp.GetInput(portName).value)</label>
+                    </div>
+                }
+            </div>
+            }
+            @if ( ent is IWireOutputEntity wireOutputProp ) {
+            <div class="ports">
+                <label>Outputs:</label>
+                    @foreach ( var portName in wireOutputProp.GetOutputNames() )
+                    {
+                        <div class="port">
+                            <label class="name">@portName</label>:
+                            <label class="value">@(wireOutputProp.GetOutput(portName).value)</label>
+                        </div>
+                    }
+            </div>
+            }
+        </div>
+	}
+</root>
+}
+
+@code
+{
+    public override void Tick()
+    {
+        base.Tick();
+
+        if (!IsVisible)
+            return;
+		StateHasChanged();
+    }
+}
+
+<style>
+.debugger-hud {
+    margin-left: 100px;
+    margin-top: 20px;
+
+    flex-direction: column;
+
+    background-color: rgba(#111, 0.5);
+    border-left: 8px solid #d80;
+    padding: 8px 16px;
+    font-size: 14px;
+
+    .title {
+        font-size: 16px;
+        margin-bottom: 4px;
+        font-weight: bold;
+        border-bottom: 0.5px solid rgba(#999, 0.75);
+        min-width: 400px;
+    }
+    .ent {
+        flex-direction: column;
+    }
+    .ports {
+        margin-left: 16px;
+        flex-direction: column;
+    }
+    .port {
+        margin-left: 16px;
+        .value {
+            margin-left: 2px;
+            color: #ccc;
+        }
+    }
+}
+</style>
