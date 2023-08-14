@@ -320,7 +320,7 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 		}
 		else if ( GateType == "Owner" )
 		{
-			this.WireTriggerOutput( "Out", this.Owner );
+			this.WireTriggerOutput( "Out", (this as Entity).GetPlayerOwner() );
 		}
 		else if ( GateType == "Position" )
 		{
