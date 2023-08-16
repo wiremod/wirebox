@@ -3,13 +3,15 @@ using Sandbox.Physics;
 using Sandbox.Tools;
 using System;
 
-[Library( "ent_constraintcontroller", Title = "Constraint Controller" )]
+[Library( "ent_wireconstraintcontroller", Title = "Constraint Controller" )]
 public partial class ConstraintControllerEntity : Prop, IWireInputEntity
 {
 	public PhysicsJoint Joint { get; set; }
 	public ConstraintType JointType { get; set; }
 	public Func<string> JointCleanup { get; set; }
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
+
+	public string[] SboxToolAutoTools => new string[] { "tool_constraint" };
 
 	public void WireInitialize()
 	{

@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 
 [Spawnable]
-[Library( "ent_lightbridge", Title = "Light Bridge" )]
+[Library( "ent_wirelightbridge", Title = "Light Bridge" )]
 public partial class LightBridgeEntity : Prop, IWireInputEntity
 {
 	private MeshEntity bridgeEntity;
