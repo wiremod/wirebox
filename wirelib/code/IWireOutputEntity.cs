@@ -19,7 +19,7 @@ namespace Sandbox
 			this.outputName = outputName;
 			this.type = type;
 
-			value = IWireEntity.GetDefaultValueFromType(type);
+			value = IWireEntity.GetDefaultValueFromType( type );
 		}
 	}
 
@@ -115,7 +115,7 @@ namespace Sandbox
 				: WirePorts.outputs.Keys.Select( ( string key ) =>
 				{
 					var type = WirePorts.outputs[key].type;
-					if (type == "string")
+					if ( type == "string" )
 						return $"{key} [{type}]: \"{WirePorts.outputs[key].value}\"";
 
 					return $"{key} [{type}]: {WirePorts.outputs[key].value}";

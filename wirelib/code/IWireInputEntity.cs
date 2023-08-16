@@ -61,7 +61,7 @@ namespace Sandbox
 				: WirePorts.inputs.Keys.Select( ( string key ) =>
 				{
 					var type = WirePorts.inputs[key].type;
-					if (type == "string")
+					if ( type == "string" )
 						return $"{key} [{type}]: \"{WirePorts.inputs[key].value}\"";
 
 					return $"{key} [{type}]: {WirePorts.inputs[key].value}";
@@ -85,7 +85,7 @@ namespace Sandbox
 				input.AttachRope = null;
 			}
 
-			WireTriggerInput(input.inputName, IWireEntity.GetDefaultValueFromType(input.type));
+			WireTriggerInput( input.inputName, IWireEntity.GetDefaultValueFromType( input.type ) );
 		}
 
 	}
@@ -93,7 +93,7 @@ namespace Sandbox
 	// Extension methods to allow calling the interface methods without explicit casting
 	public static class IWireInputEntityUtils
 	{
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<float> handler)
+		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<float> handler )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
@@ -113,7 +113,7 @@ namespace Sandbox
 			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "float" );
 		}
 
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<bool> handler)
+		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<bool> handler )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
