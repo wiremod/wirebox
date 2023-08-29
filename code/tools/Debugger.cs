@@ -65,8 +65,8 @@ namespace Sandbox.Tools
 			if ( Game.IsClient )
 			{
 				Description = "Shows selected wire ports on the HUD.\nShift-F for Wiring tool.\n";
-				Description += "\nMouse1: Add entity to HUD";
-				Description += "\nMouse2: Remove entity from HUD";
+				Description += "\nPrimary: Add entity to HUD";
+				Description += "\nSecondary: Remove entity from HUD";
 				Description += "\nReload: Clear HUD";
 
 				SandboxHud.Instance.RootPanel.ChildrenOfType<DebuggerHud>().ToList().ForEach( x => x.Delete() );

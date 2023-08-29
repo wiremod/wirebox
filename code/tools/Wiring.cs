@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Sandbox.UI;
 using System.Text.Json;
 using Sandbox.UI.Construct;
@@ -14,8 +13,8 @@ namespace Sandbox.Tools
 		[Net, Local]
 		private Vector3 inputPos { get; set; }
 
-		private WireGatePanel wireGatePanel;
-		private WiringPanel wiringHud;
+		private WireGateHud wireGatePanel;
+		private WiringHud wiringHud;
 
 		private int Stage
 		{
@@ -228,15 +227,15 @@ namespace Sandbox.Tools
 			var desc = $"Connect wirable entities with wires.\nHold G to spawn Gates.\nShift-F for Debugger.\n";
 			if ( Stage == 0 )
 			{
-				desc += "\nMouse1: select Input";
-				desc += "\nMouse2: scroll to next Input (shift for previous)";
+				desc += "\nPrimary: select Input";
+				desc += "\nSecondary: scroll to next Input (shift for previous)";
 				desc += "\nScroll Wheel: scroll between Inputs";
 				desc += "\nReload: Disconnect Input";
 			}
 			else if ( Stage == 1 )
 			{
-				desc += "\nMouse1: select Output";
-				desc += "\nMouse2: scroll to next Output (shift for previous)";
+				desc += "\nPrimary: select Output";
+				desc += "\nSecondary: scroll to next Output (shift for previous)";
 				desc += "\nScroll Wheel: scroll between Outputs";
 				desc += "\nReload: Cancel";
 			}
@@ -249,9 +248,8 @@ namespace Sandbox.Tools
 
 			if ( Game.IsClient )
 			{
-				SandboxHud.Instance.RootPanel.StyleSheet.Load( "/ui/wiringhud.scss" );
-				wiringHud = SandboxHud.Instance.RootPanel.AddChild<WiringPanel>();
-				wireGatePanel = SandboxHud.Instance.RootPanel.AddChild<WireGatePanel>( "wire-gate-menu" );
+				wiringHud = SandboxHud.Instance.RootPanel.AddChild<WiringHud>();
+				wireGatePanel = SandboxHud.Instance.RootPanel.AddChild<WireGateHud>();
 
 				var modelSelector = new ModelSelector( new string[] { "gate", "controller" } );
 				SpawnMenu.Instance?.ToolPanel?.AddChild( modelSelector );
@@ -316,6 +314,14 @@ namespace Sandbox.Tools
 			Event.Run( "entity.spawned", ent, owner );
 		}
 
+		[Event( "spawnlists.initialize" )]
+		public static void SpawnlistsInitialize()
+		{
+			ModelSelector.AddToSpawnlist( "gate", new string[] {
+				Cloud.Asset("https://asset.party/facepunch/metal_fences_gate_small"), // lol get it
+			} );
+		}
+
 
 		// A wrapper around wiringHud.SetInputs that helps sync the server port state to the client for display
 		private void ShowInputs( IWireInputEntity ent, bool entSelected = false )
@@ -358,115 +364,6 @@ namespace Sandbox.Tools
 			{
 				wiringHud?.SetOutputs( names, selectingOutput, OutputPortIndex );
 			}
-		}
-	}
-
-	public partial class WiringPanel : Panel
-	{
-		private string[] lastInputs = System.Array.Empty<string>();
-		private string[] lastOutputs = System.Array.Empty<string>();
-		public Panel InputsPanel { get; set; }
-		public Panel OutputsPanel { get; set; }
-
-		public WiringPanel()
-		{
-			SetTemplate( "/ui/wiringhud.html" );
-			InputsPanel = GetChild( 0 ).GetChild( 0 );
-			OutputsPanel = GetChild( 0 ).GetChild( 1 );
-		}
-
-		public void SetInputs( string[] names, bool selected = false, int portIndex = 0 )
-		{
-			if ( Game.LocalClient.Pawn is SandboxPlayer sandboxPlayer )
-			{
-				sandboxPlayer.SuppressScrollWheelInventory = names.Length != 0;
-			}
-			if ( !InputsPanel.IsValid() )
-			{
-				return;
-			}
-			foreach ( var lineItem in InputsPanel.GetChild( 1 ).Children )
-			{
-				lineItem.SetClass( "active", InputsPanel.GetChild( 1 ).GetChildIndex( lineItem ) == portIndex );
-			}
-			InputsPanel.SetClass( "selected", selected );
-			if ( Enumerable.SequenceEqual( lastInputs, names ) )
-			{
-				return;
-			}
-			lastInputs = names;
-			InputsPanel.GetChild( 1 ).DeleteChildren( true );
-
-			foreach ( var name in names )
-			{
-				InputsPanel.GetChild( 1 ).AddChild<Label>( "port" ).SetText( name );
-			}
-		}
-		public void SetOutputs( string[] names, bool selectingOutput = false, int portIndex = 0 )
-		{
-			if ( !OutputsPanel.IsValid() )
-			{
-				return;
-			}
-			foreach ( var lineItem in OutputsPanel.GetChild( 1 ).Children )
-			{
-				lineItem.SetClass( "active", selectingOutput && OutputsPanel.GetChild( 1 ).GetChildIndex( lineItem ) == portIndex );
-			}
-			OutputsPanel.SetClass( "selected", selectingOutput );
-			if ( Enumerable.SequenceEqual( lastOutputs, names ) )
-			{
-				return;
-			}
-			lastOutputs = names;
-			OutputsPanel.GetChild( 1 ).DeleteChildren( true );
-			OutputsPanel.SetClass( "visible", names.Length != 0 );
-
-			foreach ( var name in names )
-			{
-				OutputsPanel.GetChild( 1 ).AddChild<Label>( "port" ).SetText( name );
-			}
-		}
-	}
-
-	public partial class WireGatePanel : Panel
-	{
-		private static bool UiVisible = false;
-		public WireGatePanel()
-		{
-			var container = Add.Panel( "wire-gate-container" );
-			foreach ( var kvp in WireGateEntity.GetGates() )
-			{
-				var category = kvp.Key;
-				var gates = kvp.Value;
-
-				var categoryRow = container.Add.Panel( "wire-gate-category" );
-				var categoryText = categoryRow.Add.TextEntry( category );
-				categoryText.AddClass( "wire-gate-category-label" );
-				var categoryList = categoryRow.Add.Panel( "wire-gate-category-list" );
-				foreach ( var gateName in gates )
-				{
-					categoryList.Add.Button( gateName, () =>
-					{
-						ConsoleSystem.Run( "wire_spawn_gate", gateName );
-					} );
-				}
-			}
-		}
-		public override void Tick()
-		{
-			base.Tick();
-			SetClass( "visible", UiVisible || Input.Down( "drop" ) );
-		}
-
-		[ConCmd.Client( "wire_spawn_gate_ui_show" )]
-		public static void ShowUi()
-		{
-			UiVisible = true;
-		}
-		[ConCmd.Client( "wire_spawn_gate_ui_hide" )]
-		public static void HideUi()
-		{
-			UiVisible = false;
 		}
 	}
 }

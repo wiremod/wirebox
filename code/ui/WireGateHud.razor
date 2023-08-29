@@ -1,57 +1,57 @@
-div.wiring-tool-hud {
-  margin-left: 100px;
-  margin-top: 20px;
+@using Sandbox.UI
+@using Sandbox.Tools
+@using System.Linq
+@namespace Sandbox.UI
+@inherits Panel
+
+<root>
+  	<div class="wire-gate-container">
+		@foreach (var kvp in WireGateEntity.GetGates())
+		{
+			var category = kvp.Key;
+			var gates = kvp.Value;
+			<div class="wire-gate-category">
+				<div class="wire-gate-category-label">
+					@category
+				</div>
+				<div class="wire-gate-category-list">
+					@foreach (var gateName in gates)
+					{
+						<button
+							class="wire-gate-category-list-button"
+							onclick=@(() => ConsoleSystem.Run( "wire_spawn_gate", gateName ))
+						>
+							@gateName
+						</button>
+					}
+				</div>
+			</div>
+		}
+  	</div>
+</root>
+
+@code {
+    private static bool UiVisible = false;
+	public override void Tick()
+	{
+		base.Tick();
+		SetClass( "visible", UiVisible || Input.Down( "drop" ) );
+	}
+
+	[ConCmd.Client( "wire_spawn_gate_ui_show" )]
+	public static void ShowUi()
+	{
+		UiVisible = true;
+	}
+	[ConCmd.Client( "wire_spawn_gate_ui_hide" )]
+	public static void HideUi()
+	{
+		UiVisible = false;
+	}
 }
 
-.wiring-ports {
-  display: flex;
-  flex-direction: column;
-  background-color: rgba(blue, 0.2);
-  border-radius: 8px;
-  padding: 4px;
-
-  .h2 {
-    font-size: 40px;
-    color: rgba(white, 0.8);
-    text-shadow: 3px 3px 20px rgba(black, 0.8);
-    padding: 4px;
-  }
-  .port {
-    font-size: 24px;
-    color: rgba(white, 0.8);
-    text-shadow: 3px 3px 20px rgba(black, 0.8);
-    padding: 4px;
-    &.active {
-      background-color: rgba(green, 0.6);
-    }
-  }
-  &.selected {
-    background-color: rgba(blue, 0.35);
-    .port.active {
-      background-color: rgba(green, 0.9);
-    }
-  }
-
-  .wiring-ports-list {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-.wiring-outputs {
-  margin-left: 30px;
-
-  background-color: rgba(blue, 0.125);
-  opacity: 0.75;
-  &.selected {
-    background-color: rgba(blue, 0.2);
-    opacity: 1;
-  }
-}
-
-
-
-.wire-gate-menu {
+<style>
+WireGateHud {
   position: absolute;
   top: 0;
   left: 0;
@@ -60,6 +60,10 @@ div.wiring-tool-hud {
   display: none;
   opacity: 0;
   transition: opacity 0.2s ease-out;
+  &.visible {
+    display: flex;
+    opacity: 1;
+  }
 
   justify-content: center;
   align-items: center;
@@ -90,11 +94,6 @@ div.wiring-tool-hud {
         width: 100%;
       }
     }
-  }
-
-  &.visible {
-    display: flex;
-    opacity: 1;
 
     button {
       color: rgb(216, 216, 216);
@@ -115,3 +114,4 @@ div.wiring-tool-hud {
     }
   }
 }
+</style>

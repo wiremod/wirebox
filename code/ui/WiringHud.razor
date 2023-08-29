@@ -1,0 +1,64 @@
+@using Sandbox.UI
+@using Sandbox.Tools
+@using System.Linq
+@namespace Sandbox.UI
+@inherits Panel
+@attribute [StyleSheet]
+
+<root>
+  <div class="wiring-tool-hud">
+    <div class="wiring-ports wiring-inputs @(SelectedInput ? "selected" : "")">
+      <text class="h2">Inputs</text>
+      <div class="wiring-ports-list">
+		@for (int i=0; i < Inputs.Length; i++)
+		{
+			<div class="port @(i == InputPortIndex ? "active" : "")">
+				@Inputs[i]
+			</div>
+		}
+	  </div>
+    </div>
+	@if (Outputs.Length != 0)
+	{
+    <div class="wiring-ports wiring-outputs @(SelectingOutput ? "selected" : "")">
+      <text class="h2">Outputs</text>
+      <div class="wiring-ports-list">
+		@for (int i=0; i < Outputs.Length; i++)
+		{
+			<div class="port @(i == OutputPortIndex ? "active" : "")">
+				@Outputs[i]
+			</div>
+		}
+	  </div>
+    </div>
+	}
+  </div>
+</root>
+
+@code {
+    private string[] Inputs = System.Array.Empty<string>();
+    private string[] Outputs = System.Array.Empty<string>();
+	private bool SelectedInput = false;
+	private bool SelectingOutput = false;
+	private int InputPortIndex = 0;
+	private int OutputPortIndex = 0;
+
+    public void SetInputs( string[] names, bool selected = false, int portIndex = 0 )
+    {
+		if ( Game.LocalClient.Pawn is SandboxPlayer sandboxPlayer )
+		{
+			sandboxPlayer.SuppressScrollWheelInventory = names.Length != 0;
+		}
+		this.Inputs = names;
+		this.SelectedInput = selected;
+		this.InputPortIndex = portIndex;
+		StateHasChanged();
+    }
+    public void SetOutputs( string[] names, bool selectingOutput = false, int portIndex = 0 )
+    {
+		this.Outputs = names;
+		this.SelectingOutput = selectingOutput;
+		this.OutputPortIndex = portIndex;
+		StateHasChanged();
+    }
+}
