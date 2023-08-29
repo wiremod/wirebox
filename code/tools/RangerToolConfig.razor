@@ -1,0 +1,25 @@
+@using Sandbox.UI
+@namespace Sandbox.Tools
+@inherits Panel
+
+<root>
+	<Slider
+		Label="Range"
+		Min=@(10)
+		Max=@(1000)
+		Convar="tool_wireranger_length"
+	/>
+	<Switch
+		Label="Default to 0"
+		Convar="tool_wireranger_defaultzero"
+	/>
+</root>
+
+@code {
+}
+
+<style>
+RangerToolConfig {
+	flex-direction: column;
+}
+</style>
