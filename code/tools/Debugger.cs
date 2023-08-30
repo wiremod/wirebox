@@ -64,10 +64,10 @@ namespace Sandbox.Tools
 		{
 			if ( Game.IsClient )
 			{
-				Description = "Shows selected wire ports on the HUD.\nShift-F for Wiring tool.\n";
-				Description += "\nPrimary: Add entity to HUD";
-				Description += "\nSecondary: Remove entity from HUD";
-				Description += "\nReload: Clear HUD";
+				Description = $"Shows selected wire ports on the HUD.\n{Input.GetButtonOrigin( "run" )} - {Input.GetButtonOrigin( "flashlight" )} for Wiring tool.\n";
+				Description += $"\n{Input.GetButtonOrigin( "attack1" )}: Add entity to HUD";
+				Description += $"\n{Input.GetButtonOrigin( "attack2" )}: Remove entity from HUD";
+				Description += $"\n{Input.GetButtonOrigin( "reload" )}: Clear HUD";
 
 				SandboxHud.Instance.RootPanel.ChildrenOfType<DebuggerHud>().ToList().ForEach( x => x.Delete() );
 				debuggerHud = SandboxHud.Instance.RootPanel.AddChild<DebuggerHud>();
