@@ -224,7 +224,8 @@ namespace Sandbox.Tools
 
 		private string CalculateDescription()
 		{
-			var desc = $"Connect wirable entities with wires.\nHold G to spawn Gates.\n{Input.GetButtonOrigin( "run" )} - {Input.GetButtonOrigin( "flashlight" )} for Debugger.\n";
+			var drop = Input.GetButtonOrigin( "drop", true ) == null ? Input.GetButtonOrigin( "drop" ) : "G";
+			var desc = $"Connect wirable entities with wires.\nHold {drop} to spawn Gates.\n{Input.GetButtonOrigin( "run" )} - {Input.GetButtonOrigin( "flashlight" )} for Debugger.\n";
 			if ( Stage == 0 )
 			{
 				desc += $"\n{Input.GetButtonOrigin( "attack1" )}: select Input";
