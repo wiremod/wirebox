@@ -224,20 +224,21 @@ namespace Sandbox.Tools
 
 		private string CalculateDescription()
 		{
-			var desc = $"Connect wirable entities with wires.\nHold G to spawn Gates.\nShift-F for Debugger.\n";
+			var drop = Input.GetButtonOrigin( "drop", true ) == null ? Input.GetButtonOrigin( "drop" ) : "G";
+			var desc = $"Connect wirable entities with wires.\nHold {drop} to spawn Gates.\n{Input.GetButtonOrigin( "run" )} - {Input.GetButtonOrigin( "flashlight" )} for Debugger.\n";
 			if ( Stage == 0 )
 			{
-				desc += "\nPrimary: select Input";
-				desc += "\nSecondary: scroll to next Input (shift for previous)";
+				desc += $"\n{Input.GetButtonOrigin( "attack1" )}: select Input";
+				desc += $"\n{Input.GetButtonOrigin( "attack2" )}: scroll to next Input ({Input.GetButtonOrigin( "run" )} for previous)";
 				desc += "\nScroll Wheel: scroll between Inputs";
-				desc += "\nReload: Disconnect Input";
+				desc += $"\n{Input.GetButtonOrigin( "reload" )}: Disconnect Input";
 			}
 			else if ( Stage == 1 )
 			{
-				desc += "\nPrimary: select Output";
-				desc += "\nSecondary: scroll to next Output (shift for previous)";
+				desc += $"\n{Input.GetButtonOrigin( "attack1" )}: select Output";
+				desc += $"\n{Input.GetButtonOrigin( "attack2" )}: scroll to next Output ({Input.GetButtonOrigin( "run" )} for previous)";
 				desc += "\nScroll Wheel: scroll between Outputs";
-				desc += "\nReload: Cancel";
+				desc += $"\n{Input.GetButtonOrigin( "reload" )}: Cancel";
 			}
 			return desc;
 		}
