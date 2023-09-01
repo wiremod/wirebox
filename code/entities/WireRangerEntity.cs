@@ -16,36 +16,30 @@ public partial class WireRangerEntity : Prop, IWireOutputEntity, IWireInputEntit
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 	public void WireInitialize()
 	{
-		var inputs = ((IWireEntity)this).WirePorts.inputs;
 		this.RegisterInputHandler( "Length", ( float value ) =>
 		{
 			Length = value;
-		} );
-		inputs["Length"].value = Length;
+		}, Length );
 
 		this.RegisterInputHandler( "HitWater", ( bool value ) =>
 		{
 			HitWater = value;
-		} );
-		inputs["HitWater"].value = HitWater;
+		}, HitWater );
 
 		this.RegisterInputHandler( "HitWorld", ( bool value ) =>
 		{
 			HitWorld = value;
-		} );
-		inputs["HitWorld"].value = HitWorld;
+		}, HitWorld );
 
 		this.RegisterInputHandler( "ShowBeam", ( bool value ) =>
 		{
 			ShowBeam = value;
-		} );
-		inputs["ShowBeam"].value = ShowBeam;
+		}, ShowBeam );
 
 		this.RegisterInputHandler( "DefaultZero", ( bool value ) =>
 		{
 			DefaultZero = value;
-		} );
-		inputs["DefaultZero"].value = DefaultZero;
+		}, DefaultZero );
 	}
 	public PortType[] WireGetOutputs()
 	{
@@ -149,6 +143,6 @@ public partial class WireRangerEntity : Prop, IWireOutputEntity, IWireInputEntit
 	{
 		base.OnDestroy();
 
-		Beam?.Destroy(true);
+		Beam?.Destroy( true );
 	}
 }

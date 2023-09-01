@@ -18,24 +18,20 @@ public partial class WireForcerEntity : Prop, IWireInputEntity
 	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 	public void WireInitialize()
 	{
-		var inputs = ((IWireEntity)this).WirePorts.inputs;
 		this.RegisterInputHandler( "Length", ( float value ) =>
 		{
 			Length = value;
-		} );
-		inputs["Length"].value = Length;
+		}, Length );
 
 		this.RegisterInputHandler( "Force", ( float value ) =>
 		{
 			Force = value;
-		} );
-		inputs["Force"].value = Force;
+		}, Force );
 
 		this.RegisterInputHandler( "OffsetForce", ( float value ) =>
 		{
 			OffsetForce = value;
-		} );
-		inputs["OffsetForce"].value = OffsetForce;
+		}, OffsetForce );
 	}
 
 	[GameEvent.Physics.PostStep]

@@ -36,6 +36,10 @@ namespace Sandbox
 				return Angles.Zero;
 			else if ( type == "rotation" )
 				return Rotation.Identity;
+			else if ( type == "entity" )
+			{
+				return 0; // this... isn't great, but null's are worse (eg. TriggerOutput's `output.value.Equals( value )` check errors)
+			}
 
 			return false;
 		}
