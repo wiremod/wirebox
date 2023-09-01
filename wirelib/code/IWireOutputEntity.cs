@@ -100,6 +100,7 @@ namespace Sandbox
 		{
 			if ( WirePorts.outputs.Count == 0 )
 			{
+				InitializeOutputs();
 				WireInitializeOutputs();
 			}
 			return WirePorts.outputs[inputName];
@@ -108,6 +109,7 @@ namespace Sandbox
 		{
 			if ( WirePorts.outputs.Count == 0 )
 			{
+				InitializeOutputs();
 				WireInitializeOutputs();
 			}
 			return !withValues
@@ -122,11 +124,9 @@ namespace Sandbox
 				} ).ToArray();
 		}
 
-		// A thin wrapper, so classes can replaces this as needed
-		public virtual void WireInitializeOutputs()
-		{
-			InitializeOutputs();
-		}
+		// Entities can implement this for custom output initialization
+		public virtual void WireInitializeOutputs() { }
+
 		public void InitializeOutputs()
 		{
 			foreach ( var type in WireGetOutputs() )

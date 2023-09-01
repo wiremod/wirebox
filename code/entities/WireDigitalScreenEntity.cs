@@ -49,7 +49,7 @@ public partial class WireDigitalScreenEntity : Prop, IWireInputEntity
 	protected void UpdatePanel()
 	{
 		if ( !Game.IsClient || !worldPanel.IsValid ) return;
-		var modelData = ScreenTransforms.GetValueOrDefault( Model.Name );
+		var modelData = ScreenDatabase.GetValueOrDefault( Model.Name );
 		worldPanel.Position = Transform.PointToWorld( modelData.Position );
 		worldPanel.Rotation = Rotation.RotateAroundAxis( modelData.Rotation.Right, -modelData.Rotation.w );
 		worldPanel.Label.Text = labelPrefix;
@@ -63,13 +63,26 @@ public partial class WireDigitalScreenEntity : Prop, IWireInputEntity
 			Cloud.Asset("https://asset.party/baik/flatscreen_tv"),
 			Cloud.Asset("https://asset.party/eurorp/monitor"),
 		} );
+		ScreenDatabase = new()
+		{
+			["models/television/flatscreen_tv.vmdl"] = new ScreenData()
+			{
+				Position = new Vector3( 13, 3, 1.75f ),
+				Rotation = new Rotation( new Vector3( 0, 1, 0 ), -90 ),
+				Size = new Vector2( 50, 30 ),
+				ScreenTextureIndex = 1,
+			},
+			["models/others/monitor/monitor.vmdl"] = new ScreenData()
+			{
+				Position = new Vector3( -0.5f, 9, 1.25f ),
+				Rotation = Rotation.Identity,
+				Size = new Vector2( 37, 21 ),
+				ScreenTextureIndex = 1,
+			},
+		};
 	}
 
-	public static readonly Dictionary<string, Transform> ScreenTransforms = new()
-	{
-		["models/television/flatscreen_tv.vmdl"] = new Transform( new Vector3( 13, 3, 1.75f ), new Rotation( new Vector3( 0, 1, 0 ), -90 ) ),
-		["models/others/monitor/monitor.vmdl"] = new Transform( new Vector3( -0.5f, 9, 1.25f ), Rotation.Identity ),
-	};
+	public static Dictionary<string, ScreenData> ScreenDatabase = new();
 }
 
 
@@ -83,4 +96,14 @@ class DigitalScreenWorldPanel : WorldPanel
 		Label = Add.Label( "Wire Screen:", "ds-text" );
 		Value = Add.Label( "0", "ds-text" );
 	}
+}
+
+public struct ScreenData
+{
+	public Vector3 Position;
+	public Rotation Rotation;
+	// Size of the viewable area
+	public Vector2 Size;
+	// Index of the texture to override (typically 1)
+	public int ScreenTextureIndex;
 }
