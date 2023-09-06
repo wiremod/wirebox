@@ -22,7 +22,7 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 	{
 		return new Dictionary<string, string[]>
 		{
-			["Math"] = new string[] { "Constant", "Add", "Subtract", "Multiply", "Divide", "Negate", "Absolute", "Sin", "Cos" },
+			["Math"] = new string[] { "Constant", "Add", "Subtract", "Multiply", "Divide", "Mod", "Negate", "Absolute", "Sin", "Cos" },
 			["Logic"] = new string[] { "Not", "And", "Or", "GreaterThan", "LessThan", "Equal" },
 			["Comparison"] = new string[] { "Max", "Min", "Clamp" },
 			["Time"] = new string[] { "Delta", "Tick", "Smoother" },
@@ -155,6 +155,21 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 				else
 				{
 					this.WireTriggerOutput( "Out", inputs["A"].asFloat / b );
+				}
+			}, new string[] { "A", "B" } );
+		}
+		else if ( GateType == "Mod" )
+		{
+			BulkRegisterInputHandlers( ( float value ) =>
+			{
+				var b = inputs["B"].asFloat;
+				if ( b == 0 )
+				{
+					this.WireTriggerOutput( "Out", 0 );
+				}
+				else
+				{
+					this.WireTriggerOutput( "Out", inputs["A"].asFloat % b );
 				}
 			}, new string[] { "A", "B" } );
 		}
