@@ -12,6 +12,7 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 	private int constantValue = 3;
 	private float storedFloat = 0;
 	private Entity storedEnt;
+	private float[] storedRAM;
 
 	[Net]
 	public string DebugText { get; set; } = "";
@@ -383,6 +384,32 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 					storedFloat = newValue;
 					this.WireTriggerOutput( "Out", newValue );
 				}
+			} );
+		}
+		else if ( GateType == "RAM" )
+		{
+			storedRAM ??= new float[32768];
+			this.RegisterInputHandler( "Address", ( float value ) =>
+			{
+				if ( (int)value >= 0 && (int)value < 32768 )
+				{
+					this.WireTriggerOutput( "Out", storedRAM[(int)value] );
+				}
+			} );
+			this.RegisterInputHandler( "Value", ( float value ) => { } );
+			this.RegisterInputHandler( "Clk", ( bool value ) =>
+			{
+				var address = (int)inputs["Address"].asFloat;
+				if ( value && address is >= 0 and < 32768 )
+				{
+					storedRAM[address] = inputs["Value"].asFloat;
+					this.WireTriggerOutput( "Out", inputs["Value"].asFloat );
+				}
+			} );
+			this.RegisterInputHandler( "Reset", ( bool value ) =>
+			{
+				storedRAM = new float[32768];
+				this.WireTriggerOutput( "Out", 0f );
 			} );
 		}
 		else if ( GateType == "Incrementor" )
