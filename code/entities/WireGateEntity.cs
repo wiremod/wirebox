@@ -356,7 +356,7 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 		else if ( GateType == "Latch" )
 		{
 			this.RegisterInputHandler( "Value", (float value) => { });
-			this.RegisterInputHandler( "Clk", ( bool value ) =>
+			this.RegisterInputHandler( "Write", ( bool value ) =>
 			{
 				if ( value )
 				{
@@ -397,7 +397,7 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 				}
 			} );
 			this.RegisterInputHandler( "Value", ( float value ) => { } );
-			this.RegisterInputHandler( "Clk", ( bool value ) =>
+			this.RegisterInputHandler( "Write", ( bool value ) =>
 			{
 				var address = (int)inputs["Address"].asFloat;
 				if ( value && address is >= 0 and < 32768 )
