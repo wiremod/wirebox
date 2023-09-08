@@ -12,6 +12,7 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 	private int constantValue = 3;
 	private float storedFloat = 0;
 	private Entity storedEnt;
+	private float[] storedRAM;
 
 	[Net]
 	public string DebugText { get; set; } = "";
@@ -27,6 +28,7 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 			["Comparison"] = new string[] { "Max", "Min", "Clamp" },
 			["Time"] = new string[] { "Delta", "Tick", "Smoother" },
 			["Entity"] = new string[] { "Position", "Velocity", "Owner" },
+			["Memory"] = new string[] { "Latch", "D-Latch", "Toggle", "RAM", "Incrementor" },
 		};
 	}
 
@@ -349,6 +351,92 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 			this.RegisterInputHandler( "Ent", ( Entity value ) =>
 			{
 				storedEnt = value;
+			} );
+		}
+		else if ( GateType == "Latch" )
+		{
+			this.RegisterInputHandler( "Value", (float value) => { });
+			this.RegisterInputHandler( "Write", ( bool value ) =>
+			{
+				if ( value )
+				{
+					this.WireTriggerOutput( "Out", inputs["Value"].asFloat );
+				}
+			} );
+		}
+		else if ( GateType == "D-Latch" )
+		{
+			BulkRegisterInputHandlers( ( float value ) =>
+			{
+				if ( inputs["On"].asBool )
+				{
+					this.WireTriggerOutput( "Out", inputs["Value"].asFloat );
+				}
+			}, new string[] { "Value", "On" } );
+		}
+		else if ( GateType == "Toggle" )
+		{
+			this.RegisterInputHandler( "Toggle", ( bool value ) =>
+			{
+				if ( value )
+				{
+					float newValue = Math.Abs( storedFloat - 1 ) < 0.01 ? 0 : 1;
+					storedFloat = newValue;
+					this.WireTriggerOutput( "Out", newValue );
+				}
+			} );
+		}
+		else if ( GateType == "RAM" )
+		{
+			storedRAM ??= new float[32768];
+			this.RegisterInputHandler( "Address", ( float value ) =>
+			{
+				if ( (int)value >= 0 && (int)value < 32768 )
+				{
+					this.WireTriggerOutput( "Out", storedRAM[(int)value] );
+				}
+			} );
+			this.RegisterInputHandler( "Value", ( float value ) => { } );
+			this.RegisterInputHandler( "Write", ( bool value ) =>
+			{
+				var address = (int)inputs["Address"].asFloat;
+				if ( value && address is >= 0 and < 32768 )
+				{
+					storedRAM[address] = inputs["Value"].asFloat;
+					this.WireTriggerOutput( "Out", inputs["Value"].asFloat );
+				}
+			} );
+			this.RegisterInputHandler( "Reset", ( bool value ) =>
+			{
+				storedRAM = new float[32768];
+				this.WireTriggerOutput( "Out", 0f );
+			} );
+		}
+		else if ( GateType == "Incrementor" )
+		{
+			this.RegisterInputHandler( "Increment", ( bool value ) =>
+			{
+				if ( value )
+				{
+					storedFloat++;
+					this.WireTriggerOutput( "Out", storedFloat );
+				}
+			} );
+			this.RegisterInputHandler( "Decrement", ( bool value ) =>
+			{
+				if ( value )
+				{
+					storedFloat--;
+					this.WireTriggerOutput( "Out", storedFloat );
+				}
+			} );
+			this.RegisterInputHandler( "Reset", ( bool value ) =>
+			{
+				if ( value )
+				{
+					storedFloat = 0;
+					this.WireTriggerOutput( "Out", storedFloat );
+				}
 			} );
 		}
 	}
