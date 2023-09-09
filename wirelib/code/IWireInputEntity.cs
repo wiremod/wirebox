@@ -9,6 +9,24 @@ namespace Sandbox
 		public object value = 0;
 		public float asFloat { get => Convert.ToSingle( value ); }
 		public bool asBool { get => Convert.ToBoolean( value ); }
+		public Vector3 asVector3
+		{
+			get
+			{
+				if ( value is Vector3 valueVec3 )
+					return valueVec3;
+				else if ( value is float valueFloat )
+					return new Vector3( valueFloat, valueFloat, valueFloat );
+				else if ( value is int valueInt )
+					return new Vector3( valueInt, valueInt, valueInt );
+				else if ( value is Angles valueAng )
+					return valueAng.Forward;
+				else if ( value is Rotation valueRot )
+					return valueRot.Forward;
+				else
+					return Vector3.Zero;
+			}
+		}
 
 		public Entity entity;
 		public string inputName;
@@ -238,6 +256,12 @@ namespace Sandbox
 				}
 			});
 			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "entity", def );
+		}
+
+		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<object> handler, object def = null )
+		{
+			instance.WirePorts.inputHandlers[inputName] = handler;
+			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "any", def );
 		}
 	}
 

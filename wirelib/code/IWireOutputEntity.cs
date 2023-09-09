@@ -28,6 +28,8 @@ namespace Sandbox
 		public string Name { get; init; }
 		public string Type { get; init; }
 
+		public static PortType Any( string name ) =>
+			new() { Name = name, Type = "any" };
 		public static PortType Bool( string name ) =>
 			new() { Name = name, Type = "bool" };
 		public static PortType Int( string name ) =>

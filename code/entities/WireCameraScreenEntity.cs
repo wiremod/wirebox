@@ -48,6 +48,7 @@ public partial class WireCameraScreenEntity : Prop, IWireInputEntity
 		}
 		timeSinceLastRender = 0;
 
+		// Showing the local player seems to be broken as of https://github.com/sboxgame/issues/issues/3147
 		// todo: could consider caching the Texture between multiple screens of the same size
 		Graphics.RenderToTexture( CameraEntity.GetSceneCamera(), Texture );
 	}
