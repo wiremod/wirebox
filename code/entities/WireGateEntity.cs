@@ -209,13 +209,6 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 				}
 			}, new string[] { "A", "B" } );
 		}
-		else if ( GateType == "Negate" )
-		{
-			this.RegisterInputHandler( "A", ( float value ) =>
-			{
-				this.WireTriggerOutput( "Out", -value );
-			} );
-		}
 		else if ( GateType == "Sin" )
 		{
 			this.RegisterInputHandler( "A", ( float value ) =>
