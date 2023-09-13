@@ -21,16 +21,6 @@ public partial class WireButtonEntity : Prop, IUse, IStopUsing, IWireOutputEntit
 		return true;
 	}
 
-	private bool ModelUsesMaterialGroups()
-	{
-		var model = GetModelName();
-		if ( model == "models/wirebox/katlatze/button.vmdl" )
-		{
-			return true;
-		}
-		return false;
-	}
-
 	public bool OnUse( Entity user )
 	{
 		if ( IsToggle )
@@ -56,7 +46,7 @@ public partial class WireButtonEntity : Prop, IUse, IStopUsing, IWireOutputEntit
 	protected void SetOn( bool on )
 	{
 		On = on;
-		if ( ModelUsesMaterialGroups() )
+		if ( MaterialGroupCount > 1 )
 		{
 			SetMaterialGroup( On ? 1 : 0 );
 		}
