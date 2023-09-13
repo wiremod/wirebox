@@ -10,14 +10,6 @@ namespace Sandbox.Tools
 		{
 			return typeof( WireGyroscopeEntity );
 		}
-		protected override ModelEntity SpawnEntity( TraceResult tr )
-		{
-			return new WireGyroscopeEntity
-			{
-				Position = tr.EndPosition,
-				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) )
-			};
-		}
 		protected override string[] GetSpawnLists()
 		{
 			return new string[] { "gyroscope", "controller" };

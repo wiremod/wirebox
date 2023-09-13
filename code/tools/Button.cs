@@ -13,12 +13,9 @@ namespace Sandbox.Tools
 		}
 		protected override ModelEntity SpawnEntity( TraceResult tr )
 		{
-			return new WireButtonEntity
-			{
-				Position = tr.EndPosition,
-				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
-				IsToggle = Input.Down( "run" ),
-			};
+			var ent = (WireButtonEntity)base.SpawnEntity( tr );
+			ent.IsToggle = Input.Down( "run" );
+			return ent;
 		}
 	}
 }

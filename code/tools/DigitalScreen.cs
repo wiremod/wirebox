@@ -11,14 +11,6 @@ namespace Sandbox.Tools
 		{
 			return typeof( WireDigitalScreenEntity );
 		}
-		protected override ModelEntity SpawnEntity( TraceResult tr )
-		{
-			return new WireDigitalScreenEntity
-			{
-				Position = tr.EndPosition,
-				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) )
-			};
-		}
 		protected override string[] GetSpawnLists()
 		{
 			return new string[] { "screen", "controller" };

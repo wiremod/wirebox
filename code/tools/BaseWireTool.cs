@@ -17,7 +17,14 @@ namespace Sandbox.Tools
 		{
 			return new string[] { GetConvarValue( "tool_current", "" )[5..] };
 		}
-		abstract protected ModelEntity SpawnEntity( TraceResult tr );
+
+		protected virtual ModelEntity SpawnEntity( TraceResult tr )
+		{
+			var ent = TypeLibrary.Create<ModelEntity>( GetEntityType() );
+			ent.Position = tr.EndPosition;
+			ent.Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) );
+			return ent;
+		}
 
 		protected virtual void UpdateEntity( Entity ent ) { }
 

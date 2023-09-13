@@ -17,13 +17,10 @@ namespace Sandbox.Tools
 		}
 		protected override ModelEntity SpawnEntity( TraceResult tr )
 		{
-			return new WireRangerEntity
-			{
-				Position = tr.EndPosition,
-				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
-				Length = float.Parse( GetConvarValue( "tool_wireranger_length" ) ),
-				DefaultZero = GetConvarValue( "tool_wireranger_defaultzero" ) != "0",
-			};
+			var ent = (WireRangerEntity)base.SpawnEntity( tr );
+			ent.Length = float.Parse( GetConvarValue( "tool_wireranger_length" ) );
+			ent.DefaultZero = GetConvarValue( "tool_wireranger_defaultzero" ) != "0";
+			return ent;
 		}
 		protected override string[] GetSpawnLists()
 		{
