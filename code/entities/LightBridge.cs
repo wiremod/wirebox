@@ -16,9 +16,10 @@ public partial class LightBridgeEntity : Prop, IWireInputEntity
 				bridgeEntity?.Delete();
 				return;
 			}
+			var vertexModel = VertexMeshBuilder.CreateRectangle( (int)length, 100, 1, 64 );
 			if ( !bridgeEntity.IsValid() )
 			{
-				bridgeEntity = VertexMeshBuilder.SpawnEntity( (int)length, 100, 1, 64 );
+				bridgeEntity = VertexMeshBuilder.SpawnEntity( vertexModel );
 				bridgeEntity.Position = Transform.PointToWorld( new Vector3( 4, -50, 9.5f ) - bridgeEntity.CollisionBounds.Mins );
 				bridgeEntity.Rotation = Rotation;
 				bridgeEntity.MaterialOverride = "materials/wirebox/katlatze/metal.vmat";
@@ -27,7 +28,7 @@ public partial class LightBridgeEntity : Prop, IWireInputEntity
 			}
 			else
 			{
-				bridgeEntity.Model = VertexMeshBuilder.Models[VertexMeshBuilder.GenerateRectangleServer( (int)length, 100, 1, 64 )];
+				bridgeEntity.Model = VertexMeshBuilder.Models[vertexModel];
 				bridgeEntity.Tick();
 				bridgeEntity.Position = Transform.PointToWorld( new Vector3( 4, -50, 9.5f ) - bridgeEntity.CollisionBounds.Mins );
 			}
