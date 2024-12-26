@@ -45,9 +45,9 @@
 
     public void SetInputs( string[] names, bool selected = false, int portIndex = 0 )
     {
-		if ( Game.LocalClient.Pawn is SandboxPlayer sandboxPlayer )
+		if ( Player.FindLocalPlayer() is var player )
 		{
-			sandboxPlayer.SuppressScrollWheelInventory = names.Length != 0;
+			player.SuppressScrollWheelInventory = names.Length != 0;
 		}
 		this.Inputs = names;
 		this.SelectedInput = selected;
