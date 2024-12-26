@@ -2,7 +2,12 @@
 
 ## Current status
 
-Early WIP (as is S&box itself), compiles as of August 2023.
+Broken while we migrate from 2023's Entity system to the new Scene system, and adapt to the removal of what little official addon support existed before.
+
+For the old version using the Entity system, see [2023-entity-system](https://github.com/wiremod/wirebox/tree/2023-entity-system) branch.
+
+
+Early WIP (as is S&box itself):
 
 - Wiring Tool is equivalent to G-Wiremod's non-Adv version, with basic Debugger and Gate spawning functionalities too
 - Outputs: Buttons, GPS, Gyroscope, Ranger, Speedometer, and a Wire Keyboard (effectively a Pod Controller with a builtin vehicle)
@@ -15,12 +20,27 @@ Message Nebual on Discord with any questions about contributing! See [todos](htt
 
 Wirebox is an addon intended to be used with on top of [SandboxPlus](https://github.com/Nebual/sandbox-plus), a fork of FP's Sandbox gamemode, modified to be more extendable for addons and have more critical tools and utilities.
 
-You'll likely want to clone both repos, open them both in the same SBox Editor Project + VSCode Workspace, then configure SandboxPlus to load Wirebox as an addon (eg. via the Create Server menu).
+Still tbd how best to do addons as of the Scene system. For now:
 
+#### Windows
 ```
-git clone https://github.com/Nebual/sandbox-plus.git
-git clone https://github.com/wiremod/wirebox.git
+# in the root directory of your game project
+git submodule add https://github.com/wiremod/wirebox External\wirebox
+
+mklink /J Code\wirebox External\wirebox\Code\wirebox
+mklink /J Libraries\WireLib\Code External\wirebox\wirelib\Code
+mklink /J Assets\entity\wirebox External\wirebox\Assets\entity\wirebox
+mklink /J Assets\materials\wirebox External\wirebox\Assets\materials\wirebox
+mklink /J Assets\models\wirebox External\wirebox\Assets\models\wirebox
+mklink /J Assets\particles\wirebox External\wirebox\Assets\particles\wirebox
+echo External/ >> .gitignore
+echo Code/wirebox/ >> .gitignore
+echo Assets/*/wirebox/ >> .gitignore
 ```
+
+#### Linux
+Could use submodule + symlinks (which can be committed to git as symlinks)
+
 
 ## Developing
 

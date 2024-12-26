@@ -1,0 +1,15 @@
+{
+  "Title": "Wirebox",
+  "Type": "addon",
+  "Org": "wiremod",
+  "Ident": "wireboxaddon",
+  "Tags": "sandbox spawnmenu wirebox runtime",
+  "Schema": 1,
+  "HasAssets": true,
+  "AssetsPath": "",
+  "Resources": "/config/*.spawnlist\n/Assets/entity/*.png",
+  "MenuResources": null,
+  "PackageReferences": [],
+  "EditorReferences": null,
+  "Metadata": {}
+}
