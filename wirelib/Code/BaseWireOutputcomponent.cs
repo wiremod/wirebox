@@ -1,25 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Sandbox
+﻿namespace Sandbox
 {
 	public class WireOutput
 	{
 		public object value = 0;
-		public Entity entity;
+		public GameObject entity;
 		public string outputName;
 		public string type;
 		public List<WireInput> connected = new();
 		public int executions = 0;
 		public int executionsTick = 0;
 
-		public WireOutput( Entity entity, string outputName, string type )
+		public WireOutput( GameObject entity, string outputName, string type )
 		{
 			this.entity = entity;
 			this.outputName = outputName;
 			this.type = type;
 
-			value = IWireEntity.GetDefaultValueFromType( type );
+			value = BaseWireComponent.GetDefaultValueFromType( type );
 		}
 	}
 
@@ -44,11 +41,11 @@ namespace Sandbox
 			new() { Name = name, Type = "angle" };
 		public static PortType Rotation( string name ) =>
 			new() { Name = name, Type = "rotation" };
-		public static PortType Entity( string name ) =>
-			new() { Name = name, Type = "entity" };
+		public static PortType GameObject( string name ) =>
+			new() { Name = name, Type = "gameobject" };
 	}
 
-	public interface IWireOutputEntity : IWireEntity
+	public abstract class BaseWireOutputComponent : BaseWireComponent
 	{
 		public void WireTriggerOutput<T>( string outputName, T value )
 		{
@@ -60,9 +57,10 @@ namespace Sandbox
 
 			output.value = value;
 
-			if ( output.executionsTick != Time.Tick )
+			var tick = (Time.Now * 50).FloorToInt();
+			if ( output.executionsTick != tick )
 			{
-				output.executionsTick = Time.Tick;
+				output.executionsTick = tick;
 				output.executions = 1;
 			}
 			else if ( output.executions >= 4 )
@@ -78,13 +76,13 @@ namespace Sandbox
 			foreach ( var input in output.connected )
 			{
 				if ( !input.entity.IsValid() ) continue;
-				if ( input.entity is IWireInputEntity inputEntity )
+				if ( input.entity.GetComponent<BaseWireInputComponent>() is BaseWireInputComponent inputEntity )
 				{
 					inputEntity.WireTriggerInput( input.inputName, value );
 				}
 			}
 		}
-		public void WireConnect( IWireInputEntity inputEnt, string outputName, string inputName )
+		public void WireConnect( BaseWireInputComponent inputEnt, string outputName, string inputName )
 		{
 			var input = inputEnt.GetInput( inputName );
 			var output = GetOutput( outputName );
@@ -133,16 +131,16 @@ namespace Sandbox
 		{
 			foreach ( var type in WireGetOutputs() )
 			{
-				WirePorts.outputs[type.Name] = new WireOutput( (Entity)this, type.Name, type.Type );
+				WirePorts.outputs[type.Name] = new WireOutput( this.GameObject, type.Name, type.Type );
 			}
 		}
 		abstract public PortType[] WireGetOutputs();
 	}
 
 	// Extension methods to allow calling the interface methods without explicit casting
-	public static class IWireOutputEntityUtils
+	public static class BaseWireOutputComponentUtils
 	{
-		public static void WireTriggerOutput<T>( this IWireOutputEntity instance, string outputName, T value )
+		public static void WireTriggerOutput<T>( this BaseWireOutputComponent instance, string outputName, T value )
 		{
 			instance.WireTriggerOutput( outputName, value );
 		}

@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System;
-
-namespace Sandbox
+﻿namespace Sandbox
 {
 	public class WireInput
 	{
@@ -28,23 +24,23 @@ namespace Sandbox
 			}
 		}
 
-		public Entity entity;
+		public GameObject entity;
 		public string inputName;
 		public string type;
 		public WireOutput connectedOutput;
 		public WireCable AttachRope { get; set; }
 
-		public WireInput( Entity entity, string inputName, string type, object def = null )
+		public WireInput( GameObject entity, string inputName, string type, object def = null )
 		{
 			this.entity = entity;
 			this.inputName = inputName;
 			this.type = type;
 
-			value = def ?? IWireEntity.GetDefaultValueFromType( type );
+			value = def ?? BaseWireComponent.GetDefaultValueFromType( type );
 		}
 	}
 
-	public interface IWireInputEntity : IWireEntity
+	public class BaseWireInputComponent : BaseWireComponent
 	{
 		public void WireTriggerInput<T>( string inputName, T value )
 		{
@@ -99,19 +95,19 @@ namespace Sandbox
 			}
 			if ( input.AttachRope != null )
 			{
-				input.AttachRope.Destroy( true );
+				input.AttachRope.Destroy();
 				input.AttachRope = null;
 			}
 
-			WireTriggerInput( input.inputName, IWireEntity.GetDefaultValueFromType( input.type ) );
+			WireTriggerInput( input.inputName, BaseWireComponent.GetDefaultValueFromType( input.type ) );
 		}
 
 	}
 
 	// Extension methods to allow calling the interface methods without explicit casting
-	public static class IWireInputEntityUtils
+	public static class BaseWireInputComponentUtils
 	{
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<float> handler, float def = 0f )
+		public static void RegisterInputHandler( this BaseWireInputComponent instance, string inputName, Action<float> handler, float def = 0f )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
@@ -128,10 +124,10 @@ namespace Sandbox
 					handler( Convert.ToSingle( value ) );
 				}
 			});
-			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "float", def );
+			instance.WirePorts.inputs[inputName] = new WireInput( instance.GameObject, inputName, "float", def );
 		}
 
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<bool> handler, bool def = false )
+		public static void RegisterInputHandler( this BaseWireInputComponent instance, string inputName, Action<bool> handler, bool def = false )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
@@ -152,10 +148,10 @@ namespace Sandbox
 					handler( (bool)value );
 				}
 			});
-			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "bool", def );
+			instance.WirePorts.inputs[inputName] = new WireInput( instance.GameObject, inputName, "bool", def );
 		}
 
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<int> handler, int def = 0 )
+		public static void RegisterInputHandler( this BaseWireInputComponent instance, string inputName, Action<int> handler, int def = 0 )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
@@ -168,16 +164,16 @@ namespace Sandbox
 					handler( (int)value );
 				}
 			});
-			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "int", def );
+			instance.WirePorts.inputs[inputName] = new WireInput( instance.GameObject, inputName, "int", def );
 		}
 
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<string> handler, string def = "" )
+		public static void RegisterInputHandler( this BaseWireInputComponent instance, string inputName, Action<string> handler, string def = "" )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
-				if ( value is Entity valueEnt )
+				if ( value is GameObject valueEnt )
 				{
-					handler( $"{valueEnt.ClassName} [{valueEnt.NetworkIdent}]" );
+					handler( $"GameObject" ); // todo is there something more useful like $"{valueEnt.ClassName} [{valueEnt.NetworkIdent}]" we can do?
 				}
 				else if ( value is Vector3 valueVec3 )
 				{
@@ -192,10 +188,10 @@ namespace Sandbox
 					handler( value.ToString() );
 				}
 			});
-			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "string", def );
+			instance.WirePorts.inputs[inputName] = new WireInput( instance.GameObject, inputName, "string", def );
 		}
 
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<Vector3> handler, Vector3 def = new Vector3() )
+		public static void RegisterInputHandler( this BaseWireInputComponent instance, string inputName, Action<Vector3> handler, Vector3 def = new Vector3() )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
@@ -208,10 +204,10 @@ namespace Sandbox
 					handler( (Vector3)value );
 				}
 			});
-			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "vector3", def );
+			instance.WirePorts.inputs[inputName] = new WireInput( instance.GameObject, inputName, "vector3", def );
 		}
 
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<Angles> handler, Angles def = new Angles() )
+		public static void RegisterInputHandler( this BaseWireInputComponent instance, string inputName, Action<Angles> handler, Angles def = new Angles() )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
@@ -224,44 +220,44 @@ namespace Sandbox
 					handler( (Angles)value );
 				}
 			});
-			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "angle", def );
+			instance.WirePorts.inputs[inputName] = new WireInput( instance.GameObject, inputName, "angle", def );
 		}
 
 		// Todo: C# won't seem to let me make `def = Rotation.Identity`, so lets just have a second function for now
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<Rotation> handler )
+		public static void RegisterInputHandler( this BaseWireInputComponent instance, string inputName, Action<Rotation> handler )
 		{
 			RegisterInputHandler( instance, inputName, handler, Rotation.Identity );
 		}
 
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<Rotation> handler, Rotation def )
+		public static void RegisterInputHandler( this BaseWireInputComponent instance, string inputName, Action<Rotation> handler, Rotation def )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
 				handler( (Rotation)value );
 			});
-			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "rotation", def );
+			instance.WirePorts.inputs[inputName] = new WireInput( instance.GameObject, inputName, "rotation", def );
 		}
 
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<Entity> handler, Entity def = null )
+		public static void RegisterInputHandler( this BaseWireInputComponent instance, string inputName, Action<GameObject> handler, GameObject def = null )
 		{
 			instance.WirePorts.inputHandlers[inputName] = (( value ) =>
 			{
-				if ( value is Entity valueEnt )
+				if ( value is GameObject valueGo )
 				{
-					handler( (Entity)value );
+					handler( valueGo );
 				}
 				else
 				{
 					handler( null );
 				}
 			});
-			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "entity", def );
+			instance.WirePorts.inputs[inputName] = new WireInput( instance.GameObject, inputName, "gameobject", def );
 		}
 
-		public static void RegisterInputHandler( this IWireInputEntity instance, string inputName, Action<object> handler, object def = null )
+		public static void RegisterInputHandler( this BaseWireInputComponent instance, string inputName, Action<object> handler, object def = null )
 		{
 			instance.WirePorts.inputHandlers[inputName] = handler;
-			instance.WirePorts.inputs[inputName] = new WireInput( (Entity)instance, inputName, "any", def );
+			instance.WirePorts.inputs[inputName] = new WireInput( instance.GameObject, inputName, "any", def );
 		}
 	}
 
