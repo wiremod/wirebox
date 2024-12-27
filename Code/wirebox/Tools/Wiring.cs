@@ -54,7 +54,7 @@ namespace Sandbox.Tools
 					}
 					inputEnt = tr.GameObject;
 					inputPos = tr.EndPosition;
-					Parent.ToolEffects( tr.EndPosition );
+					Parent.ToolEffects( tr.EndPosition, tr.Normal );
 				}
 				else
 				{
@@ -138,7 +138,7 @@ namespace Sandbox.Tools
 				return;
 			}
 
-			Parent.ToolEffects( tr.EndPosition );
+			Parent.ToolEffects( tr.EndPosition, tr.Normal );
 		}
 
 		protected void UpdateTraceEntPorts( SceneTraceResult tr )

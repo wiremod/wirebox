@@ -7,22 +7,16 @@ namespace Sandbox.Tools
 		[ConVar( "tool_wirebutton_model" )]
 		public static string _ { get; set; } = "models/wirebox/katlatze/button.vmdl";
 
-		protected override bool IsMatchingEntity( GameObject go )
+		protected override TypeDescription GetSpawnedComponent()
 		{
-			return go.GetComponent<WireButtonComponent>() != null;
+			return TypeLibrary.GetType<WireButtonComponent>();
 		}
-		protected override GameObject SpawnEntity( SceneTraceResult tr )
+		protected override void UpdateEntity( GameObject go )
 		{
-			var go = base.SpawnEntity( tr );
-			var button = go.AddComponent<WireButtonComponent>();
-			button.IsToggle = Input.Down( "run" );
+			base.UpdateEntity( go );
 
-			UndoSystem.Add( creator: this.Owner, callback: () =>
-			{
-				go.Destroy();
-				return "Undid button creation";
-			}, prop: go );
-			return go;
+			var button = go.GetComponent<WireButtonComponent>();
+			button.IsToggle = Input.Down( "run" );
 		}
 		protected override string[] GetSpawnLists()
 		{
