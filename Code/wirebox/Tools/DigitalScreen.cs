@@ -1,15 +1,14 @@
-﻿using System;
-namespace Sandbox.Tools
+﻿namespace Sandbox.Tools
 {
 	[Library( "tool_wiredigitalscreen", Title = "Wire Digital Screen", Description = "Create a Wire Digital Screen for displaying numbers", Group = "construction" )]
-	public partial class DigitalScreenTool : BaseWireTool
+	public partial class DigitalScreenTool : BaseSpawnTool
 	{
-		[ConVar.ClientData( "tool_wiredigitalscreen_model" )]
+		[ConVar( "tool_wiredigitalscreen_model" )]
 		public static string _ { get; set; } = "models/television/flatscreen_tv.vmdl";
 
-		protected override Type GetEntityType()
+		protected override TypeDescription GetSpawnedComponent()
 		{
-			return typeof( WireDigitalScreenEntity );
+			return TypeLibrary.GetType<WireDigitalScreenComponent>();
 		}
 		protected override string[] GetSpawnLists()
 		{
