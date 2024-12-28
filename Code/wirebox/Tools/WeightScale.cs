@@ -1,15 +1,14 @@
-﻿using System;
-namespace Sandbox.Tools
+﻿namespace Sandbox.Tools
 {
 	[Library( "tool_wireweightscale", Title = "Wire Weight Scale", Description = "Create a Wire Scale that measures the weight of props sitting on it.", Group = "construction" )]
-	public partial class WireWeightScaleTool : BaseWireTool
+	public partial class WireWeightScaleTool : BaseSpawnTool
 	{
-		[ConVar.ClientData( "tool_wireweightscale_model" )]
+		[ConVar( "tool_wireweightscale_model" )]
 		public static string _ { get; set; } = "models/sbox_props/pallet/pallet.vmdl"; // -> Cloud.Asset( "facepunch.pallet" );
 
-		protected override Type GetEntityType()
+		protected override TypeDescription GetSpawnedComponent()
 		{
-			return typeof( WireWeightScaleEntity );
+			return TypeLibrary.GetType<WireWeightScaleComponent>();
 		}
 		protected override string[] GetSpawnLists()
 		{

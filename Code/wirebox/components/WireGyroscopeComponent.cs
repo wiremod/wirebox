@@ -27,10 +27,10 @@ public partial class WireGyroscopeComponent : BaseWireOutputComponent
 		{
 			return;
 		}
-		WireTriggerOutput( "Pitch", angle.pitch );
-		WireTriggerOutput( "Yaw", angle.yaw );
-		WireTriggerOutput( "Roll", angle.roll );
-		WireTriggerOutput( "Angle", angle );
-		WireTriggerOutput( "Rotation", WorldRotation );
+		this.WireTriggerOutput( "Pitch", angle.pitch );
+		this.WireTriggerOutput( "Yaw", angle.yaw );
+		this.WireTriggerOutput( "Roll", angle.roll );
+		this.WireTriggerOutput( "Angle", angle );
+		this.WireTriggerOutput( "Rotation", WorldRotation );
 	}
 }

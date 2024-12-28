@@ -48,7 +48,7 @@ namespace Sandbox.Tools
 				if ( !inputEnt.IsValid() )
 				{
 					// stage 1
-					if ( tr.GameObject.GetComponent<BaseWireInputComponent>() is not BaseWireInputComponent wireProp || wireProp.GetInputNames().Length == 0 )
+					if ( tr.GameObject.GetComponent<IWireInputComponent>() is not IWireInputComponent wireProp || wireProp.GetInputNames().Length == 0 )
 					{
 						return;
 					}
@@ -59,11 +59,10 @@ namespace Sandbox.Tools
 				else
 				{
 					// stage 2
-					if ( inputEnt.GetComponent<BaseWireInputComponent>() is not BaseWireInputComponent wireInputProp )
+					if ( inputEnt.GetComponent<IWireInputComponent>() is not IWireInputComponent wireInputProp )
 						return;
-					if ( tr.GameObject.GetComponent<BaseWireOutputComponent>() is not BaseWireOutputComponent wireOutputProp || wireOutputProp.GetOutputNames().Length == 0 )
+					if ( tr.GameObject.GetComponent<IWireOutputComponent>() is not IWireOutputComponent wireOutputProp || wireOutputProp.GetOutputNames().Length == 0 )
 						return;
-
 					string outputName;
 					string inputName;
 					try
@@ -103,7 +102,7 @@ namespace Sandbox.Tools
 			{
 				var portDirection = Input.Down( "run" ) ? -1 : 1;
 
-				if ( inputEnt.IsValid() && inputEnt.GetComponent<BaseWireInputComponent>() is not null )
+				if ( inputEnt.IsValid() && inputEnt.GetComponent<IWireInputComponent>() is not null )
 				{
 					OutputPortIndex += portDirection;
 				}
@@ -116,7 +115,7 @@ namespace Sandbox.Tools
 			}
 			else if ( Input.Pressed( "reload" ) )
 			{
-				if ( Stage == 0 && tr.GameObject.IsValid() && tr.GameObject.GetComponent<BaseWireInputComponent>() is BaseWireInputComponent wireEntity )
+				if ( Stage == 0 && tr.GameObject.IsValid() && tr.GameObject.GetComponent<IWireInputComponent>() is IWireInputComponent wireEntity )
 				{
 					wireEntity.DisconnectInput( wireEntity.GetInputNames()[InputPortIndex] );
 				}
@@ -143,10 +142,10 @@ namespace Sandbox.Tools
 
 		protected void UpdateTraceEntPorts( SceneTraceResult tr )
 		{
-			if ( inputEnt.IsValid() && inputEnt.GetComponent<BaseWireInputComponent>() is BaseWireInputComponent wireInputEnt )
+			if ( inputEnt.IsValid() && inputEnt.GetComponent<IWireInputComponent>() is IWireInputComponent wireInputEnt )
 			{
 				wiringHud?.SetInputs( wireInputEnt.GetInputNames( true ), true, InputPortIndex );
-				if ( tr.GameObject.IsValid() && tr.GameObject.GetComponent<BaseWireOutputComponent>() is BaseWireOutputComponent wireOutputProp1 )
+				if ( tr.GameObject.IsValid() && tr.GameObject.GetComponent<IWireOutputComponent>() is IWireOutputComponent wireOutputProp1 )
 				{
 					OutputPortIndex = Math.Clamp( OutputPortIndex - Input.MouseWheel.y.FloorToInt(), 0, Math.Max( 0, wireOutputProp1.GetOutputNames().Length - 1 ) );
 					wiringHud?.SetOutputs( wireOutputProp1.GetOutputNames( true ), true, OutputPortIndex );
@@ -158,7 +157,7 @@ namespace Sandbox.Tools
 			}
 			else
 			{
-				if ( tr.GameObject.IsValid() && tr.GameObject.GetComponent<BaseWireInputComponent>() is BaseWireInputComponent wireInputEnt2 )
+				if ( tr.GameObject.IsValid() && tr.GameObject.GetComponent<IWireInputComponent>() is IWireInputComponent wireInputEnt2 )
 				{
 					InputPortIndex = Math.Clamp( InputPortIndex - Input.MouseWheel.y.FloorToInt(), 0, Math.Max( 0, wireInputEnt2.GetInputNames().Length - 1 ) );
 					wiringHud?.SetInputs( wireInputEnt2.GetInputNames( true ), false, InputPortIndex );
@@ -167,7 +166,7 @@ namespace Sandbox.Tools
 				{
 					wiringHud?.SetInputs( [] );
 				}
-				if ( tr.GameObject.IsValid() && tr.GameObject.GetComponent<BaseWireOutputComponent>() is BaseWireOutputComponent wireOutputProp2 )
+				if ( tr.GameObject.IsValid() && tr.GameObject.GetComponent<IWireOutputComponent>() is IWireOutputComponent wireOutputProp2 )
 				{
 					wiringHud?.SetOutputs( wireOutputProp2.GetOutputNames( true ), false, OutputPortIndex );
 				}

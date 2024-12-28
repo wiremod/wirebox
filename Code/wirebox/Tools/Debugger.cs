@@ -1,41 +1,34 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-
-namespace Sandbox.Tools
+﻿namespace Sandbox.Tools
 {
 	[Library( "tool_debugger", Title = "Wire Debugger", Description = "Shows selected wire ports on the HUD", Group = "construction" )]
 	public partial class DebuggerTool : WiringTool
 	{
-		public static HashSet<IWireEntity> TrackedEntities { get; set; } = new();
+		public static HashSet<IWireComponent> TrackedEntities { get; set; } = new();
 
 		protected DebuggerHud debuggerHud;
 
-		public override void Simulate()
+		protected override void OnUpdate()
 		{
-			if ( !Game.IsClient )
+			if ( !IsProxy )
 			{
-				return;
-			}
-			using ( Prediction.Off() )
-			{
-				var tr = DoTrace( false );
+				var tr = Parent.BasicTraceTool();
 
 				UpdateTraceEntPorts( tr );
 
 				if ( Input.Pressed( "attack1" ) )
 				{
-					if ( !tr.Hit || !tr.Body.IsValid() || !tr.Entity.IsValid() || tr.Entity.IsWorld )
+					if ( !tr.Hit || !tr.Body.IsValid() || !tr.GameObject.IsValid() || tr.GameObject.IsWorld() )
 						return;
-					if ( tr.Entity is not IWireEntity wireProp )
+					if ( tr.GameObject.GetComponent<IWireComponent>() is not IWireComponent wireProp )
 						return;
 
 					TrackedEntities.Add( wireProp );
 				}
 				else if ( Input.Pressed( "attack2" ) )
 				{
-					if ( !tr.Hit || !tr.Body.IsValid() || !tr.Entity.IsValid() || tr.Entity.IsWorld )
+					if ( !tr.Hit || !tr.Body.IsValid() || !tr.GameObject.IsValid() || tr.GameObject.IsWorld() )
 						return;
-					if ( tr.Entity is not IWireEntity wireProp )
+					if ( tr.GameObject.GetComponent<IWireComponent>() is not IWireComponent wireProp )
 						return;
 
 					TrackedEntities.Remove( wireProp );
@@ -56,30 +49,30 @@ namespace Sandbox.Tools
 				{
 					return;
 				}
-				CreateHitEffects( tr.EndPosition, tr.Normal );
+				Parent.ToolEffects( tr.EndPosition, tr.Normal );
 			}
 		}
 
 		public override void Activate()
 		{
-			if ( Game.IsClient )
+			if ( !IsProxy )
 			{
 				Description = $"Shows selected wire ports on the HUD.\n{Input.GetButtonOrigin( "run" )} - {Input.GetButtonOrigin( "flashlight" )} for Wiring tool.\n";
 				Description += $"\n{Input.GetButtonOrigin( "attack1" )}: Add entity to HUD";
 				Description += $"\n{Input.GetButtonOrigin( "attack2" )}: Remove entity from HUD";
 				Description += $"\n{Input.GetButtonOrigin( "reload" )}: Clear HUD";
 
-				SandboxHud.Instance.RootPanel.ChildrenOfType<DebuggerHud>().ToList().ForEach( x => x.Delete() );
-				debuggerHud = SandboxHud.Instance.RootPanel.AddChild<DebuggerHud>();
+				SandboxHud.Instance.Panel.ChildrenOfType<DebuggerHud>().ToList().ForEach( x => x.Delete() );
+				debuggerHud = SandboxHud.Instance.Panel.AddChild<DebuggerHud>();
 			}
 
 			base.Activate();
 		}
 
-		public override void Deactivate()
+		public override void Disabled()
 		{
-			base.Deactivate();
-			if ( Game.IsClient )
+			base.Disabled();
+			if ( !IsProxy )
 			{
 				if ( TrackedEntities.Count == 0 )
 				{

@@ -11,8 +11,8 @@
 	@foreach ( var ent in DebuggerTool.TrackedEntities )
 	{
         <div class="ent">
-		    <label class="name">@(DisplayInfo.For(ent).Name) (@((ent as Entity).NetworkIdent))</label>
-		    @if ( ent is IWireInputEntity wireInputProp ) {
+		    <label class="name">@(DisplayInfo.For(ent).Name)@* (@((ent as Entity).NetworkIdent))*@</label>
+		    @if ( ent is IWireInputComponent wireInputProp ) {
             <div class="ports">
                 <label>Inputs:</label>
                 @foreach ( var portName in wireInputProp.GetInputNames() )
@@ -24,7 +24,7 @@
                 }
             </div>
             }
-            @if ( ent is IWireOutputEntity wireOutputProp ) {
+            @if ( ent is IWireOutputComponent wireOutputProp ) {
             <div class="ports">
                 <label>Outputs:</label>
                     @foreach ( var portName in wireOutputProp.GetOutputNames() )

@@ -24,9 +24,9 @@ public partial class WireGPSComponent : BaseWireOutputComponent
 		{
 			return;
 		}
-		WireTriggerOutput( "X", WorldPosition.x );
-		WireTriggerOutput( "Y", WorldPosition.y );
-		WireTriggerOutput( "Z", WorldPosition.z );
-		WireTriggerOutput( "Position", WorldPosition );
+		this.WireTriggerOutput( "X", WorldPosition.x );
+		this.WireTriggerOutput( "Y", WorldPosition.y );
+		this.WireTriggerOutput( "Z", WorldPosition.z );
+		this.WireTriggerOutput( "Position", WorldPosition );
 	}
 }

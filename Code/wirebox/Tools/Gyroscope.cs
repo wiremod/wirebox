@@ -1,5 +1,4 @@
-﻿using System;
-namespace Sandbox.Tools
+﻿namespace Sandbox.Tools
 {
 	[Library( "tool_wiregyroscope", Title = "Wire Gyroscope", Description = "Create a Wire Gyroscope for retrieving rotation data", Group = "construction" )]
 	public partial class GyroscopeTool : BaseSpawnTool

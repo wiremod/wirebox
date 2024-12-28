@@ -23,7 +23,7 @@ public partial class WireSpeedometerComponent : BaseWireOutputComponent
 
 		var rigid = GetComponent<Rigidbody>();
 		var localVel = Transform.World.NormalToLocal( rigid.Velocity );
-		if ( GetOutput( "Velocity" ).Equals( localVel ) )
+		if ( this.GetOutput( "Velocity" ).Equals( localVel ) )
 		{
 			return;
 		}

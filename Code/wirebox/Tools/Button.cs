@@ -1,5 +1,4 @@
-﻿using System;
-namespace Sandbox.Tools
+﻿namespace Sandbox.Tools
 {
 	[Library( "tool_wirebutton", Title = "Wire Button", Description = "Create Buttons! Shift for Toggle buttons", Group = "construction" )]
 	public partial class ButtonTool : BaseSpawnTool

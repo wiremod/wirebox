@@ -53,7 +53,7 @@ public partial class WireButtonComponent : BaseWireOutputComponent, Component.IP
 		{
 			renderer.Tint = On ? Color.Green : Color.Red;
 		}
-		WireTriggerOutput("On", On);
+		this.WireTriggerOutput("On", On);
 		Sound.Play( On ? "flashlight-on" : "flashlight-off", WorldPosition );
 	}
 

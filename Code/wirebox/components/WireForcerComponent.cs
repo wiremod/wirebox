@@ -1,22 +1,22 @@
 ﻿using Sandbox;
 
 [Library( "ent_wireforcer", Title = "Wire Forcer" )]
-public partial class WireForcerEntity : Prop, IWireInputEntity
+public partial class WireForcerComponent : BaseWireInputComponent
 {
-	[Net]
+	[Sync]
 	public float Length { get; set; } = 100;
-	[Net]
+	[Sync]
 	public float Force { get; set; } = 0;
-	[Net]
+	[Sync]
 	public float OffsetForce { get; set; } = 0;
-	[Net]
+	[Sync]
 	public bool ShowBeam { get; set; } = true;
-	[Net]
+	[Sync]
 	public bool IgnoreMass { get; set; } = true;
 
-	private Particles Beam;
-	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
-	public void WireInitialize()
+	private LegacyParticleSystem Beam;
+	private SceneTraceResult lastTrace;
+	public override void WireInitialize()
 	{
 		this.RegisterInputHandler( "Length", ( float value ) =>
 		{
@@ -34,19 +34,19 @@ public partial class WireForcerEntity : Prop, IWireInputEntity
 		}, OffsetForce );
 	}
 
-	[GameEvent.Physics.PostStep]
-	public void OnPostPhysicsStep()
+	protected override void OnFixedUpdate()
 	{
 		if ( !this.IsValid() )
 			return;
 
 		var tr = DoTrace();
+		lastTrace = tr;
 
 		if ( tr.Hit && tr.Body.IsValid() )
 		{
 			if ( Force != 0 )
 			{
-				var appliedForce = Rotation.Up * Force;
+				var appliedForce = WorldRotation.Up * Force;
 				if ( IgnoreMass )
 				{
 					appliedForce *= tr.Body.Mass;
@@ -55,7 +55,7 @@ public partial class WireForcerEntity : Prop, IWireInputEntity
 			}
 			if ( OffsetForce != 0 )
 			{
-				var appliedForce = Rotation.Up * OffsetForce;
+				var appliedForce = WorldRotation.Up * OffsetForce;
 				if ( IgnoreMass )
 				{
 					appliedForce *= tr.Body.Mass;
@@ -65,40 +65,41 @@ public partial class WireForcerEntity : Prop, IWireInputEntity
 		}
 	}
 
-	private TraceResult DoTrace()
+	private SceneTraceResult DoTrace()
 	{
-		var Offset = Rotation.Up * CollisionBounds.Size.z;
-		var trace = Trace.Ray( Position + Offset, Position + Offset + Rotation.Up * Length )
-			.DynamicOnly()
-			.Ignore( this );
+		var Offset = WorldRotation.Up * GetComponent<Rigidbody>().PhysicsBody.GetBounds().Size.z;
+		var trace = Scene.Trace.Ray( WorldPosition + Offset, WorldPosition + Offset + WorldRotation.Up * Length )
+				.UseHitboxes()
+				.WithAnyTags( "solid", "npc", "glass" )
+				.WithoutTags( "debris", "player" )
+				.IgnoreGameObjectHierarchy( GameObject )
+				.Size( 2 );
 
 		return trace.Run();
 	}
 
-	[GameEvent.Client.Frame]
-	public void OnFrame()
+	protected override void OnUpdate()
 	{
 		if ( !ShowBeam )
 		{
 			if ( Beam != null )
 			{
-				Beam.Destroy( true );
+				Beam.Destroy();
 				Beam = null;
 			}
 			return;
 		}
-		var tr = DoTrace();
 		if ( Beam == null )
 		{
-			Beam = Particles.Create( "particles/wirebox/ranger_beam.vpcf", this, "root" );
+			Beam = Particles.MakeParticleSystem( "particles/wirebox/ranger_beam.vpcf", Transform.World, 0, GameObject );
 		}
-		Beam.SetPosition( 1, tr.EndPosition );
+		Beam.SceneObject?.SetControlPoint( 1, lastTrace.EndPosition );
 	}
 
 	protected override void OnDestroy()
 	{
 		base.OnDestroy();
 
-		Beam?.Destroy( true );
+		Beam?.Destroy();
 	}
 }

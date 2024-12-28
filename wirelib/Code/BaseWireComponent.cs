@@ -8,9 +8,9 @@ namespace Sandbox
 		public Dictionary<string, WireOutput> outputs = [];
 	}
 
-	public class BaseWireComponent : Component
+	public interface IWireComponent
 	{
-		public WirePortData WirePorts { get; } = new();
+		public WirePortData WirePorts { get; }
 
 		public virtual string GetOverlayText() { return ""; }
 
@@ -37,5 +37,9 @@ namespace Sandbox
 
 			return false;
 		}
+	}
+	public class BaseWireComponent : Component, IWireComponent
+	{
+		public WirePortData WirePorts { get; } = new();
 	}
 }

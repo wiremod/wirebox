@@ -16,7 +16,7 @@
 			this.outputName = outputName;
 			this.type = type;
 
-			value = BaseWireComponent.GetDefaultValueFromType( type );
+			value = IWireComponent.GetDefaultValueFromType( type );
 		}
 	}
 
@@ -45,7 +45,7 @@
 			new() { Name = name, Type = "gameobject" };
 	}
 
-	public abstract class BaseWireOutputComponent : BaseWireComponent
+	public interface IWireOutputComponent : IWireComponent
 	{
 		public void WireTriggerOutput<T>( string outputName, T value )
 		{
@@ -76,13 +76,13 @@
 			foreach ( var input in output.connected )
 			{
 				if ( !input.entity.IsValid() ) continue;
-				if ( input.entity.GetComponent<BaseWireInputComponent>() is BaseWireInputComponent inputEntity )
+				if ( input.entity.GetComponent<IWireInputComponent>() is IWireInputComponent inputEntity )
 				{
 					inputEntity.WireTriggerInput( input.inputName, value );
 				}
 			}
 		}
-		public void WireConnect( BaseWireInputComponent inputEnt, string outputName, string inputName )
+		public void WireConnect( IWireInputComponent inputEnt, string outputName, string inputName )
 		{
 			var input = inputEnt.GetInput( inputName );
 			var output = GetOutput( outputName );
@@ -131,10 +131,25 @@
 		{
 			foreach ( var type in WireGetOutputs() )
 			{
-				WirePorts.outputs[type.Name] = new WireOutput( this.GameObject, type.Name, type.Type );
+				WirePorts.outputs[type.Name] = new WireOutput( ((Component)this).GameObject, type.Name, type.Type );
 			}
 		}
 		abstract public PortType[] WireGetOutputs();
+	}
+	
+	public abstract class BaseWireOutputComponent: BaseWireComponent, IWireOutputComponent
+	{
+		public abstract PortType[] WireGetOutputs();
+		// Entities can implement this for custom output initialization
+		public virtual void WireInitializeOutputs() { }
+	}
+
+	public abstract class BaseWireInputOutputComponent: BaseWireComponent, IWireInputComponent, IWireOutputComponent
+	{
+		public abstract void WireInitialize();
+		public abstract PortType[] WireGetOutputs();
+		// Entities can implement this for custom output initialization
+		public virtual void WireInitializeOutputs() { }
 	}
 
 	// Extension methods to allow calling the interface methods without explicit casting
@@ -142,8 +157,20 @@
 	{
 		public static void WireTriggerOutput<T>( this BaseWireOutputComponent instance, string outputName, T value )
 		{
-			instance.WireTriggerOutput( outputName, value );
+			((IWireOutputComponent)instance).WireTriggerOutput( outputName, value );
+		}
+		public static WireOutput GetOutput( this BaseWireOutputComponent instance, string inputName )
+		{
+			return ((IWireOutputComponent)instance).GetOutput( inputName );
+		}
+
+		public static void WireTriggerOutput<T>( this BaseWireInputOutputComponent instance, string outputName, T value )
+		{
+			((IWireOutputComponent)instance).WireTriggerOutput( outputName, value );
+		}
+		public static WireOutput GetOutput( this BaseWireInputOutputComponent instance, string inputName )
+		{
+			return ((IWireOutputComponent)instance).GetOutput( inputName );
 		}
 	}
-
 }
