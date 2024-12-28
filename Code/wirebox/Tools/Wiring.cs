@@ -11,7 +11,7 @@ namespace Sandbox.Tools
 		private GameObject inputEnt { get; set; }
 		private Vector3 inputPos { get; set; }
 
-		// private WireGateHud wireGatePanel;
+		private WireGateHud wireGatePanel;
 		private WiringHud wiringHud;
 
 		private int Stage
@@ -31,8 +31,14 @@ namespace Sandbox.Tools
 		[ConVar( "tool_wiring_materialgroup" )]
 		public static int _2 { get; set; } = 0;
 
+		protected override bool IsPreviewTraceValid( SceneTraceResult tr )
+		{
+			return !IsProxy && Input.Down( "drop" );
+		}
+
 		protected override void OnUpdate()
 		{
+			base.OnUpdate();
 			if ( IsProxy ) return;
 
 			Description = CalculateDescription();
@@ -215,10 +221,10 @@ namespace Sandbox.Tools
 			{
 				SandboxHud.Instance.Panel.ChildrenOfType<WiringHud>().ToList().ForEach( x => x.Delete() );
 				wiringHud = SandboxHud.Instance.Panel.AddChild<WiringHud>();
-				// 	wireGatePanel = SandboxHud.Instance.Panel.AddChild<WireGateHud>();
+				wireGatePanel = SandboxHud.Instance.Panel.AddChild<WireGateHud>();
 
-				// 	var modelSelector = new ModelSelector( new string[] { "gate", "controller" } );
-				// 	SpawnMenu.Instance?.ToolPanel?.AddChild( modelSelector );
+				var modelSelector = new ModelSelector( new string[] { "gate", "controller" } );
+				SpawnMenu.Instance?.ToolPanel?.AddChild( modelSelector );
 			}
 			Reset();
 		}
@@ -228,7 +234,7 @@ namespace Sandbox.Tools
 			base.Disabled();
 			if ( !IsProxy )
 			{
-				// 	wireGatePanel?.Delete();
+				wireGatePanel?.Delete();
 				wiringHud?.Delete();
 			}
 			Reset();
@@ -237,59 +243,61 @@ namespace Sandbox.Tools
 		[ConCmd( "wire_spawn_gate" )]  // todo: should this be an RPC?
 		public static void SpawnGate( string gateType )
 		{
-			/*
-			var owner = ConsoleSystem.Caller?.Pawn as Player;
+			var owner = Player.FindLocalPlayer();
 
-			if ( ConsoleSystem.Caller == null )
-				return;
+			var tr = Player.DoBasicTrace();
 
-			var tr = Trace.Ray( owner.EyePosition, owner.EyePosition + owner.EyeRotation.Forward * 500 )
-			  .UseHitboxes()
-			  .Ignore( owner )
-			  .Size( 2 )
-			  .Run();
-
-			if ( tr.Entity is WireGateEntity wireGateEntity )
+			if ( tr.GameObject.GetComponent<WireGateComponent>() is WireGateComponent wireGateEntity )
 			{
 				wireGateEntity.Update( gateType );
-				if ( owner.Inventory.Active is Tool toolgun && toolgun.CurrentTool is WiringTool wiringTool )
+				if ( owner.Inventory.ActiveWeapon is ToolGun toolgun && toolgun.CurrentTool is WiringTool wiringTool )
 				{
-					wiringTool.CreateHitEffects( tr.EndPosition, tr.Normal );
+					toolgun.ToolEffects( tr.EndPosition, tr.Normal );
 				}
 				return;
 			}
 
-			var ent = new WireGateEntity
+			var go = new GameObject()
 			{
-				Position = tr.EndPosition,
-				Rotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
-				GateType = gateType,
+				WorldPosition = tr.HitPosition,
+				WorldRotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 			};
-			ent.SetModel( ConsoleSystem.Caller.GetClientData<string>( "tool_wiring_model" ) );
-			int.TryParse( ConsoleSystem.Caller.GetClientData<string>( "tool_wiring_materialgroup" ), out int matGroup );
-			ent.SetMaterialGroup( matGroup );
+			var prop = go.AddComponent<Prop>();
+			prop.Model = Model.Load( ConsoleSystem.GetValue( "tool_wiring_model" ) );
 
-			var attachEnt = tr.Body.IsValid() ? tr.Body.GetEntity() : tr.Entity;
+			var propHelper = go.AddComponent<PropHelper>();
+			var gate = go.AddComponent<WireGateComponent>();
+			gate.GateType = gateType;
+
+			int.TryParse( ConsoleSystem.GetValue( "tool_wiring_materialgroup" ), out int matGroup );
+			propHelper.MaterialGroupIndex = matGroup;
+
+			UndoSystem.Add( creator: owner, callback: () =>
+			{
+				go.Destroy();
+				return $"Undid Gate {gateType} creation";
+			}, prop: go );
+
+			go.NetworkSpawn();
+			go.Network.SetOrphanedMode( NetworkOrphaned.Host );
+
+			var attachEnt = tr.Body.IsValid() ? tr.Body.GetGameObject() : tr.GameObject;
 			if ( attachEnt.IsValid() )
 			{
-				ent.SetParent( attachEnt, tr.Body.GroupName );
+				go.SetParent( attachEnt );
 			}
-			if ( owner.Inventory.Active is Tool toolgun2 && toolgun2.CurrentTool is WiringTool wiringTool2 )
+			if ( owner.Inventory.ActiveWeapon is ToolGun toolgun2 && toolgun2.CurrentTool is WiringTool wiringTool2 )
 			{
-				wiringTool2.CreateHitEffects( tr.EndPosition, tr.Normal );
+				toolgun2.ToolEffects( tr.EndPosition, tr.Normal );
 			}
-			Event.Run( "entity.spawned", ent, owner );
-			*/
+			// Event.Run( "entity.spawned", ent, owner );
 		}
 
-		/*
-		[Event( "spawnlists.initialize" )]
 		public static void SpawnlistsInitialize()
 		{
 			ModelSelector.AddToSpawnlist( "gate", new string[] {
 				Cloud.Asset("https://asset.party/facepunch/metal_fences_gate_small"), // lol get it
 			} );
 		}
-		*/
 	}
 }

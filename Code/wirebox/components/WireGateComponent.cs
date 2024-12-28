@@ -1,22 +1,19 @@
-﻿using Sandbox;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 [Library( "ent_wiregate", Title = "Wire Gate" )]
-public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity, IUse
+public partial class WireGateComponent : BaseWireInputOutputComponent
 {
-	[Net]
+	[Sync]
 	public string GateType { get; set; } = "Add";
 
 	private int constantValue = 3;
 	private float storedFloat = 0;
-	private Entity storedEnt;
+	private GameObject storedEnt;
 	private float[] storedRAM;
 
-	[Net]
+	[Sync]
 	public string DebugText { get; set; } = "";
-	WirePortData IWireEntity.WirePorts { get; } = new WirePortData();
 
 	// todo: allow these to be extended by addons
 	public static Dictionary<string, string[]> GetGates()
@@ -26,7 +23,7 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 			["Math"] = new string[] { "Constant", "Add", "Subtract", "Multiply", "Divide", "Mod", "Negate", "Absolute", "Sin", "Cos" },
 			["Logic"] = new string[] { "Not", "And", "Or", "GreaterThan", "LessThan", "Equal" },
 			["Comparison"] = new string[] { "Max", "Min", "Clamp" },
-			["Time"] = new string[] { "Delta", "Tick", "Smoother" },
+			["Time"] = new string[] { "Delta", "TimeNow", "Smoother" },
 			["Entity"] = new string[] { "Position", "Velocity", "Owner" },
 			["Memory"] = new string[] { "Latch", "D-Latch", "Toggle", "RAM", "Incrementor" },
 		};
@@ -34,72 +31,73 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 
 	public void Update( string newGateType )
 	{
-		var oldInputs = ((IWireEntity)this).WirePorts.inputs;
-		((IWireEntity)this).WirePorts.inputs = new();
+		var oldInputs = WirePorts.inputs;
+		WirePorts.inputs = new();
 
 		GateType = newGateType;
 		WireInitialize();
 
 
 		// reconnect old matching inputs
-		foreach ( var kv in ((IWireEntity)this).WirePorts.inputs )
+		foreach ( var kv in WirePorts.inputs )
 		{
 			var inputName = kv.Key;
 			if ( oldInputs.ContainsKey( inputName ) )
 			{
 				var output = oldInputs[inputName].connectedOutput;
-				if ( output != null && output.entity is IWireOutputEntity outputEnt )
+				if ( output != null && output.entity.GetComponent<IWireOutputComponent>() is IWireOutputComponent outputEnt )
 				{
 					var rope = oldInputs[inputName].AttachRope;
 					oldInputs[inputName].AttachRope = null;
-					((IWireInputEntity)this).DisconnectInput( oldInputs[inputName] );
+					((IWireInputComponent)this).DisconnectInput( oldInputs[inputName] );
 					oldInputs.Remove( inputName );
 
 					outputEnt.WireConnect( this, output.outputName, inputName );
-					((IWireEntity)this).WirePorts.inputs[inputName].AttachRope = rope;
+					WirePorts.inputs[inputName].AttachRope = rope;
 				}
 			}
 		}
 		foreach ( var kv in oldInputs )
 		{
-			((IWireInputEntity)this).DisconnectInput( kv.Value );
+			((IWireInputComponent)this).DisconnectInput( kv.Value );
 		}
 
 		// todo: outputs, once we got more than 1
 	}
 
-	public void WireInitialize()
+	public override void WireInitialize()
 	{
-		if ( GetModelName().Contains( "chip_rectangle.vmdl" ) )
+		var propHelper = GetComponent<PropHelper>();
+		if ( propHelper.Renderer.Model.Name.Contains( "chip_rectangle.vmdl" ) )
 		{
 			var allGates = GetGates();
 			if ( GateType == "Constant" )
 			{
-				SetMaterialGroup( 6 );
+				propHelper.MaterialGroupIndex = 6;
 			}
 			else if ( allGates["Math"].Contains( GateType ) )
 			{
-				SetMaterialGroup( 2 );
+				propHelper.MaterialGroupIndex = 2;
 			}
 			else if ( allGates["Logic"].Contains( GateType ) )
 			{
-				SetMaterialGroup( 3 );
+				propHelper.MaterialGroupIndex = 3;
 			}
 			else if ( allGates["Comparison"].Contains( GateType ) )
 			{
-				SetMaterialGroup( 4 );
+				propHelper.MaterialGroupIndex = 4;
 			}
 			else if ( allGates["Time"].Contains( GateType ) )
 			{
-				SetMaterialGroup( 5 );
+				propHelper.MaterialGroupIndex = 5;
 			}
 			else
 			{
-				SetMaterialGroup( 0 );
+				propHelper.MaterialGroupIndex = 1;
 			}
 		}
 
-		var inputs = ((IWireEntity)this).WirePorts.inputs;
+		var inputs = WirePorts.inputs;
 		if ( GateType == "Add" )
 		{
 			Action<object> handler = ( object value ) =>
@@ -364,18 +362,18 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 		}
 		else if ( GateType == "Owner" )
 		{
-			this.WireTriggerOutput( "Out", (this as Entity).GetPlayerOwner() );
+			this.WireTriggerOutput( "Out", Player.FindPlayerOwner( GameObject ).GameObject );
 		}
 		else if ( GateType == "Position" )
 		{
-			this.RegisterInputHandler( "Ent", ( Entity value ) =>
+			this.RegisterInputHandler( "Ent", ( GameObject value ) =>
 			{
 				storedEnt = value;
 			} );
 		}
 		else if ( GateType == "Velocity" )
 		{
-			this.RegisterInputHandler( "Ent", ( Entity value ) =>
+			this.RegisterInputHandler( "Ent", ( GameObject value ) =>
 			{
 				storedEnt = value;
 			} );
@@ -470,21 +468,20 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 		}
 	}
 
-	[Event.Physics.PostStep]
-	public void OnPostPhysicsStep()
+	protected override void OnFixedUpdate()
 	{
 		// todo: it sucks to bind this for gates that don't need it, perhaps move to separate entity?
-		if ( GateType == "Tick" )
+		if ( GateType == "TimeNow" )
 		{
-			this.WireTriggerOutput( "Out", Time.Tick );
+			this.WireTriggerOutput( "Out", Time.Now );
 		}
 		else if ( GateType == "Position" )
 		{
-			this.WireTriggerOutput( "Out", storedEnt.IsValid() ? storedEnt.Position : Vector3.Zero );
+			this.WireTriggerOutput( "Out", storedEnt.IsValid() ? storedEnt.WorldPosition : Vector3.Zero );
 		}
 		else if ( GateType == "Velocity" )
 		{
-			this.WireTriggerOutput( "Out", storedEnt.IsValid() ? storedEnt.Velocity : Vector3.Zero );
+			this.WireTriggerOutput( "Out", storedEnt.IsValid() ? storedEnt.GetComponent<PropHelper>()?.Velocity : Vector3.Zero );
 		}
 	}
 
@@ -510,11 +507,11 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 		}
 	}
 
-	public PortType[] WireGetOutputs()
+	public override PortType[] WireGetOutputs()
 	{
 		if ( GateType == "Owner" )
 		{
-			return new PortType[] { PortType.Entity( "Out" ) };
+			return new PortType[] { PortType.GameObject( "Out" ) };
 		}
 		if ( GateType == "Position" || GateType == "Velocity" )
 		{
@@ -531,24 +528,24 @@ public partial class WireGateEntity : Prop, IWireInputEntity, IWireOutputEntity,
 		return new PortType[] { PortType.Float( "Out" ) };
 	}
 
-	string IWireEntity.GetOverlayText()
+	public override string GetOverlayText()
 	{
 		return $"Gate: {GateType}{DebugText}";
 	}
 
-	public bool OnUse( Entity user )
-	{
-		if ( GateType == "Constant" && Game.IsServer )
-		{
-			constantValue += Input.Down( InputButton.Run ) ? -1 : 1;
-			DebugText = $" value: {constantValue}";
-			this.WireTriggerOutput( "Out", constantValue );
-		}
-		return false;
-	}
+	// public bool OnUse( Entity user )
+	// {
+	// 	if ( GateType == "Constant" && Game.IsServer )
+	// 	{
+	// 		constantValue += Input.Down( InputButton.Run ) ? -1 : 1;
+	// 		DebugText = $" value: {constantValue}";
+	// 		this.WireTriggerOutput( "Out", constantValue );
+	// 	}
+	// 	return false;
+	// }
 
-	public bool IsUsable( Entity user )
-	{
-		return this.GateType == "Constant";
-	}
+	// public bool IsUsable( Entity user )
+	// {
+	// 	return this.GateType == "Constant";
+	// }
 }

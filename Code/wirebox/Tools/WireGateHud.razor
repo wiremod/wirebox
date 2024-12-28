@@ -6,7 +6,7 @@
 
 <root>
   	<div class="wire-gate-container">
-		@foreach (var kvp in WireGateEntity.GetGates())
+		@foreach (var kvp in WireGateComponent.GetGates())
 		{
 			var category = kvp.Key;
 			var gates = kvp.Value;
@@ -38,12 +38,12 @@
 		SetClass( "visible", UiVisible || Input.Down( "drop" ) );
 	}
 
-	[ConCmd.Client( "wire_spawn_gate_ui_show" )]
+	[ConCmd( "wire_spawn_gate_ui_show" )]
 	public static void ShowUi()
 	{
 		UiVisible = true;
 	}
-	[ConCmd.Client( "wire_spawn_gate_ui_hide" )]
+	[ConCmd( "wire_spawn_gate_ui_hide" )]
 	public static void HideUi()
 	{
 		UiVisible = false;
