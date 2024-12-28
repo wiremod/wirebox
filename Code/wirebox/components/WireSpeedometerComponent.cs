@@ -22,17 +22,16 @@ public partial class WireSpeedometerComponent : BaseWireOutputComponent
 			return;
 
 		var rigid = GetComponent<Rigidbody>();
-		var localVel = Transform.World.NormalToLocal( rigid.Velocity );
-		if ( this.GetOutput( "Velocity" ).Equals( localVel ) )
+		if ( this.GetOutput( "Velocity" ).Equals( rigid.Velocity ) )
 		{
 			return;
 		}
-		this.WireTriggerOutput( "Speed", localVel.Length );
+		this.WireTriggerOutput( "Speed", rigid.Velocity.Length );
 
-		this.WireTriggerOutput( "X", localVel.x );
-		this.WireTriggerOutput( "Y", localVel.y );
-		this.WireTriggerOutput( "Z", localVel.z );
-		this.WireTriggerOutput( "Velocity", localVel );
+		this.WireTriggerOutput( "X", rigid.Velocity.x );
+		this.WireTriggerOutput( "Y", rigid.Velocity.y );
+		this.WireTriggerOutput( "Z", rigid.Velocity.z );
+		this.WireTriggerOutput( "Velocity", rigid.Velocity );
 
 		this.WireTriggerOutput( "Pitch", rigid.AngularVelocity.x );
 		this.WireTriggerOutput( "Yaw", rigid.AngularVelocity.y );

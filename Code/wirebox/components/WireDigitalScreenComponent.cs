@@ -67,7 +67,7 @@ public partial class WireDigitalScreenComponent : BaseWireInputComponent
 	protected override void OnUpdate()
 	{
 		if ( !worldPanelComponent.IsValid || !worldPanelComponent.GetPanel().IsValid() ) return;
-		if ( worldPanel == null )
+		if ( worldPanel == null || Label.Style.TextAlign != TextAlign.Center )
 		{
 			InitializeRenderScreen();
 		}

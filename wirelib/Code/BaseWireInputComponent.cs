@@ -99,12 +99,16 @@
 				input.AttachRope = null;
 			}
 
-			WireTriggerInput( input.inputName, IWireComponent.GetDefaultValueFromType( input.type ) );
+			if ( WirePorts.inputs.ContainsKey( input.inputName ) ) // it might have been removed eg. when switching gate type
+			{
+				WireTriggerInput( input.inputName, IWireComponent.GetDefaultValueFromType( input.type ) );
+			}
 		}
 	}
 	public abstract class BaseWireInputComponent : BaseWireComponent, IWireInputComponent
 	{
 		public abstract void WireInitialize();
+		public virtual string GetOverlayText() { return ""; }
 	}
 
 

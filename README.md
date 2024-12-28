@@ -29,6 +29,7 @@ git submodule add https://github.com/wiremod/wirebox External\wirebox
 
 mklink /J Code\wirebox External\wirebox\Code\wirebox
 mklink /J Libraries\WireLib\Code External\wirebox\wirelib\Code
+mklink /J Assets\spawnlists\wirebox External\wirebox\Assets\spawnlists
 mklink /J Assets\entity\wirebox External\wirebox\Assets\entity\wirebox
 mklink /J Assets\materials\wirebox External\wirebox\Assets\materials\wirebox
 mklink /J Assets\models\wirebox External\wirebox\Assets\models\wirebox

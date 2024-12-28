@@ -52,7 +52,7 @@
 				WorldRotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 			};
 			var prop = go.AddComponent<Prop>();
-			var model = GetConvarValue( "tool_camerascreen_cameramodel" ) ?? Cloud.Asset( "smlp/camera" );
+			var model = GetConvarValue( "tool_camerascreen_cameramodel", Cloud.Asset( "smlp/camera" ));
 			// todo: add ModelSelector UI for the Camera part
 			prop.Model = Model.Load( model );
 

@@ -140,6 +140,7 @@
 	public abstract class BaseWireOutputComponent: BaseWireComponent, IWireOutputComponent
 	{
 		public abstract PortType[] WireGetOutputs();
+		public virtual string GetOverlayText() { return ""; }
 		// Entities can implement this for custom output initialization
 		public virtual void WireInitializeOutputs() { }
 	}
@@ -148,6 +149,7 @@
 	{
 		public abstract void WireInitialize();
 		public abstract PortType[] WireGetOutputs();
+		public virtual string GetOverlayText() { return ""; }
 		// Entities can implement this for custom output initialization
 		public virtual void WireInitializeOutputs() { }
 	}
