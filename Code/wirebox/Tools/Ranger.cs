@@ -3,12 +3,12 @@
 	[Library( "tool_wireranger", Title = "Wire Ranger", Description = "Create a Wire Ranger for running traces", Group = "construction" )]
 	public partial class RangerTool : BaseSpawnTool
 	{
-		[ConVar( "tool_wireranger_model" )]
-		public static string _ { get; set; } = "models/wirebox/katlatze/apc.vmdl";
-		[ConVar( "tool_wireranger_length" )]
-		public static float _2 { get; set; } = 100f;
-		[ConVar( "tool_wireranger_defaultzero" )]
-		public static bool _3 { get; set; } = true;
+		[Property, Title( "Model" ), ModelProperty( SpawnLists = ["ranger", "controller"] )]
+		public override string SpawnModel { get; set; } = "models/wirebox/katlatze/apc.vmdl";
+		[Property, Title( "Laser Length" ), Range( 10f, 1000f, 1f )]
+		public float Length { get; set; } = 100f;
+		[Property, Title( "Default to Zero" )]
+		public bool DefaultZero { get; set; } = true;
 
 		protected override TypeDescription GetSpawnedComponent()
 		{
@@ -17,18 +17,8 @@
 		protected override void UpdateEntity( GameObject go )
 		{
 			var ranger = go.GetComponent<WireRangerComponent>();
-			ranger.Length = float.Parse( GetConvarValue( "tool_wireranger_length" ) );
-			ranger.DefaultZero = GetConvarValue( "tool_wireranger_defaultzero" ) != "0";
-		}
-		protected override string[] GetSpawnLists()
-		{
-			return new string[] { "ranger", "controller" };
-		}
-
-		public override void CreateToolPanel()
-		{
-			var toolConfigUi = new RangerToolConfig();
-			SpawnMenu.Instance?.ToolPanel?.AddChild( toolConfigUi );
+			ranger.Length = Length;
+			ranger.DefaultZero = DefaultZero;
 		}
 	}
 }

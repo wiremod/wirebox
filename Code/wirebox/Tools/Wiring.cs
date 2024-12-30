@@ -5,7 +5,7 @@ using Sandbox.UI.Construct;
 
 namespace Sandbox.Tools
 {
-	[Library( "tool_wiring", Title = "Wiring", Description = "Wire entities together", Group = "construction" )]
+	[Library( "tool_wiring", Title = "Wiring", Description = "Wire entities together", Group = "constraints" )]
 	public partial class WiringTool : BaseTool
 	{
 		private GameObject inputEnt { get; set; }
@@ -26,8 +26,8 @@ namespace Sandbox.Tools
 		private int InputPortIndex { get; set; } = 0;
 		private int OutputPortIndex { get; set; } = 0;
 
-		[ConVar( "tool_wiring_model" )]
-		public static string _ { get; set; } = "models/wirebox/katlatze/chip_rectangle.vmdl";
+		[Property, Title("Gate Model"), ModelProperty(SpawnLists = ["gate", "controller"])]
+		public override string SpawnModel { get; set; } = "models/wirebox/katlatze/chip_rectangle.vmdl";
 		[ConVar( "tool_wiring_materialgroup" )]
 		public static int _2 { get; set; } = 0;
 
@@ -41,7 +41,7 @@ namespace Sandbox.Tools
 			base.OnUpdate();
 			if ( IsProxy ) return;
 
-			Description = CalculateDescription();
+			LongDescription = CalculateDescription();
 
 			var tr = Parent.BasicTraceTool();
 			UpdateTraceEntPorts( tr );
@@ -222,9 +222,6 @@ namespace Sandbox.Tools
 				SandboxHud.Instance.Panel.ChildrenOfType<WiringHud>().ToList().ForEach( x => x.Delete() );
 				wiringHud = SandboxHud.Instance.Panel.AddChild<WiringHud>();
 				wireGatePanel = SandboxHud.Instance.Panel.AddChild<WireGateHud>();
-
-				var modelSelector = new ModelSelector( new string[] { "gate", "controller" } );
-				SpawnMenu.Instance?.ToolPanel?.AddChild( modelSelector );
 			}
 			Reset();
 		}
@@ -241,7 +238,15 @@ namespace Sandbox.Tools
 		}
 
 		[ConCmd( "wire_spawn_gate" )]  // todo: should this be an RPC?
-		public static void SpawnGate( string gateType )
+		public static void SpawnGateCmd(string gateType)
+		{
+			var tool = CurrentTool.GetCurrentTool();
+			if ( tool is WiringTool wiringTool )
+			{
+				wiringTool.SpawnGate( gateType );
+			}
+		}
+		public void SpawnGate( string gateType )
 		{
 			var owner = Player.FindLocalPlayer();
 
@@ -263,7 +268,7 @@ namespace Sandbox.Tools
 				WorldRotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 			};
 			var prop = go.AddComponent<Prop>();
-			prop.Model = Model.Load( ConsoleSystem.GetValue( "tool_wiring_model" ) );
+			prop.Model = Model.Load( SpawnModel );
 
 			var propHelper = go.AddComponent<PropHelper>();
 			var gate = go.AddComponent<WireGateComponent>();

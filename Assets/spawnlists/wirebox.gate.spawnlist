@@ -8,3 +8,6 @@ models/wirebox/katlatze/e2--3.vmdl
 models/wirebox/katlatze/e2--4.vmdl
 models/wirebox/katlatze/e2--5.vmdl
 models/wirebox/katlatze/constant_value.vmdl
+models/wirebox/fasteroid/gate4x1.vmdl
+models/wirebox/fasteroid/gate2x2.vmdl
+models/wirebox/fasteroid/gate2x1.vmdl

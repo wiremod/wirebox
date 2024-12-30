@@ -3,16 +3,12 @@
 	[Library( "tool_wireweightscale", Title = "Wire Weight Scale", Description = "Create a Wire Scale that measures the weight of props sitting on it.", Group = "construction" )]
 	public partial class WireWeightScaleTool : BaseSpawnTool
 	{
-		[ConVar( "tool_wireweightscale_model" )]
-		public static string _ { get; set; } = "models/sbox_props/pallet/pallet.vmdl"; // -> Cloud.Asset( "facepunch.pallet" );
+		[Property, Title( "Model" ), ModelProperty( SpawnLists = ["weightscale"] )]
+		public override string SpawnModel { get; set; } = "models/sbox_props/pallet/pallet.vmdl"; // -> Cloud.Asset( "facepunch.pallet" );
 
 		protected override TypeDescription GetSpawnedComponent()
 		{
 			return TypeLibrary.GetType<WireWeightScaleComponent>();
-		}
-		protected override string[] GetSpawnLists()
-		{
-			return new string[] { "weightscale" };
 		}
 		private void unused()
 		{

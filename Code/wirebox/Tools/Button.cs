@@ -3,8 +3,8 @@
 	[Library( "tool_wirebutton", Title = "Wire Button", Description = "Create Buttons! Shift for Toggle buttons", Group = "construction" )]
 	public partial class ButtonTool : BaseSpawnTool
 	{
-		[ConVar( "tool_wirebutton_model" )]
-		public static string _ { get; set; } = "models/wirebox/katlatze/button.vmdl";
+		[Property, Title( "Model" ), ModelProperty( SpawnLists = ["button"] )]
+		public override string SpawnModel { get; set; } = "models/wirebox/katlatze/button.vmdl";
 
 		protected override TypeDescription GetSpawnedComponent()
 		{
@@ -16,10 +16,6 @@
 
 			var button = go.GetComponent<WireButtonComponent>();
 			button.IsToggle = Input.Down( "run" );
-		}
-		protected override string[] GetSpawnLists()
-		{
-			return ["button"];
 		}
 	}
 }

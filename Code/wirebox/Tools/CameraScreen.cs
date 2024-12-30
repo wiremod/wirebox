@@ -3,18 +3,15 @@
 	[Library( "tool_wirecamerascreen", Title = "Wire Camera Screen", Description = "Create a Wire Camera Screen for rendering real time views", Group = "construction" )]
 	public partial class CameraScreenTool : BaseSpawnTool
 	{
-		[ConVar( "tool_wirecamerascreen_model" )]
-		public static string _ { get; set; } = "models/television/flatscreen_tv.vmdl";
+		[Property, Title( "Screen Model" ), ModelProperty( SpawnLists = ["screen"] )]
+		public override string SpawnModel { get; set; } = "models/television/flatscreen_tv.vmdl";
+
 		[ConVar( "tool_wirecamerascreen_cameramodel" )]
 		public static string _2 { get; set; } = "camera/camera.vmdl"; // -> Cloud.Asset( "smlp/camera" );
 
 		protected override TypeDescription GetSpawnedComponent()
 		{
 			return TypeLibrary.GetType<WireCameraScreenComponent>();
-		}
-		protected override string[] GetSpawnLists()
-		{
-			return new string[] { "screen" };
 		}
 
 		public override void Activate()
