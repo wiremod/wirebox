@@ -1,6 +1,6 @@
 ﻿namespace Sandbox.Tools
 {
-	[Library( "tool_wirebutton", Title = "Wire Button", Description = "Create Buttons! Shift for Toggle buttons", Group = "construction" )]
+	[Library( "tool_wirebutton", Title = "Button", Description = "Create Buttons! Shift for Toggle buttons", Group = "construction" )]
 	public partial class ButtonTool : BaseSpawnTool
 	{
 		[Property, Title( "Model" ), ModelProperty( SpawnLists = ["button"] )]

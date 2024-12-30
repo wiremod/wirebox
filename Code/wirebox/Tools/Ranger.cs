@@ -1,6 +1,6 @@
 ﻿namespace Sandbox.Tools
 {
-	[Library( "tool_wireranger", Title = "Wire Ranger", Description = "Create a Wire Ranger for running traces", Group = "construction" )]
+	[Library( "tool_wireranger", Title = "Ranger", Description = "Create a Wire Ranger laser for running traces", Group = "construction" )]
 	public partial class RangerTool : BaseSpawnTool
 	{
 		[Property, Title( "Model" ), ModelProperty( SpawnLists = ["ranger", "controller"] )]

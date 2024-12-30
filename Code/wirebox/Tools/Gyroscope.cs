@@ -1,10 +1,10 @@
 ﻿namespace Sandbox.Tools
 {
-	[Library( "tool_wiregyroscope", Title = "Wire Gyroscope", Description = "Create a Wire Gyroscope for retrieving rotation data", Group = "construction" )]
+	[Library( "tool_wiregyroscope", Title = "Gyroscope", Description = "Create a Wire Gyroscope for retrieving rotation data", Group = "construction" )]
 	public partial class GyroscopeTool : BaseSpawnTool
 	{
 		[Property, Title( "Model" ), ModelProperty( SpawnLists = ["gyroscope", "controller"] )]
-		public override string SpawnModel { get; set; } = "models/citizen_props/icecreamcone01.vmdl";
+		public override string SpawnModel { get; set; } = "models/wirebox/katlatze/gyroscope.vmdl";
 
 		protected override TypeDescription GetSpawnedComponent()
 		{

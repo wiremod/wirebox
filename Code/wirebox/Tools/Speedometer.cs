@@ -1,6 +1,6 @@
 ﻿namespace Sandbox.Tools
 {
-	[Library( "tool_wirespeedometer", Title = "Wire Speedometer", Description = "Create a Wire Speedometer for retrieving velocity data", Group = "construction" )]
+	[Library( "tool_wirespeedometer", Title = "Speedometer", Description = "Create a Wire Speedometer for retrieving velocity data", Group = "construction" )]
 	public partial class SpeedometerTool : BaseSpawnTool
 	{
 		[Property, Title( "Model" ), ModelProperty( SpawnLists = ["speedometer", "controller"] )]

@@ -1,6 +1,6 @@
 ﻿namespace Sandbox.Tools
 {
-	[Library( "tool_wiredigitalscreen", Title = "Wire Digital Screen", Description = "Create a Wire Digital Screen for displaying numbers", Group = "construction" )]
+	[Library( "tool_wiredigitalscreen", Title = "Digital Screen", Description = "Create a Wire Digital Screen for displaying numbers", Group = "construction" )]
 	public partial class DigitalScreenTool : BaseSpawnTool
 	{
 		[Property, Title( "Screen Model" ), ModelProperty( SpawnLists = ["screen"] )]

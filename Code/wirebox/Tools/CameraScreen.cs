@@ -1,6 +1,6 @@
 ﻿namespace Sandbox.Tools
 {
-	[Library( "tool_wirecamerascreen", Title = "Wire Camera Screen", Description = "Create a Wire Camera Screen for rendering real time views", Group = "construction" )]
+	[Library( "tool_wirecamerascreen", Title = "Camera Screen", Description = "Create a Wire Camera Screen for rendering real time views", Group = "construction" )]
 	public partial class CameraScreenTool : BaseSpawnTool
 	{
 		[Property, Title( "Screen Model" ), ModelProperty( SpawnLists = ["screen"] )]

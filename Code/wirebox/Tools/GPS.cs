@@ -1,6 +1,6 @@
 ﻿namespace Sandbox.Tools
 {
-	[Library( "tool_wiregps", Title = "Wire GPS", Description = "Create a Wire GPS for retrieving position data", Group = "construction" )]
+	[Library( "tool_wiregps", Title = "GPS", Description = "Create a Wire GPS for retrieving position data", Group = "construction" )]
 	public partial class GPSTool : BaseSpawnTool
 	{
 		[Property, Title( "Model" ), ModelProperty( SpawnLists = ["gps", "controller"] )]

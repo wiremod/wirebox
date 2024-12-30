@@ -1,6 +1,6 @@
 ﻿namespace Sandbox.Tools
 {
-	[Library( "tool_debugger", Title = "Wire Debugger", Description = "Shows selected wire ports on the HUD", Group = "construction" )]
+	[Library( "tool_debugger", Title = "Wiring Debugger", Description = "Shows selected wire ports on the HUD", Group = "constraints" )]
 	public partial class DebuggerTool : WiringTool
 	{
 		public static HashSet<IWireComponent> TrackedEntities { get; set; } = new();

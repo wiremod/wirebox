@@ -1,6 +1,6 @@
 ﻿namespace Sandbox.Tools
 {
-	[Library( "tool_wireforcer", Title = "Wire Forcer", Description = "Create a Wire Forcer for pushing/pulling props", Group = "construction" )]
+	[Library( "tool_wireforcer", Title = "Forcer", Description = "Create a Wire Forcer for pushing/pulling props", Group = "construction" )]
 	public partial class ForcerTool : BaseSpawnTool
 	{
 		[Property, Title( "Model" ), ModelProperty( SpawnLists = ["ranger", "forcer", "controller"] )]
