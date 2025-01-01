@@ -295,7 +295,7 @@ namespace Sandbox.Tools
 			{
 				toolgun2.ToolEffects( tr.EndPosition, tr.Normal );
 			}
-			// Event.Run( "entity.spawned", ent, owner );
+			Events.IPropSpawnedEvent.Post( x => x.OnSpawned( prop ) );
 		}
 
 		public static void SpawnlistsInitialize()

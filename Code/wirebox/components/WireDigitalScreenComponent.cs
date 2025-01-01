@@ -38,6 +38,7 @@ public partial class WireDigitalScreenComponent : BaseWireInputComponent
 			Parent = GameObject,
 		};
 		worldPanelComponent = mountPoint.AddComponent<Sandbox.WorldPanel>();
+		Network.Refresh();
 	}
 
 	protected void InitializeRenderScreen()

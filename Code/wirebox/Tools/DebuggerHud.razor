@@ -49,6 +49,14 @@
 
         if (!IsVisible)
             return;
+
+		foreach (var ent in DebuggerTool.TrackedEntities)
+		{
+			if (ent is not BaseWireComponent component || !component.IsValid())
+			{
+				DebuggerTool.TrackedEntities.Remove(ent);
+			}
+		}
 		StateHasChanged();
     }
 }
