@@ -40,7 +40,7 @@ public partial class WireWeightScaleComponent : BaseWireInputOutputComponent
 		box = box.AddPoint( PhysicsBody.GetBounds().Center + WorldRotation.Up * (Length + Model.Bounds.Size.z / 2) );
 		foreach ( GameObject ent in Scene.FindInPhysics( box ) )
 		{
-			if ( ent.GetComponent<PlayerController>() is PlayerController player )
+			if ( ent.GetComponent<SandboxPlus.PlayerController>() is SandboxPlus.PlayerController player )
 			{
 				// todo: is this right as of the new player controller?
 				measuredWeight += 100 * player.GetComponent<Rigidbody>().PhysicsBody.GravityScale;
