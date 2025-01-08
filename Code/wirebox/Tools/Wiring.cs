@@ -26,7 +26,7 @@ namespace Sandbox.Tools
 		private int InputPortIndex { get; set; } = 0;
 		private int OutputPortIndex { get; set; } = 0;
 
-		[Property, Title("Gate Model"), ModelProperty(SpawnLists = ["gate", "controller"])]
+		[Property, Title( "Gate Model" ), ModelProperty( SpawnLists = ["gate", "controller"] )]
 		public override string SpawnModel { get; set; } = "models/wirebox/katlatze/chip_rectangle.vmdl";
 		[ConVar( "tool_wiring_materialgroup" )]
 		public static int _2 { get; set; } = 0;
@@ -81,26 +81,10 @@ namespace Sandbox.Tools
 						Reset();
 						return;
 					}
-
 					// Log.Info( "Wiring " + wireInputProp + "'s " + inputName + " to " + wireOutputProp + "'s " + outputName );
-					wireOutputProp.WireConnect( wireInputProp, outputName, inputName );
+					wireOutputProp.WireConnect( inputEnt, outputName, inputName );
 
-					var attachEnt = tr.Body.IsValid() ? tr.Body.GetGameObject() : tr.GameObject;
-					var ropeParticle = Particles.MakeParticleSystem( "particles/wirebox/wire.vpcf", inputEnt.WorldTransform, 0, inputEnt );
-					var RopePoints = new List<ParticleControlPoint>();
-
-					var p = new GameObject();
-					p.SetParent( inputEnt );
-					p.LocalPosition = inputEnt.Transform.World.PointToLocal( inputPos );
-					RopePoints.Add( new() { StringCP = "0", Value = ParticleControlPoint.ControlPointValueInput.GameObject, GameObjectValue = p } );
-
-					var p2 = new GameObject();
-					p2.SetParent( tr.GameObject );
-					p2.LocalPosition = tr.Body.Transform.PointToLocal( tr.EndPosition );
-					RopePoints.Add( new() { StringCP = "1", Value = ParticleControlPoint.ControlPointValueInput.GameObject, GameObjectValue = p2 } );
-
-					ropeParticle.ControlPoints = RopePoints;
-					wireInputProp.WirePorts.inputs[inputName].AttachRope = new WireCable( ropeParticle, inputEnt, attachEnt );
+					MakeVisualWire( wireInputProp, tr.GameObject, inputPos, tr.EndPosition, inputName );
 					Reset();
 				}
 			}
@@ -144,6 +128,28 @@ namespace Sandbox.Tools
 			}
 
 			Parent.ToolEffects( tr.EndPosition, tr.Normal );
+		}
+
+		[Rpc.Broadcast]
+		private static void MakeVisualWire( IWireInputComponent wireInputProp, GameObject goOutput, Vector3 inputPos, Vector3 outputPos, string inputName )
+		{
+			var inputEnt = (wireInputProp as BaseWireComponent).GameObject;
+
+			var ropeParticle = Particles.MakeParticleSystem( "particles/wirebox/wire.vpcf", inputEnt.WorldTransform, 0, inputEnt );
+			var RopePoints = new List<ParticleControlPoint>();
+
+			var p = new GameObject();
+			p.SetParent( inputEnt );
+			p.LocalPosition = inputEnt.Transform.World.PointToLocal( inputPos );
+			RopePoints.Add( new() { StringCP = "0", Value = ParticleControlPoint.ControlPointValueInput.GameObject, GameObjectValue = p } );
+
+			var p2 = new GameObject();
+			p2.SetParent( goOutput );
+			p2.LocalPosition = goOutput.Transform.World.PointToLocal( outputPos );
+			RopePoints.Add( new() { StringCP = "1", Value = ParticleControlPoint.ControlPointValueInput.GameObject, GameObjectValue = p2 } );
+
+			ropeParticle.ControlPoints = RopePoints;
+			wireInputProp.WirePorts.inputs[inputName].AttachRope = new WireCable( ropeParticle, inputEnt, goOutput );
 		}
 
 		protected void UpdateTraceEntPorts( SceneTraceResult tr )
@@ -238,7 +244,7 @@ namespace Sandbox.Tools
 		}
 
 		[ConCmd( "wire_spawn_gate" )]  // todo: should this be an RPC?
-		public static void SpawnGateCmd(string gateType)
+		public static void SpawnGateCmd( string gateType )
 		{
 			var tool = CurrentTool.GetCurrentTool();
 			if ( tool is WiringTool wiringTool )
@@ -301,7 +307,7 @@ namespace Sandbox.Tools
 		public static void SpawnlistsInitialize()
 		{
 			ModelSelector.AddToSpawnlist( "gate", new string[] {
-				Cloud.Asset("https://asset.party/facepunch/metal_fences_gate_small"), // lol get it
+				Cloud.Asset("facepunch/metal_fences_gate_small"), // lol get it
 			} );
 		}
 	}

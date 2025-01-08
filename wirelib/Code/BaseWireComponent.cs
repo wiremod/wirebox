@@ -41,5 +41,16 @@ namespace Sandbox
 	public class BaseWireComponent : Component, IWireComponent
 	{
 		public WirePortData WirePorts { get; } = new();
+
+		[Rpc.Broadcast( NetFlags.Reliable )]
+		public void WireConnect( GameObject inputEnt, string outputName, string inputName )
+		{
+			((IWireOutputComponent)this)._WireConnect( inputEnt.GetComponent<IWireInputComponent>(), outputName, inputName );
+		}
+		[Rpc.Broadcast( NetFlags.Reliable )]
+		public void DisconnectInput( string inputName, bool destroyRope = true )
+		{
+			((IWireInputComponent)this)._DisconnectInput( inputName, destroyRope );
+		}
 	}
 }

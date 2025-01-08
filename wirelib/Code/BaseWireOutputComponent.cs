@@ -82,14 +82,17 @@
 				}
 			}
 		}
-		public void WireConnect( IWireInputComponent inputEnt, string outputName, string inputName )
+
+		// Rpc.Broadcast version is over in the BaseWireComponent class
+		public void WireConnect( GameObject inputEnt, string outputName, string inputName );
+		internal void _WireConnect( IWireInputComponent inputEnt, string outputName, string inputName )
 		{
 			var input = inputEnt.GetInput( inputName );
 			var output = GetOutput( outputName );
 			var connected = output.connected;
 			if ( input.connectedOutput != null )
 			{
-				inputEnt.DisconnectInput( inputName );
+				inputEnt._DisconnectInput( inputName );
 			}
 			input.connectedOutput = output;
 			connected.Add( input );

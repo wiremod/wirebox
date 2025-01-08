@@ -82,11 +82,13 @@
 				} ).ToArray();
 		}
 
-		public void DisconnectInput( string inputName )
+		// Rpc.Broadcast version is over in the BaseWireComponent class
+		public void DisconnectInput( string inputName, bool destroyRope = true );
+		internal void _DisconnectInput( string inputName, bool destroyRope = true )
 		{
-			DisconnectInput( GetInput( inputName ) );
+			_DisconnectInput( GetInput( inputName ), destroyRope );
 		}
-		public void DisconnectInput( WireInput input )
+		internal void _DisconnectInput( WireInput input, bool destroyRope = true )
 		{
 			if ( input.connectedOutput != null )
 			{
@@ -95,7 +97,7 @@
 			}
 			if ( input.AttachRope != null )
 			{
-				input.AttachRope.Destroy();
+				if ( destroyRope ) input.AttachRope.Destroy();
 				input.AttachRope = null;
 			}
 
@@ -166,6 +168,10 @@
 				if ( value is Vector3 valueVec3 )
 				{
 					handler( (int)valueVec3.Length );
+				}
+				else if ( value is bool valueBool )
+				{
+					handler( valueBool ? 1 : 0 );
 				}
 				else
 				{

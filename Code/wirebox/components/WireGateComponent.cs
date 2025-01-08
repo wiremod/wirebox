@@ -29,6 +29,7 @@ public partial class WireGateComponent : BaseWireInputOutputComponent, Component
 		};
 	}
 
+	[Rpc.Broadcast]
 	public void Update( string newGateType )
 	{
 		var oldInputs = WirePorts.inputs;
@@ -37,6 +38,7 @@ public partial class WireGateComponent : BaseWireInputOutputComponent, Component
 		GateType = newGateType;
 		WireInitialize();
 
+		if ( IsProxy ) return; // rest of this is RPC'd already
 
 		// reconnect old matching inputs
 		foreach ( var kv in WirePorts.inputs )
@@ -48,18 +50,17 @@ public partial class WireGateComponent : BaseWireInputOutputComponent, Component
 				if ( output != null && output.entity.GetComponent<IWireOutputComponent>() is IWireOutputComponent outputEnt )
 				{
 					var rope = oldInputs[inputName].AttachRope;
-					oldInputs[inputName].AttachRope = null;
-					((IWireInputComponent)this).DisconnectInput( oldInputs[inputName] );
+					DisconnectInput( inputName, destroyRope: false );
 					oldInputs.Remove( inputName );
 
-					outputEnt.WireConnect( this, output.outputName, inputName );
+					outputEnt.WireConnect( this.GameObject, output.outputName, inputName );
 					WirePorts.inputs[inputName].AttachRope = rope;
 				}
 			}
 		}
 		foreach ( var kv in oldInputs )
 		{
-			((IWireInputComponent)this).DisconnectInput( kv.Value );
+			DisconnectInput( kv.Value.inputName );
 		}
 
 		// todo: outputs, once we got more than 1
