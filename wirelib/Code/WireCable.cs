@@ -31,9 +31,9 @@ namespace Sandbox
 		// In 2023's engine, it was very unreliable killing the visual cables when the entities were destroyed. It might be better now?
 		private static CancellationTokenSource cancellationTokenSource;
 
-		// [Event( "game.init" )]
 		// [Event( "package.mounted" )]
 		// [Event.Hotload]
+		[SandboxPlus.GameInit( HostOnly: false )]
 		public static async void InitCleanupTimer()
 		{
 			StopCleanupTimer();

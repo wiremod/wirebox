@@ -46,8 +46,8 @@
 		{
 			if ( !WirePorts.inputsInitialized )
 			{ // these get cleared by hot reloading
-				WireInitialize();
 				WirePorts.inputsInitialized = true;
+				WireInitialize();
 			}
 			WirePorts.inputs[inputName].value = value;
 			WirePorts.inputHandlers[inputName]( value );
