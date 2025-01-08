@@ -10,6 +10,12 @@
 		{
 			return TypeLibrary.GetType<WireWeightScaleComponent>();
 		}
+
+		protected override void UpdateEntity( GameObject ent )
+		{
+			base.UpdateEntity( ent );
+			ent.GetComponent<PropHelper>().Invincible = true;
+		}
 		private void unused()
 		{
 			Cloud.Model( "facepunch.pallet" ); // this is here to download the model, so we can set it as the default
