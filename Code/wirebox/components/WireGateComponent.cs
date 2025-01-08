@@ -2,7 +2,7 @@
 using System.Linq;
 
 [Library( "ent_wiregate", Title = "Wire Gate" )]
-public partial class WireGateComponent : BaseWireInputOutputComponent
+public partial class WireGateComponent : BaseWireInputOutputComponent, Component.IPressable
 {
 	[Sync]
 	public string GateType { get; set; } = "Add";
@@ -533,19 +533,27 @@ public partial class WireGateComponent : BaseWireInputOutputComponent
 		return $"Gate: {GateType}{DebugText}";
 	}
 
-	// public bool OnUse( Entity user )
-	// {
-	// 	if ( GateType == "Constant" && Game.IsServer )
-	// 	{
-	// 		constantValue += Input.Down( InputButton.Run ) ? -1 : 1;
-	// 		DebugText = $" value: {constantValue}";
-	// 		this.WireTriggerOutput( "Out", constantValue );
-	// 	}
-	// 	return false;
-	// }
+	bool IPressable.CanPress( IPressable.Event e )
+	{
+		return this.GateType == "Constant";
+	}
+	[Rpc.Broadcast]
+	public void Press( GameObject presser )
+	{
+		if ( presser.Network.Owner != Rpc.Caller )
+			return;
 
-	// public bool IsUsable( Entity user )
-	// {
-	// 	return this.GateType == "Constant";
-	// }
+		if ( GateType == "Constant" )
+		{
+			constantValue += Input.Down( "run" ) ? -1 : 1;
+			DebugText = $" value: {constantValue}";
+			this.WireTriggerOutput( "Out", constantValue );
+		}
+	}
+
+	bool IPressable.Press( IPressable.Event e )
+	{
+		Press( e.Source.GameObject );
+		return true;
+	}
 }
