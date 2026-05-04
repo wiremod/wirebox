@@ -6,12 +6,17 @@
 		[Property, Title( "Screen Model" ), ModelProperty( SpawnLists = ["screen"] )]
 		public override string SpawnModel { get; set; } = "models/television/flatscreen_tv.vmdl";
 
-		[ConVar( "tool_wirecamerascreen_cameramodel" )]
-		public static string _2 { get; set; } = "camera/camera.vmdl"; // -> Cloud.Asset( "smlp/camera" );
+		[Property, Title( "Camera Model" ), ModelProperty( SpawnLists = ["camera"] )]
+		public static string CameraModel { get; set; } = "camera/camera.vmdl";
 
 		protected override TypeDescription GetSpawnedComponent()
 		{
 			return TypeLibrary.GetType<WireCameraScreenComponent>();
+		}
+
+		private void _loadCloudModel()
+		{
+			Cloud.Model( "smlp/camera" ); // unreachable but having this in code will force it to be bundled
 		}
 
 		public override void Activate()
@@ -49,9 +54,8 @@
 				WorldRotation = Rotation.LookAt( tr.Normal, tr.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ),
 			};
 			var prop = go.AddComponent<Prop>();
-			var model = GetConvarValue( "tool_camerascreen_cameramodel", Cloud.Asset( "smlp/camera" ));
 			// todo: add ModelSelector UI for the Camera part
-			prop.Model = Model.Load( model );
+			prop.Model = Model.Load( CameraModel );
 
 			go.AddComponent<PropHelper>();
 			go.AddComponent<WireCameraComponent>();

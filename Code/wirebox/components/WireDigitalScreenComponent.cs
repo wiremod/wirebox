@@ -8,37 +8,40 @@ public partial class WireDigitalScreenComponent : BaseWireInputComponent
 	private string valueString { get; set; } = "0";
 	[Sync]
 	public string LabelPrefix { get; set; } = "Wire Screen: ";
-	private Sandbox.WorldPanel worldPanelComponent;
+	[Sync] private Sandbox.WorldPanel worldPanelComponent {get; set;}
 	private Sandbox.UI.WorldPanel worldPanel;
 
 	private Label Label;
 	private Label Value;
 	private Model Model;
-	private GameObject mountPoint;
+	[Sync] private GameObject mountPoint { get; set; }
 
 	public override void WireInitialize()
 	{
 		this.RegisterInputHandler( "Label", ( string value ) =>
 		{
 			LabelPrefix = value;
-		} );
+		}, LabelPrefix );
 		this.RegisterInputHandler( "Text", ( string value ) =>
 		{
 			valueString = value;
-		} );
+		}, valueString );
 	}
 
 	protected override void OnEnabled()
 	{
 		base.OnEnabled();
 		Model = GetComponent<ModelRenderer>().Model;
-		mountPoint = new GameObject()
+		if ( !mountPoint.IsValid() && !IsProxy )
 		{
-			WorldPosition = WorldPosition,
-			Parent = GameObject,
-		};
-		worldPanelComponent = mountPoint.AddComponent<Sandbox.WorldPanel>();
-		Network.Refresh();
+			mountPoint = new GameObject()
+			{
+				WorldPosition = WorldPosition,
+				Parent = GameObject,
+			};
+			worldPanelComponent = mountPoint.AddComponent<Sandbox.WorldPanel>();
+			mountPoint.NetworkSpawn();
+		}
 	}
 
 	protected void InitializeRenderScreen()
@@ -67,7 +70,7 @@ public partial class WireDigitalScreenComponent : BaseWireInputComponent
 
 	protected override void OnUpdate()
 	{
-		if ( !worldPanelComponent.IsValid || !worldPanelComponent.GetPanel().IsValid() ) return;
+		if ( worldPanelComponent == null || !worldPanelComponent.IsValid || !worldPanelComponent.GetPanel().IsValid() ) return;
 		if ( worldPanel == null || Label.Style.TextAlign != TextAlign.Center )
 		{
 			InitializeRenderScreen();
@@ -79,8 +82,8 @@ public partial class WireDigitalScreenComponent : BaseWireInputComponent
 	public static void SpawnlistsInitialize()
 	{
 		ModelSelector.AddToSpawnlist( "screen", new string[] {
-			Cloud.Asset("https://asset.party/baik/flatscreen_tv"),
-			Cloud.Asset("https://asset.party/eurorp/monitor"),
+			Cloud.Asset("baik/flatscreen_tv"),
+			Cloud.Asset("eurorp/monitor"),
 		} );
 		ScreenDatabase = new()
 		{

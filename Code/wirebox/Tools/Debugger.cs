@@ -1,4 +1,6 @@
-﻿namespace Sandbox.Tools
+﻿using Sandbox.UI;
+
+namespace Sandbox.Tools
 {
 	[Library( "tool_debugger", Title = "Wiring Debugger", Description = "Shows selected wire ports on the HUD", Group = "constraints" )]
 	public partial class DebuggerTool : WiringTool

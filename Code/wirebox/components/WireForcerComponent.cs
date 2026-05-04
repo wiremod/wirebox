@@ -91,9 +91,10 @@ public partial class WireForcerComponent : BaseWireInputComponent
 		}
 		if ( Beam == null )
 		{
-			Beam = Particles.MakeParticleSystem( "particles/wirebox/ranger_beam.vpcf", Transform.World, 0, GameObject );
+			// LegacyParticleSystem is fully broken now, todo replace
+			// Beam = Particles.MakeParticleSystem( "particles/wirebox/ranger_beam.vpcf", Transform.World, 0, GameObject );
 		}
-		Beam.SceneObject?.SetControlPoint( 1, lastTrace.EndPosition );
+		Beam?.SceneObject?.SetControlPoint( 1, lastTrace.EndPosition );
 	}
 
 	protected override void OnDestroy()

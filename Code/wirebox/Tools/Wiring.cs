@@ -135,7 +135,8 @@ namespace Sandbox.Tools
 		{
 			var inputEnt = (wireInputProp as BaseWireComponent).GameObject;
 
-			var ropeParticle = Particles.MakeParticleSystem( "particles/wirebox/wire.vpcf", inputEnt.WorldTransform, 0, inputEnt );
+			// LegacyParticleSystem is fully broken now, todo replace
+			// var ropeParticle = Particles.MakeParticleSystem( "particles/wirebox/wire.vpcf", inputEnt.WorldTransform, 0, inputEnt );
 			var RopePoints = new List<ParticleControlPoint>();
 
 			var p = new GameObject();
@@ -148,8 +149,8 @@ namespace Sandbox.Tools
 			p2.LocalPosition = goOutput.Transform.World.PointToLocal( outputPos );
 			RopePoints.Add( new() { StringCP = "1", Value = ParticleControlPoint.ControlPointValueInput.GameObject, GameObjectValue = p2 } );
 
-			ropeParticle.ControlPoints = RopePoints;
-			wireInputProp.WirePorts.inputs[inputName].AttachRope = new WireCable( ropeParticle, inputEnt, goOutput );
+			// ropeParticle.ControlPoints = RopePoints;
+			wireInputProp.WirePorts.inputs[inputName].AttachRope = new WireCable( null, inputEnt, goOutput );
 		}
 
 		protected void UpdateTraceEntPorts( SceneTraceResult tr )
@@ -246,7 +247,7 @@ namespace Sandbox.Tools
 		[ConCmd( "wire_spawn_gate" )]  // todo: should this be an RPC?
 		public static void SpawnGateCmd( string gateType )
 		{
-			var tool = CurrentTool.GetCurrentTool();
+			var tool = BaseTool.Instance;
 			if ( tool is WiringTool wiringTool )
 			{
 				wiringTool.SpawnGate( gateType );

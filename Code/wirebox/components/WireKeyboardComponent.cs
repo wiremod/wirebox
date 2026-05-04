@@ -1,4 +1,5 @@
-﻿using SandboxPlus.Movement;
+﻿using Sandbox.UI;
+using SandboxPlus.Movement;
 namespace Wirebox.Components;
 
 [Library( "ent_wirekeyboard", Title = "Wire Keyboard" )]
