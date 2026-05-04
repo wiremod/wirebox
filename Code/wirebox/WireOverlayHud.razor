@@ -1,0 +1,51 @@
+@using System.Threading.Tasks;
+@using System.Collections.Generic;
+@using Sandbox;
+@using Sandbox.Tools;
+@using Sandbox.UI;
+@namespace Sandbox.UI
+@inherits Panel;
+
+@code
+{
+	static WireOverlayHud current;
+	public override void Tick()
+	{
+		base.Tick();
+
+		if (!IsVisible)
+			return;
+
+		var player = Player.FindLocalPlayer();
+		if (!player.IsValid() || !player.Scene.IsValid())
+		{
+			return;
+		}
+		
+		var tr = player.Scene.Trace.Ray(player.AimRay.Position, player.AimRay.Position + player.AimRay.Forward * 160)
+				.UseHitboxes()
+				.WithAnyTags("solid", "npc", "glass")
+				.WithoutTags("debris", "player")
+				.IgnoreGameObjectHierarchy(player.GameObject)
+				.Size(2)
+				.Run();
+		 
+		if (tr.Hit && tr.GameObject.IsValid() && tr.GameObject.GetComponent<IWireComponent>() is IWireComponent wireEntity)
+		{
+			var text = wireEntity.GetOverlayText();
+			if (text != "")
+			{
+				tr.GameObject.DebugOverlay.Text(tr.EndPosition, wireEntity.GetOverlayText(), 12, overlay: true);
+			}
+		}
+
+		@* StateHasChanged(); *@
+	}
+
+	[SandboxPlus.GameInit(HostOnly: false)]
+	public static async void InitHud()
+	{
+		SandboxHud.Instance.Panel.ChildrenOfType<WireOverlayHud>().ToList().ForEach(x => x.Delete());
+		current = SandboxHud.Instance.Panel.AddChild<WireOverlayHud>();
+	}
+}
